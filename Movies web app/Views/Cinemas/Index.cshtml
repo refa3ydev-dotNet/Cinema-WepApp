@@ -1,0 +1,71 @@
+﻿@using Business.DTOs.Cinemas
+@using Core.Helpers
+@using System.Linq
+@model PaginationResult<GetAllCinemasDto>
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Cinemas";
+}
+
+<link href="~/css/Actor/list.css" rel="stylesheet" />
+<h1 class="text-danger text-center mt-5">Welcome in <span class="h1">Cinema</span> page</h1>
+<div class="row text-white">
+    <div class="box row">
+        @foreach (var item in Model.Items)
+        {
+            <a asp-controller="Cinemas" asp-action="Details" asp-route-id="@item.Id">
+
+                <div class="card">
+                    <div class="imgBx">
+                        <img src="@item.LogoPath" alt="@item.Name">
+                    </div>
+                    <div class="details">
+                        <h2>@item.Name<br><span>Cinema</span></h2>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+</div>
+
+<div style="position:fixed; bottom: 20px; right: 20px">
+
+    <a asp-action="Create" class="btn btn-outline-success rounded rounded-circle "><i class="bi bi-plus-circle-fill"></i></a>
+</div>
+<div class="pagination d-flex justify-content-center">
+    <nav aria-label="Pagination">
+        <ul class="pagination">
+            @if (Model.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="?page=@(Model.CurrentPage - 1)">Previous</a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                if (i == Model.CurrentPage)
+                {
+                    <li class="page-item active">
+                        <a class="page-link" href="?page=@i">@i <span class="sr-only"></span></a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="?page=@i">@i</a>
+                    </li>
+                }
+            }
+
+            @if (Model.CurrentPage < Model.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="?page=@(Model.CurrentPage + 1)">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+
+</div>

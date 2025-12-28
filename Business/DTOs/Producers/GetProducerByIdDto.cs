@@ -1,0 +1,19 @@
+﻿using Business.DTOs.Movies;
+using Microsoft.AspNetCore.Http;
+
+namespace Business.DTOs.Producers
+{
+    public class GetProducerByIdDto
+    {
+        public int Id { get; set; }
+        public string? ProfilePath { get; set; }
+        public IFormFile ProfilePicture { get; set; }
+
+        public string FullName { get; set; }
+        public string Bio { get; set; }
+        public string IMDBLink { get; set; }
+
+        public List<GetAllMoviesDto> MovieDetails { get; set; }
+
+    }
+}

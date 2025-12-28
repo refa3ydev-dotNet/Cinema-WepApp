@@ -1,0 +1,57 @@
+﻿@using Business.DTOs.Movies
+@model GetMovieByIdDto
+@{
+    var movieName = Model.Name;
+    ViewData["Title"] = movieName;
+    var backgroundPath = Model.BackgroundUrl;
+}
+<link href="~/css/Movie/datails.css" rel="stylesheet" />
+@if(!string.IsNullOrEmpty(Model.BackgroundUrl)){
+    <style>
+        body{
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url( '@backgroundPath' ) no-repeat center / cover;
+            background-attachment:fixed;
+            width:100vw;
+            min-height:100vh;
+            margin:0;
+        }
+        strong{
+            font-size: 20px;
+        }
+
+    </style>
+}
+<section class="container px-5 text-white">
+    <h1 class="text-white">Movie Details</h1>
+    <section class="movie-info-top d-lg-flex d-sm-block gap-5">
+
+    <aside class="align-items-center d-flex flex-column">
+        <img src="@Model.PosterUrl" alt="@Model.Name Poster" style="max-width: 200px; height: auto;" />
+        <h2 class="text-white">@Model.Name</h2>
+    </aside>
+
+    <div class="text-white">
+        <p><strong>Movie :</strong> @Model.Name</p> 
+        <p><strong>Release Date:</strong> @Model.CreatedDate.ToString("ddd MMM yy")</p> 
+        <p class=""><strong>Genre:</strong>
+            @if (Model.CategoryName != null && Model.CategoryName.Any())
+            {
+                foreach (var name in Model.CategoryName)
+                {
+                        <span class="badge badge-dark">@name</span>
+                }
+            }
+        </p>
+        <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+        <p><strong>Actors:</strong> 
+                @foreach (var actor in Model.ActorsIds)
+                {
+
+                }
+        </p> 
+    </div>
+    </section>
+        <p class="d-flex flex-clomn"><strong>Description:</strong> <br/> @Model.Description</p>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</section>

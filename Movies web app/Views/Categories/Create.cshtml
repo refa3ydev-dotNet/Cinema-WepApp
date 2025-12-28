@@ -1,0 +1,33 @@
+﻿@using Business.DTOs.Categories
+@model CreateCategoryDto
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+
+<div class="row text">
+    <div class="col-md-8 offset-2">
+        <h1 class="text-white">
+            Add a New Actor
+        </h1>
+    </div>
+    <div class="col-md-8 offset-2">
+
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group text-white">
+                <label asp-for="Name" class="control-label">Full Name</label>
+                <input asp-for="Name" class="form-control" placeholder="Enter Category Name" id="actorInputName" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group d-flex justify-content-between mb-2 mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+                <input type="submit" value="Create" class="btn btn-outline-success" />
+            </div>
+        </form>
+    </div>
+
+
+</div>
+

@@ -1,0 +1,32 @@
+﻿@using Business.DTOs.Actors
+@model List<GetAllActorsDto>
+@{
+    ViewData["Title"] = "Actors";
+}
+<link href="~/css/Actor/list.css" rel="stylesheet" />
+<h1 class="text-danger text-center mt-5">Welcome in <span class="h1">Actor</span> page</h1>
+
+
+<div class="row text-white ">
+    <div class="box">
+        @foreach (var item in Model)
+        {
+            <a asp-controller="Actors" asp-action="Details" asp-route-id="@item.Id">
+
+                <div class="card1" >
+                    <div class="imgBx">
+                        <img src="@item.ProfilePath" alt="images">
+                    </div>
+                    <div class="details">
+                        <h2>@item.FullName<br><span>Actor</span></h2>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+</div>
+
+<div style="position:fixed; bottom: 20px; right: 20px">
+
+    <a asp-action="Create" class="btn btn-outline-success rounded rounded-circle"><i class="bi bi-plus-circle-fill"></i></a>
+</div>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -6,5 +6,28 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Movies_web_app</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\Images\Actors\7246ec99-f13c-4715-ba95-15265230c50a_eyJidWNrZXQiOiJrb2wtaW1hZ2VzLXByb2QiLCJrZXkiOiJwaWN0dXJlcy9hZ2kvYWdpLzIwMjQvMDcvMjgvMDYwNjU0ODMzLWVhZjIwYThiLWY4NjgtNGYwZS1hMDRhLTRjOGIzOTVjZDBkOS5qcGciLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjE1MDAsImhlaWdodCI6MTA2M.webp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Business\Business.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ViewModel\" />
+    <Folder Include="wwwroot\Images\Actors\" />
+    <Folder Include="wwwroot\Images\Cinemas\" />
+    <Folder Include="wwwroot\Images\Producers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.18">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
 </Project>

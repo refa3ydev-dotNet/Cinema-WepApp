@@ -1,0 +1,78 @@
+﻿@using Business.DTOs.Cinemas
+@model UpdateCinemaDto
+
+@{
+    ViewData["Title"] = "update New Cinema";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row text">
+    <div class="col-md-8 offset-2">
+        <h1 class="text-white">
+            Update Cinema
+        </h1>
+    </div>
+    <div class="col-md-8 offset-2">
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group text-center">
+                <img id="ProfilePicturePreview" style="max-width: 200px; height: auto;" />
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Logo" class="control-label">Logo </label>
+                <input asp-for="Logo" class="form-control" id="ProfilePictureURL" placeholder="" type="file" />
+                <span asp-validation-for="Logo" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="BackgroundPicture" class="control-label">BackgroundPicture </label>
+                <input asp-for="BackgroundPicture" class="form-control" id="BackgroundPicture" placeholder="" type="file" />
+                <span asp-validation-for="BackgroundPicture" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Name" class="control-label">Name</label>
+                <input asp-for="Name" class="form-control" placeholder="" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Description" class="control-label">Description</label>
+                <input asp-for="Description" class="form-control" placeholder="" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Address" class="control-label">Address</label>
+                <input asp-for="Address" class="form-control" placeholder="" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group d-flex justify-content-between mb-2 mt-2">
+                <input type="submit" value="Edit" class="btn btn-outline-success" />
+                <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+    <script>
+
+        $("#ProfilePictureURL").on("change", function () {
+            const [file] = this.files;
+            if (file) {
+                const output = document.getElementById("ProfilePicturePreview");
+                output.src = URL.createObjectURL(file);
+            }
+        });
+    </script>
+
+        }

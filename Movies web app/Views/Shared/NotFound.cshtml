@@ -1,0 +1,63 @@
+﻿@{
+    Layout = null;
+}
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <div class="row1">
+        <span class="span">404</span>
+        <h3 class="oops">Oops</h3>
+        <h2 class="notfound">Page not found</h2>
+        <p class="des">The page you are looking for does not exist or has been moved</p>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">Back to Home</a>
+    </div>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: url(/Images/NotFound/404.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        font-family: Poppins;
+        overflow: hidden;
+    }
+
+    .row1 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.8);
+        width: 700px;
+        margin: 0 auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        border-radius: 10px;
+    }
+
+    .span {
+        color: #fff;
+        font-size: 100px;
+    }
+
+    .oops {
+        color: #fff;
+        font-size: 50px;
+    }
+
+    .notfound {
+        color: #fff;
+        font-size: 50px;
+    }
+
+    .des {
+        color: #fff;
+        font-size: 20px;
+    }
+</style>

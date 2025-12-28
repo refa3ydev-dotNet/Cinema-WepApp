@@ -1,0 +1,141 @@
+﻿@using Business.DTOs.Movies
+@using Business.DTOs.Actors
+@using Core.Enums
+
+@model CreateMovieDto
+
+@{
+    ViewData["Title"] = "Create New Movie";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- head: below existing links -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@4.0.1/dist/css/multi-select-tag.min.css">
+<!-- End of <body> -->
+<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@4.0.1/dist/js/multi-select-tag.min.js"></script>
+
+
+<div class="row text">
+    <div class="col-md-8 offset-2">
+        <h1 class="text-white">
+            Add a New Movie
+        </h1>
+    </div>
+    <div class="col-md-8 offset-2">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group text-center">
+                <img id="ProfilePicturePreview" style="max-width: 200px; height: auto;" />
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="PosterImg" class="control-label">Movie Poster </label>
+                <input asp-for="PosterImg" class="form-control" id="ProfilePictureURL" placeholder="" type="file" />
+                <span asp-validation-for="PosterImg" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="BackgroundImg" class="control-label">Movie Background </label>
+                <input asp-for="BackgroundImg" class="form-control" id="BackgroundImgURL" placeholder="" type="file" />
+                <span asp-validation-for="BackgroundImg" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Name" class="control-label">Movie Name</label>
+                <input asp-for="Name" class="form-control" placeholder="" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Description" class="control-label">Movie Description</label>
+                <input asp-for="Description" class="form-control" placeholder="" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Price" class="control-label">Ticket Price</label>
+                <input asp-for="Price" class="form-control" placeholder="" type="number" step="0.01"/>
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <div class="inline w-100 field">
+                    <label class="text-white">Select Categories</label>
+                    <select asp-for="CategoryIds" asp-items="@(ViewBag.categories)" id="Categories" multiple class="text-secondary" >
+                    </select>
+                    </div> 
+            </div>
+            <div class="form-group">
+                <div class="inline w-100 field">
+                    <label class="text-white">Select Actors</label>
+                    <select asp-for="ActorsIds" asp-items="@(ViewBag.actors)"  id="Actors" multiple class="text-secondary" >
+                    </select>
+                    </div> 
+            </div>
+            <div class="form-group">
+                    <div class="inline w-100 field">
+                        <label class="text-white">Select Porducer</label>
+                    <select asp-for="producerId" asp-items="@(ViewBag.producers)" id="Producers" multiple class="text-secondary" >
+                    </select>
+                    </div> 
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Translation" class="control-label">Translation</label>
+                <select asp-for="Translation" class="form-control" 
+                asp-items="@(ViewBag.translations)">
+                </select>
+                <span asp-validation-for="Translation" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Language" class="control-label">Language</label>
+                <select asp-for="Language" class="form-control" 
+                asp-items="@(Html.GetEnumSelectList<Core.Enums.Language>())">
+                    <option value="0">Select Language</option>
+                </select>
+                <span asp-validation-for="Translation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group d-flex justify-content-between mb-2 mt-2">
+                <input type="submit" value="Create" class="btn btn-outline-success" />
+                <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Poster preview
+        $("#PosterImg").on("change", function () {
+            const [file] = this.files;
+            if (file) {
+                const output = document.getElementById("PosterPreview");
+                output.src = URL.createObjectURL(file);
+            }
+        });
+    </script>
+    <script>
+        var tagSelector = new MultiSelectTag('Actors', {
+            maxSelection: 6,              // default unlimited.
+            required: true,               // default false.
+            placeholder: 'Search tags',   // default 'Search'.
+            onChange: function(selected) { // Callback when selection changes.
+                // console.log('Selection changed:', selected);
+            }
+        });
+        var tagSelector = new MultiSelectTag('Categories', {
+            maxSelection: 6,              // default unlimited.
+            required: true,               // default false.
+            placeholder: 'Search tags',   // default 'Search'.
+            onChange: function(selected) { // Callback when selection changes.
+                // console.log('Selection changed:', selected);
+            }
+        });
+        var ProducerSelector = new MultiSelectTag('Producers', {
+            maxSelection: 1,              // default unlimited.
+            required: true,               // default false.
+            placeholder: 'Search tags',   // default 'Search'.
+            onChange: function(selected) { // Callback when selection changes.
+                // console.log('Selection changed:', selected);
+            }
+        });
+    </script>
+        }

@@ -1,0 +1,249 @@
+﻿.carousel-item img {
+    max-height: 400px;
+    object-fit: contain;
+    margin: auto;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+}
+
+.carousel-inner {
+    background: #222;
+    border-radius: 24px;
+    padding: 32px 0;
+}
+
+body {
+    background: #181818;
+    color: #fff;
+    min-height: 100vh;
+
+
+}
+
+.carousel {
+    width: 90vw;
+    max-width: 900px;
+}
+
+body {
+    background: #181818;
+    color: #fff;
+    min-height: 100vh;
+
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.actor-card {
+    background: #23272f;
+    border-radius: 2rem;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.25);
+    max-width: 900px;
+    width: 95vw;
+    padding: 2.5rem 2rem 2rem 2rem;
+    margin:0 auto;
+}
+
+.actor-card-header {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.actor-photo {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #495057;
+    background: #181818;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+.actor-details {
+    flex: 1;
+}
+
+.actor-name {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.actor-title {
+    color: #a0a0a0;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.actor-bio {
+    font-size: 1.06rem;
+    color: #e0e0e0;
+    margin-bottom: 0;
+}
+
+.custom-carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5rem;
+    background: #181c22;
+    border-radius: 1.2rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+    padding: 1.5rem 1rem;
+
+    position: relative;
+}
+
+.custom-carousel {
+    display: flex;
+    gap: 1.5rem;
+    overflow: hidden;
+    width: 540px;
+    min-height: 280px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(.77,0,.18,1);
+}
+
+.carousel-poster-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 240px;
+}
+
+.carousel-poster {
+    width: 160px;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 1rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+    background: #222;
+    border: 2px solid #2d323a;
+    transition: transform 0.3s cubic-bezier(.77,0,.18,1);
+    z-index: 1;
+}
+
+.carousel-poster-wrapper:hover .carousel-poster {
+    transform: scale(1.07) translateY(-8px);
+    box-shadow: 0 6px 32px rgba(0,0,0,0.32);
+    border-color: #ffd700;
+}
+
+.poster-play-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3;
+    transition: opacity 0.3s cubic-bezier(.77,0,.18,1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-poster-wrapper:hover .poster-play-center {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.poster-titlebar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(20,20,20,0.92) 80%, rgba(20,20,20,0.0) 100%);
+    border-radius: 0 0 1rem 1rem;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(.77,0,.18,1);
+    z-index: 4;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 48px;
+    padding-bottom: 8px;
+    pointer-events: none;
+}
+
+.carousel-poster-wrapper:hover .poster-titlebar {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.poster-title {
+    color: #ffd700;
+    font-size: 1.08rem;
+    font-weight: bold;
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 8px #000;
+    padding: 0.18em 1.1em;
+    border-radius: 0.6em;
+    background: rgba(0,0,0,0.22);
+    box-shadow: 0 1px 8px rgba(0,0,0,0.12);
+    margin-bottom: 0;
+}
+
+.carousel-arrow {
+    background: #323844;
+    border: none;
+    color: #fff;
+    font-size: 2.5rem;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin: 0 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+    transition: background 0.2s;
+    z-index: 1;
+}
+
+    .carousel-arrow:hover {
+        background: #495057;
+        color: #ffd700;
+    }
+
+@media screen and (max-width: 700px) {
+    .actor-card-header {
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .custom-carousel {
+        width: 95vw;
+        min-width: 0;
+    }
+
+    .carousel-poster {
+        width: 28vw;
+        height: 36vw;
+        min-width: 80px;
+        min-height: 120px;
+    }
+}@media screen and (max-width: 400px) {
+    .actor-card-header {
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .custom-carousel {
+        width: 95vw;
+        min-width: 0;
+    }
+
+    .carousel-poster {
+        width: 140px;
+        height: 240px;
+        min-width: 80px;
+        min-height: 120px;
+    }
+}

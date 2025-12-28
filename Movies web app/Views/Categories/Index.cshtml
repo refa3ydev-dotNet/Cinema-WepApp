@@ -1,0 +1,38 @@
+﻿@using Business.DTOs.Categories
+@model List<GetAllCategoriesDto>
+@{
+    ViewData["Title"] = "Categories";
+}
+
+
+<div class="container">
+
+<div class="row d-flex justify-content-center">
+    <table class="table table-striped text-white w-50">
+            <tr class="text-white">
+            <th>Number</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr class="text-white">
+                <td>
+                    @item.Id
+                </td>
+                <td>
+                    @item.Name
+                </td>
+                <td class="col-6">
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-success rounded rounded-circle"><i class="bi bi-pencil-fill"></i></a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger rounded rounded-circle"><i class="bi bi-trash-fill"></i></a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+</div>
+<div style="position:fixed; bottom: 20px; right: 20px">
+
+    <a asp-action="Create" class="btn btn-outline-success rounded rounded-circle "><i class="bi bi-plus-circle-fill"></i></a>
+</div>

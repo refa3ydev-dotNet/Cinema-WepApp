@@ -1,0 +1,161 @@
+﻿@using Business.DTOs.Producers
+@model GetProducerByIdDto
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Details";
+}
+<link href="~/css/Actor/Details.css" rel="stylesheet" />
+
+
+<div class="actor-card">
+    <div class="actor-card-header">
+        <img src="@Model.ProfilePath" class="actor-photo" alt="@Model.FullName">
+        <div class="actor-details">
+            <div class="d-flex gap-2 align-items-center">
+
+                <h3 class="actor-name">@Model.FullName</h3>
+                @if (Model.IMDBLink != null)
+                {
+                    <a href="@Model.IMDBLink" class="link-danger text-decoration-none">IMDP Profile</a>
+
+                }
+            </div>
+            <h5 class="actor-title">Biogarphy</h5>
+            <p class="actor-bio">@Model.Bio</p>
+        </div>
+    </div>
+    <div class="custom-carousel-container"> 
+        @if (Model.MovieDetails.Count > 3) 
+        {
+         <button class="carousel-arrow left" id="carouselPrev">&#8592;</button> 
+     } 
+    @if (Model.MovieDetails.Count == 0) {
+          <H3>No Movies</H3>
+    }
+   else
+    { 
+        <div class="custom-carousel" id="customCarousel"> 
+           @foreach (var poster in Model.MovieDetails) 
+            { 
+                <div class="carousel-poster-wrapper"> 
+                 <img src="@poster.PosterUrl" class="carousel-poster" alt="Poster"> 
+                   <div class="poster-play-center"> 
+                        <svg width="54" height="54" viewBox="0 0 54 54"> 
+                            <circle cx="27" cy="27" r="26" fill="rgba(0,0,0,0.42)" stroke="#fff" stroke-width="2" /> 
+                            <polygon points="22,17 38,27 22,37" fill="#fff" /> 
+                        </svg> 
+                   </div> 
+                     <div class="poster-titlebar"> 
+                           <span class="poster-title">@poster.Name</span> 
+                     </div> 
+                </div> 
+              } 
+           </div> 
+
+    } 
+     @if (Model.MovieDetails.Count > 3)
+       { 
+
+           <button class="carousel-arrow right" id="carouselNext">&#8594;</button>
+     }
+</div>
+    <div class="d-flex justify-content-between mt-2">
+        <a asp-controller="Producers" asp-action="Index" class="btn btn-outline-secondary">All Producers</a>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="delete-form">
+            <button type="submit" class="btn btn-danger">
+                Delete
+            </button>
+        </form>
+
+        <a asp-controller="Producers" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const postersToShow = 3;
+        const carousel = document.getElementById('customCarousel');
+        const wrappers = Array.from(carousel.children);
+        let startIdx = 0;
+
+        function renderCarousel() {
+            wrappers.forEach((wrapper, i) => {
+                // Calculate the correct position for each poster
+                let idx = (startIdx + i) % wrappers.length;
+                if (i < postersToShow) {
+                    wrappers[idx].style.display = 'flex';
+                } else {
+                    wrappers[idx].style.display = 'none';
+                }
+            });
+            // Reorder DOM so visible posters are always first
+            for (let i = 0; i < wrappers.length; i++) {
+                carousel.appendChild(wrappers[(startIdx + i) % wrappers.length]);
+            }
+        }
+
+        document.getElementById('carouselPrev').onclick = function() {
+            startIdx = (startIdx - 1 + wrappers.length) % wrappers.length;
+            renderCarousel();
+        };
+        document.getElementById('carouselNext').onclick = function() {
+            startIdx = (startIdx + 1) % wrappers.length;
+            renderCarousel();
+        };
+
+        renderCarousel();
+    });
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "btn btn-success me-3",
+        cancelButton: "btn btn-danger"
+      },
+      buttonsStyling: false
+    });
+
+
+    // أربط كل فورم حذف بكود SweetAlert
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // امنع الإرسال المؤقتًا
+
+            swalWithBootstrapButtons.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                background: "#1e1e1e", // اللون الغامق للخلفية
+                color: "#f1f1f1",       // اللون الفاتح للنص
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel!",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                        swalWithBootstrapButtons.fire({
+                        title: "Deleted!",
+                        text: "Your file has been deleted.",
+                        icon: "success",
+                        background: "#1e1e1e",
+                        color: "#f1f1f1"
+                    }).then(() => {
+                    form.submit(); 
+                });;
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Cancelled",
+                        text: "Your file is safe :)",
+                        icon: "error",
+                        background: "#1e1e1e",
+                        color: "#f1f1f1"
+                    });
+                }
+            });
+        });
+    });
+</script>

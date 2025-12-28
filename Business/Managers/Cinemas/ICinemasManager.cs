@@ -1,0 +1,21 @@
+﻿using Business.DTOs.Cinemas;
+using Business.DTOs.Producers;
+using Core.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Business.Managers.Cinemas
+{
+    public interface ICinemasManager
+    {
+        Task CreateCinemaAsync(CreateCinemaDto dto);
+        Task DeleteCinemaAsync(int id);
+        Task<List<GetAllCinemasDto>> GetAllCinemasAsync();
+        Task<GetCinemaByIdDto> GetCinemaByIdAsync(int id);
+        Task UpdateCinemaAsync(UpdateCinemaDto dto);
+        Task<PaginationResult<GetAllCinemasDto>> GetPagedCinemasAsync(int page, int pageSize);
+    }
+}

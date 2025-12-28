@@ -1,0 +1,152 @@
+﻿@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&display=swap");
+h1 {
+    font-family: "Londrina Solid", sans-serif;
+    font-size: 4rem;
+    color: #ff5400;
+}
+.h1 {
+    font-family: "Bebas Neue", sans-serif;
+    transition: all 0.6s ease-in-out;
+}
+.h1:hover {
+    font-size: 4rem;
+    letter-spacing: 10px;
+    color: aliceblue;
+}
+.box {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 2rem;
+    padding: 20px;
+    margin: 2rem auto;
+    max-width: 1200px;
+}
+
+.card1 {
+    position: relative;
+    width: 12rem;
+    height: 18rem;
+    background: #fff;
+    margin: 0 auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    margin-top: 2rem;
+}
+
+.card1:before,
+.card1:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    background: #fff;
+    transition: 0.5s;
+    z-index: -1;
+}
+
+.card1:hover:before {
+    transform: rotate(20deg);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card1:hover:after {
+    transform: rotate(10deg);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card1 .imgBx {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    bottom: 10px;
+    right: 10px;
+    background: #222;
+    transition: 0.5s;
+    z-index: 1;
+}
+
+.card1:hover .imgBx {
+    bottom: 80px;
+}
+
+.card1 .imgBx img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card1 .details {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    height: 60px;
+    text-align: center;
+}
+
+.card1 .details h2 {
+    margin: 0;
+    padding: 0;
+    font-weight: 600;
+    font-size: 100%;
+    color: #777;
+    text-transform: uppercase;
+}
+
+.card1 .details h2 span {
+    font-weight: 500;
+    font-size: 100%;
+    color: #f38695;
+    display: block;
+    margin-top: 5px;
+}
+@media screen and (max-width: 700px) {
+        .box {
+        grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    }
+    .card1 {
+        width: 100%;
+        height: 25rem;
+    }
+
+    .card1 .details h2 {
+        font-size: 1.3rem;
+    }
+
+    .card1 .details h2 span {
+        font-weight: 500;
+        font-size: 100%;
+        color: #f38695;
+        display: block;
+        margin-top: 5px;
+    }
+}
+}
+@media screen and (max-width: 400px) {
+    .box {
+        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    }
+    .card1 {
+        width: 100%;
+        height: 25rem;
+    }
+
+    .card1 .details h2 {
+        font-size: 1.5rem;
+    }
+
+    .card1 .details h2 span {
+        font-weight: 500;
+        font-size: 100%;
+        color: #f38695;
+        display: block;
+        margin-top: 5px;
+    }
+}

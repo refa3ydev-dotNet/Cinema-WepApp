@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -18,5 +18,36 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.8)), /* طبقة شفافة */
+    url('../Images/pattern.jpg')center;
+}
+header{
+    background-color:transparent;
+}
+
+.logo {
+    color: white;
+    background: #ff5964;
+    padding:4px;
+    border-radius:5px;
+    font-weight:700;
+}
+.brand {
+    color: #ff5964;
+    padding-left:4px;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size:1.2rem;
+    text-decoration:none;
+    border:2px solid;
+    transition:all ease-in-out 0.3s;
+}
+    .brand:hover {
+        color: #ff5964;
+        background-color: white;
+
+    }
+nav{
+    padding:0 3rem;
 }

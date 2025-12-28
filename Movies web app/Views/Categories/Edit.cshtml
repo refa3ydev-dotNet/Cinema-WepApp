@@ -1,0 +1,29 @@
+﻿@using Business.DTOs.Categories
+@model UpdateCategoryDto
+
+@{
+    ViewData["Title"] = "Edit Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row text">
+    <div class="col-md-8 offset-2">
+        <h1 class="text-white">
+            Edit Category
+        </h1>
+    </div>
+    <div class="col-md-8 offset-2">
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+            <div class="form-group text-white">
+                <label asp-for="Name" class="control-label">Full Name</label>
+                <input asp-for="Name" class="form-control" placeholder="Enter Full Name" value="@Model.Name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="Id" />
+        </form>
+    </div>
+
+
+</div>
