@@ -7,7 +7,7 @@ using DataAccess.Repositories.MOVIE;
 
 namespace Business.Managers.Movies
 {
-    public class MovieManager: IMovieManager
+    public class MovieManager : IMovieManager
     {
         private readonly IMovieRepository _movieRepository;
         private readonly ICategoryManager _categoryManager;

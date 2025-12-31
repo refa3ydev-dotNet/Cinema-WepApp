@@ -1,12 +1,6 @@
 ﻿using Business.DTOs.Actors;
 using Business.DTOs.Movies;
 using Core;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Mapping
 {
@@ -17,20 +11,22 @@ namespace Business.Mapping
             return new Actor()
             {
                 FullName = dto.FullName,
-                Bio=dto.Bio,
+                Bio = dto.Bio,
                 ProfilePicture = dto.ProfilePath,
-                IMDBLink=dto.IMDBLink
+                IMDBLink = dto.IMDBLink,
+                BirthDate = dto.BirthDate
             };
         }
         public static Actor ToActor(this UpdateActorDto dto)
         {
             return new Actor()
             {
-                Id=dto.Id,
+                Id = dto.Id,
                 FullName = dto.FullName,
                 Bio = dto.Bio,
                 ProfilePicture = dto.ProfilePath,
-                IMDBLink=dto.IMDBLink
+                IMDBLink = dto.IMDBLink,
+                BirthDate = dto.BirthDate
             };
 
         }
@@ -42,7 +38,9 @@ namespace Business.Mapping
                 FullName = actor.FullName,
                 Bio = actor.Bio,
                 ProfilePath = actor.ProfilePicture,
-                IMDBLink=actor.IMDBLink
+                IMDBLink = actor.IMDBLink,
+                BirthDate =(DateOnly)actor.BirthDate
+                
 
             };
         }
@@ -52,31 +50,34 @@ namespace Business.Mapping
 
             return new GetActorByIdDto
             {
-                Id=actor.Id,
+                Id = actor.Id,
                 FullName = actor.FullName,
                 Bio = actor.Bio,
                 ProfilePath = actor.ProfilePicture,
                 IMDBLink = actor.IMDBLink,
-                MovieDetails=actor.ActorMovies?
-                .Select(m=>new GetAllMoviesDto {
+                MovieDetails = actor.ActorMovies?
+                .Select(m => new GetAllMoviesDto
+                {
                     Id = m.Movie.Id,
                     Name = m.Movie.Name,
                     PosterUrl = m.Movie.PosterImg,
-                    Price=m.Movie.Price,
-                    Cinemas= m.Movie.CinemaMovies.Select(cm => cm.Cinema.Name).Where(name => name != null).ToList() ?? new List<string>(),
-                }).ToList()
+                    Price = m.Movie.Price,
+                    Cinemas = m.Movie.CinemaMovies.Select(cm => cm.Cinema.Name).Where(name => name != null).ToList() ?? new List<string>(),
+                }).ToList(),
+                BirthDate = (DateOnly)actor.BirthDate
             };
         }
         public static List<GetAllActorsDto> ToActor(this List<Actor> actors)
         {
             if (actors == null) return null;
-            return actors.Select(actor=>new GetAllActorsDto{
+            return actors.Select(actor => new GetAllActorsDto
+            {
                 Id = actor.Id,
                 FullName = actor.FullName,
                 Bio = actor.Bio,
                 ProfilePath = actor.ProfilePicture,
-                IMDBLink=actor.IMDBLink,
-            }).ToList(); 
+                IMDBLink = actor.IMDBLink,
+            }).ToList();
         }
 
 

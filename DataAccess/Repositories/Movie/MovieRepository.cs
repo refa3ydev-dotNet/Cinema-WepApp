@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.MOVIE
 {
-    public class MovieRepository:IMovieRepository
+    public class MovieRepository : IMovieRepository
     {
         private readonly MoviesDbContext _context;
 
@@ -19,12 +19,12 @@ namespace DataAccess.Repositories.MOVIE
         {
             if (id > 0)
             {
-                var mov= await _context.Movies
+                var mov = await _context.Movies
                     .Include(x => x.ActorMovies)
                     .ThenInclude(y => y.Actor)
                     .Include(x => x.CinemaMovies)
                     .ThenInclude(y => y.Cinema)
-                    .Include(x=>x.Categories)
+                    .Include(x => x.Categories)
                     .FirstOrDefaultAsync(x => x.Id == id);
                 if (mov != null)
                 {
@@ -51,7 +51,7 @@ namespace DataAccess.Repositories.MOVIE
             if (movs != null)
             {
 
-            return movs;
+                return movs;
             }
             else
             {

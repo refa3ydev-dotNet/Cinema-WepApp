@@ -2,7 +2,6 @@
 using Business.Managers.Cinemas;
 using DataAccess.Contexts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Movies_web_app.Services;
 
 namespace Movies_web_app.Controllers
@@ -75,13 +74,13 @@ namespace Movies_web_app.Controllers
             return View(dto);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit( UpdateCinemaDto cinema)
+        public async Task<IActionResult> Edit(UpdateCinemaDto cinema)
         {
             if (!ModelState.IsValid)
             {
                 return View(cinema);
             }
-            if(cinema.Logo != null)
+            if (cinema.Logo != null)
             {
                 if (!string.IsNullOrEmpty(cinema.LogoPath))
                 {
@@ -91,7 +90,7 @@ namespace Movies_web_app.Controllers
                 cinema.LogoPath = "/Images/Cinemas/" + logoImageName;
 
             }
-            if(cinema.BackgroundPicture != null)
+            if (cinema.BackgroundPicture != null)
             {
                 if (!string.IsNullOrEmpty(cinema.BackgroundPath))
                 {
@@ -102,7 +101,7 @@ namespace Movies_web_app.Controllers
 
             }
 
-            await _cinemaManager.UpdateCinemaAsync( cinema);
+            await _cinemaManager.UpdateCinemaAsync(cinema);
             return RedirectToAction("Details", new { id = cinema.Id });
 
         }

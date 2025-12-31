@@ -1,5 +1,4 @@
 ﻿using Business.DTOs.Movies;
-using Core;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
@@ -19,5 +18,6 @@ namespace Business.DTOs.Actors
         public string? ProfilePath { get; set; } // دي هتحط فيها مسار الصورة بعد الرفع
         public string IMDBLink { get; set; }
         public List<GetAllMoviesDto> MovieDetails { get; set; }
+        public DateOnly BirthDate {  get; set; }
     }
 }

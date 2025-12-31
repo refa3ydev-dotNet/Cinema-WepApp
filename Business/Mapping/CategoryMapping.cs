@@ -1,10 +1,5 @@
 ﻿using Business.DTOs.Categories;
 using Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Mapping
 {
@@ -36,7 +31,8 @@ namespace Business.Mapping
         public static List<GetAllCategoriesDto> ToDto(this List<Category> categories)
         {
             if (categories == null) return null;
-            return categories.Select(x => new GetAllCategoriesDto() {
+            return categories.Select(x => new GetAllCategoriesDto()
+            {
                 Id = x.Id,
                 Name = x.CategoryName,
             }).ToList();

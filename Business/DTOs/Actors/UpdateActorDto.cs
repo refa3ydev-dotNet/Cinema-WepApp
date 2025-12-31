@@ -16,5 +16,6 @@ namespace Business.DTOs.Actors
 
         public string? ProfilePath { get; set; } // دي هتحط فيها مسار الصورة بعد الرفع
         public string IMDBLink { get; set; }
+        public DateOnly BirthDate { set; get; }
     }
 }

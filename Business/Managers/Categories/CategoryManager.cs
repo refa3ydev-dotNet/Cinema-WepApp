@@ -2,27 +2,23 @@
 using Business.Mapping;
 using Core.Entities;
 using DataAccess.Repositories.CATEGORY;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Managers.Categories
 {
     public class CategoryManager : ICategoryManager
     {
         private readonly ICategoryRepository _categoryRepository;
-        public CategoryManager(ICategoryRepository categoryRepository){
+        public CategoryManager(ICategoryRepository categoryRepository)
+        {
             _categoryRepository = categoryRepository;
-            }
+        }
         public async Task CreateCategoryAsync(CreateCategoryDto dto)
         {
             var category = dto.ToEntity();
             await _categoryRepository.CreateCategoryAsync(category);
         }
 
-        public async Task<List<Category>>GetCategoriesByIdsAsync(List<int> ids)
+        public async Task<List<Category>> GetCategoriesByIdsAsync(List<int> ids)
         {
 
             var categories = await _categoryRepository.GetCategoriesByIdsAsync(ids);
@@ -41,7 +37,7 @@ namespace Business.Managers.Categories
 
         public async Task<List<GetAllCategoriesDto>> GetAllCategoriesAsync()
         {
-           var category = await _categoryRepository.GetAllCategoriesAsync();
+            var category = await _categoryRepository.GetAllCategoriesAsync();
             return category.ToDto();
         }
 

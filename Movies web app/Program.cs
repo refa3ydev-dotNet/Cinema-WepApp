@@ -17,6 +17,11 @@ namespace Movies_web_app
             builder.Services.AddScoped<DataAccess.Repositories.ACTOR.IActorRepository,
                 DataAccess.Repositories.ACTOR.ActorRepository>();
 
+            builder.Services.AddScoped<Business.Managers.Rooms.IRoomManager,
+                Business.Managers.Rooms.RoomManager>();
+            builder.Services.AddScoped<DataAccess.Repositories.ROOM.IRoomRepository,
+                DataAccess.Repositories.ROOM.RoomRepository>();
+
             builder.Services.AddScoped<Business.Managers.Producers.IProducersManager,
                 Business.Managers.Producers.ProducersManager>();
             builder.Services.AddScoped<DataAccess.Repositories.PRODUCER.IProducerRepository,

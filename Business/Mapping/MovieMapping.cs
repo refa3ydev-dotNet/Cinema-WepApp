@@ -1,5 +1,4 @@
 ﻿using Business.DTOs.Actors;
-using Business.DTOs.Cinemas;
 using Business.DTOs.Movies;
 using Business.DTOs.Producers;
 using Core;
@@ -20,10 +19,13 @@ namespace Business.Mapping
                 Description = dto.Description,
                 Price = dto.Price,
                 PosterImg = dto.PosterUrl,
-                Categories = categories.Where(c=>dto.CategoryIds.Contains(c.Id)).ToList(),
+                Categories = categories.Where(c => dto.CategoryIds.Contains(c.Id)).ToList(),
                 Language = dto.Language,
                 Translation = dto.Translation,
-                ProducerId = dto.producerId,
+                producerMovies = dto.ProducerIds.Select(ProducerId=>new ProducerMovie
+                {
+                    ProducerId=ProducerId
+                }).ToList()??new List<ProducerMovie>(),
                 ActorMovies = dto.ActorsIds?.Select(actorId => new ActorMovie
                 {
                     ActorId = actorId
@@ -36,7 +38,7 @@ namespace Business.Mapping
             };
         }
 
-        public static Movie ToEntity(this UpdateMovieDto dto,List<Category>categories)
+        public static Movie ToEntity(this UpdateMovieDto dto, List<Category> categories)
         {
             return new Movie()
             {
@@ -45,7 +47,7 @@ namespace Business.Mapping
                 Description = dto.Description,
                 Price = dto.Price,
                 PosterImg = dto.PosterUrl,
-                Categories =categories.Where(c=> dto.CategoryIds.Contains(c.Id)).ToList(),
+                Categories = categories.Where(c => dto.CategoryIds.Contains(c.Id)).ToList(),
                 Language = dto.Language,
                 Translation = dto.Translation
             };
@@ -62,11 +64,11 @@ namespace Business.Mapping
                 Price = x.Price,
                 PosterUrl = x.PosterImg,
                 BackgroundUrl = x.BackgroundImg,
-                CategoryNames = x.Categories.Select(c=>c.CategoryName).ToList(),
+                CategoryNames = x.Categories.Select(c => c.CategoryName).ToList(),
                 Language = x.Language,
                 Translation = x.Translation,
-                Cinemas=x.CinemaMovies.Select(y=>y.Cinema.Name).ToList(),
-                Actors=x.ActorMovies.Select(y=>y.Actor.FullName).ToList()
+                Cinemas = x.CinemaMovies.Select(y => y.Cinema.Name).ToList(),
+                Actors = x.ActorMovies.Select(y => y.Actor.FullName).ToList()
             }).ToList();
         }
 
@@ -87,9 +89,10 @@ namespace Business.Mapping
                 CategoryName = movie.Categories.Where(X => X.CategoryName != null).Select(mv => mv.CategoryName).ToList(),
                 Language = movie.Language,
                 Translation = movie.Translation,
-                producer = movie.producer.Select(P=>new ProducerInMovieDto{
-                    ID=P.Id,
-                    Name=P.FullName
+                producer = movie.producerMovies.Select(P => new ProducerInMovieDto
+                {
+                    ID = P.ProducerId,
+                    Name = P.Producer.FullName
                 }).ToList(),
                 actors = movie.ActorMovies.Select(x => new ActorsInMovieDto
                 {

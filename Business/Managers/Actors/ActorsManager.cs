@@ -1,15 +1,10 @@
 ﻿using Business.DTOs.Actors;
 using Business.Mapping;
 using DataAccess.Repositories.ACTOR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Managers.Actors
 {
-    public class ActorsManager: IActorsManager
+    public class ActorsManager : IActorsManager
     {
         private readonly IActorRepository _actorRepository;
         public ActorsManager(IActorRepository actorrepository)
@@ -24,8 +19,8 @@ namespace Business.Managers.Actors
         }
         public async Task DeleteActorAsync(int id)
         {
-            var exist =await _actorRepository.GetActorByIdAsync(id);
-            if(exist == null)throw new Exception("actor not found");
+            var exist = await _actorRepository.GetActorByIdAsync(id);
+            if (exist == null) throw new Exception("actor not found");
             await _actorRepository.DeleteActorAsync(id);
         }
         public async Task<List<GetAllActorsDto>> GetAllActorsAsync()
@@ -38,7 +33,7 @@ namespace Business.Managers.Actors
             var actor = await _actorRepository.GetActorByIdAsync(id);
             return actor.ToActorWithMovies();
         }
-        public async Task UpdateActorAsync( UpdateActorDto dto)
+        public async Task UpdateActorAsync(UpdateActorDto dto)
         {
             var actor = dto.ToActor();
             await _actorRepository.UpdateActorAsync(actor);

@@ -1,27 +1,26 @@
 ﻿using Core;
 using DataAccess.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices;
 
 namespace DataAccess.Repositories.ACTOR
-{ 
-    public class ActorRepository: IActorRepository
+{
+    public class ActorRepository : IActorRepository
     {
         private readonly MoviesDbContext _context;
-        public ActorRepository (MoviesDbContext context)
+        public ActorRepository(MoviesDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Actor>GetActorByIdAsync(int id)
+        public async Task<Actor> GetActorByIdAsync(int id)
         {
             if (id > 0)
             {
                 return await _context.Actors
-                    .Include(x=>x.ActorMovies)
-                    .ThenInclude(x=>x.Movie)
-                    .ThenInclude(m=>m.CinemaMovies)
-                    .ThenInclude(c=>c.Cinema)
+                    .Include(x => x.ActorMovies)
+                    .ThenInclude(x => x.Movie)
+                    .ThenInclude(m => m.CinemaMovies)
+                    .ThenInclude(c => c.Cinema)
                     .FirstOrDefaultAsync(x => x.Id == id);
             }
             else
@@ -31,10 +30,10 @@ namespace DataAccess.Repositories.ACTOR
         }
         public async Task<List<Actor>> GetAllActorsAsync()
         {
-            if(_context.Actors != null)
+            if (_context.Actors != null)
             {
 
-            return await _context.Actors.OrderBy(a=>a.FullName).ToListAsync();
+                return await _context.Actors.OrderBy(a => a.FullName).ToListAsync();
             }
             else
             {
@@ -49,7 +48,7 @@ namespace DataAccess.Repositories.ACTOR
         public async Task UpdateActorAsync(Actor actor)
         {
             var Act = await _context.Actors.FindAsync(actor.Id);
-            if(Act != null)
+            if (Act != null)
             {
                 if (string.IsNullOrEmpty(actor.ProfilePicture))
                 {
@@ -60,7 +59,7 @@ namespace DataAccess.Repositories.ACTOR
             else
             {
                 var dbActor = await _context.Actors.AsNoTracking().FirstOrDefaultAsync(x => x.Id == actor.Id);
-                if(dbActor != null && string.IsNullOrEmpty(actor.ProfilePicture))
+                if (dbActor != null && string.IsNullOrEmpty(actor.ProfilePicture))
                 {
                     actor.ProfilePicture = dbActor.ProfilePicture;
                 }
@@ -70,7 +69,7 @@ namespace DataAccess.Repositories.ACTOR
         public async Task DeleteActorAsync(int id)
         {
             var actor = await _context.Actors.FindAsync(id);
-            if(actor != null)
+            if (actor != null)
             {
                 _context.Actors.Remove(actor);
                 await _context.SaveChangesAsync();
@@ -84,7 +83,7 @@ namespace DataAccess.Repositories.ACTOR
         {
             return await _context.Actors.Where(x => x.FullName.Contains(name)).ToListAsync();
         }
-        public async Task <int> GetActorsCountAsync()
+        public async Task<int> GetActorsCountAsync()
         {
             return await _context.Actors.CountAsync();
         }

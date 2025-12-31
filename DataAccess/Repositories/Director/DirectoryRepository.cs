@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.DIRECTOR
 {
-    public class DirectoryRepository:IDirectorRepository
+    public class DirectoryRepository : IDirectorRepository
     {
         private readonly MoviesDbContext _context;
         public DirectoryRepository(MoviesDbContext context)
@@ -21,7 +21,7 @@ namespace DataAccess.Repositories.DIRECTOR
 
         public async Task DeleteDirectorAsync(int id)
         {
-            Director director =await GetDirectorByIdAsync(id);
+            Director director = await GetDirectorByIdAsync(id);
             if (director != null)
             {
                 _context.Directors.Remove(director);
@@ -30,13 +30,13 @@ namespace DataAccess.Repositories.DIRECTOR
             {
                 return;
             }
-                await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
         }
 
         public async Task<List<Director>> GetAllDirectorsAsync()
         {
-            List<Director> directors =await _context.Directors.ToListAsync();
+            List<Director> directors = await _context.Directors.ToListAsync();
             if (directors == null)
             {
                 return null;
@@ -56,8 +56,8 @@ namespace DataAccess.Repositories.DIRECTOR
 
         public async Task<Director> GetDirectorByNameAsync(string name)
         {
-            Director director =await _context.Directors.FirstOrDefaultAsync(x => x.Name == name);
-                        if (director == null)
+            Director director = await _context.Directors.FirstOrDefaultAsync(x => x.Name == name);
+            if (director == null)
             {
                 return null;
             }
@@ -69,18 +69,18 @@ namespace DataAccess.Repositories.DIRECTOR
             Director existingDirector = await _context.Directors.FindAsync(director.Id);
             if (existingDirector != null)
             {
-                if ( string.IsNullOrEmpty(director.ProfilePicture ))
+                if (string.IsNullOrEmpty(director.ProfilePicture))
                 {
                     director.ProfilePicture = existingDirector.ProfilePicture;
                 }
-                    _context.Entry(existingDirector).CurrentValues.SetValues(director);
+                _context.Entry(existingDirector).CurrentValues.SetValues(director);
             }
             else
             {
-                var dir =await _context.Directors
+                var dir = await _context.Directors
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(d=>d.Id==director.Id);
-                if (dir!=null&&string.IsNullOrEmpty(director.ProfilePicture)) 
+                    .FirstOrDefaultAsync(d => d.Id == director.Id);
+                if (dir != null && string.IsNullOrEmpty(director.ProfilePicture))
                 {
                     dir.ProfilePicture = director.ProfilePicture;
                 }

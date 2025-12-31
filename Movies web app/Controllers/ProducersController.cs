@@ -52,9 +52,9 @@ namespace Movies_web_app.Controllers
                 }
                 return View(Producer);
             }
-            if(Producer.ProfilePicture!=null)
+            if (Producer.ProfilePicture != null)
             {
-            string imageName = await _imageServises.UploadImageAsync(Producer.ProfilePicture, "Producers");
+                string imageName = await _imageServises.UploadImageAsync(Producer.ProfilePicture, "Producers");
                 Producer.ProfilePath = "/Images/Producers/" + imageName;
             }
             await _producersManager.CreateProducerAsync(Producer);

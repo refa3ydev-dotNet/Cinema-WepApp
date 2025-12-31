@@ -2,12 +2,17 @@
 @model List<GetAllActorsDto>
 @{
     ViewData["Title"] = "Actors";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link href="~/css/Actor/list.css" rel="stylesheet" />
-<h1 class="text-danger text-center mt-5">Welcome in <span class="h1">Actor</span> page</h1>
+
+<link rel="stylesheet" href="~/css/Actor.css">
 
 
-<div class="row text-white ">
+@* <h1 class="text-danger mt-5 text-center">Welcome in <span class="h1">Actor</span> page</h1>
+
+
+<div class="row text-white">
     <div class="box">
         @foreach (var item in Model)
         {
@@ -28,5 +33,74 @@
 
 <div style="position:fixed; bottom: 20px; right: 20px">
 
-    <a asp-action="Create" class="btn btn-outline-success rounded rounded-circle"><i class="bi bi-plus-circle-fill"></i></a>
-</div>
+    <a asp-action="Create" class="btn btn-outline-success rounded-circle rounded"><i class="bi bi-plus-circle-fill"></i></a>
+</div> *@
+@* ///////////////// *@
+<section class="actors-hero">
+    <div class="hero-content">
+        <h1>Meet the Stars</h1>
+        <p>Discover the talented cast and crew behind your favorite blockbusters.</p>
+
+        <div class="actor-search-container">
+            <form action="#" method="get" class="actor-search">
+                <i class="fas fa-search"></i>
+                <input type="text" name="ActorSearch" placeholder="Search actors by name...">
+                <button type="submit" class="btn-search">Search</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Actors List Section -->
+<section class="actors-section">
+    <div class="actors-header">
+        <div class="header-title">
+            <h2>All Actors</h2>
+            <span class="count-badge">@Model.Count</span>
+        </div>
+        <!-- Admin Action (Visual Only) -->
+        <a asp-controller="Actors" asp-action="Create" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Actor</a>
+    </div>
+
+    <!-- Actors Grid -->
+    <div class="actors-grid">
+        <!-- Card 1: RDJ -->
+        @foreach(var actor in Model)
+        {
+            
+        <div class="actor-card">
+            <div class="actor-image-wrapper">
+                <img src="@actor.ProfilePath" alt="@actor.FullName" class="actor-image" onerror="this.src='https://via.placeholder.com/150/111/fff?text=RDJ'">
+                @* <div class="rank-badge">#1</div> *@
+            </div>
+            <h3>@actor.FullName</h3>
+            <p>@actor.Bio</p>
+@* @if(authorize.IsInRole("Admin")) *@
+            <div class="actor-actions">
+                    <a class="btn-view-details" asp-controller="Actors" asp-action="Details" asp-route-id="@actor.Id">View Details <i class="fas fa-arrow-right"></i></a>
+                <div class="action-icons">
+                    <a class="action-icon-btn" asp-controller="Actors" asp-action="Edit" asp-route-id="@actor.Id"><i class="fas fa-pen" asp-></i></a>
+                    <a class="action-icon-btn delete" asp-controller="Actors" asp-action="Delete" asp-route-id="@actor.Id"><i class="fas fa-trash"></i></a>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.Count > 8)
+    {
+        
+    <div class="pagination">
+        <button class="page-arrow"><i class="fas fa-chevron-left"></i></button>
+        <a href="#" class="page-link active">1</a>
+        <a href="#" class="page-link">2</a>
+        <a href="#" class="page-link">3</a>
+        <span style="color: grey;">...</span>
+        <a href="#" class="page-link">12</a>
+        <button class="page-arrow"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    }
+</section>
+
+@* <!-- @RenderBody() End --> *@

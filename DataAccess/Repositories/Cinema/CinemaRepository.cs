@@ -18,7 +18,7 @@ namespace DataAccess.Repositories.CINEMA
             if (id > 0)
             {
                 return await _context.Cinemas
-                    .Include(x=>x.CinemaMovies)
+                    .Include(x => x.CinemaMovies)
                     .ThenInclude(Task => Task.Movie)
                     .FirstOrDefaultAsync(x => x.Id == id);
             }
@@ -69,7 +69,7 @@ namespace DataAccess.Repositories.CINEMA
                 }
 
                 _context.Entry(cine).CurrentValues.SetValues(cinema);
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
             else
             {

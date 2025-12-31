@@ -1,11 +1,6 @@
 ﻿using Core.Entities;
 using DataAccess.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repositories.CATEGORY
 {
@@ -21,14 +16,14 @@ namespace DataAccess.Repositories.CATEGORY
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
         }
-        public async Task<List<Category>>GetCategoriesByIdsAsync(List<int> ids)
+        public async Task<List<Category>> GetCategoriesByIdsAsync(List<int> ids)
         {
             return await _context.Categories.Where(x => ids.Contains(x.Id)).ToListAsync();
 
         }
         public async Task DeleteCategoryAsync(int id)
         {
-            var exist =await _context.Categories.FindAsync(id);
+            var exist = await _context.Categories.FindAsync(id);
             if (exist == null) return;
             _context.Categories.Remove(exist);
             await _context.SaveChangesAsync();

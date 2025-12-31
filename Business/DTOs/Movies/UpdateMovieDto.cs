@@ -1,10 +1,5 @@
 ﻿using Core.Enums;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.DTOs.Movies
 {
@@ -27,6 +22,7 @@ namespace Business.DTOs.Movies
         //public string? cinemaName { get; set; }
         public List<int>? CinemasIds { get; set; }
         public List<int> ActorsIds { get; set; }
-        public int producerId { get; set; }
+        public List<int> ProducerIds { get; set; }
+
     }
 }

@@ -1,0 +1,747 @@
+﻿/* Carousel Hero Section */
+.hero-carousel {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+.carousel-track-container {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.carousel-track {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 3rem;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    z-index: 1;
+    overflow: hidden; /* Clip the scaling background */
+}
+
+    /* Background Layer via Pseudo-element for Ken Burns */
+    .carousel-slide::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: var(--bg-image); /* Set via JS */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: 0;
+        transform: scale(1);
+        transition: transform 10s ease-out; /* Slow zoom duration */
+    }
+
+    .carousel-slide.current-slide {
+        opacity: 1;
+        z-index: 2;
+    }
+
+        .carousel-slide.current-slide::before {
+            transform: scale(1.15); /* The Ken Burns Zoom */
+        }
+
+.slide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-overlay);
+    z-index: 1;
+}
+
+.slide-content {
+    position: relative;
+    z-index: 5;
+    max-width: 600px;
+    margin-top: 5rem;
+}
+
+    /* Staggered Text Animations */
+    .slide-content > * {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+/* When slide is active, animate children in */
+.carousel-slide.current-slide .slide-content > *:nth-child(1) {
+    transition-delay: 0.4s;
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Badge */
+.carousel-slide.current-slide .slide-content > *:nth-child(2) {
+    transition-delay: 0.6s;
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Title */
+.carousel-slide.current-slide .slide-content > *:nth-child(3) {
+    transition-delay: 0.8s;
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Desc */
+.carousel-slide.current-slide .slide-content > *:nth-child(4) {
+    transition-delay: 1.0s;
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Buttons */
+
+/* Carousel Buttons */
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+    padding: 1rem;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s;
+    opacity: 0; /* Hidden by default until hover or active */
+    height:80%;
+
+}
+
+.hero-carousel:hover .carousel-button {
+    opacity: 1;
+}
+
+.carousel-button:hover {
+
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-button--left {
+    left: 2rem;
+}
+
+.carousel-button--right {
+    right: 2rem;
+}
+
+.carousel-nav {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    gap: 0.8rem;
+}
+
+.carousel-indicator {
+    border: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .carousel-indicator.current-slide {
+        background: var(--primary-red);
+        width: 30px; /* Stretch active indicator */
+        border-radius: 6px;
+    }
+
+/* Reusing Hero styles for inner content */
+.badge-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: #ffcc00;
+}
+
+    .badge-container .badge {
+        color: white;
+        background: rgba(255,255,255,0.2);
+    }
+
+.movie-title {
+    font-size: 5rem;
+    line-height: 0.9;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+}
+
+.movie-description {
+    font-size: 1.1rem;
+    color: #e0e0e0;
+    margin-bottom: 2rem;
+    max-width: 500px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    color: rgba(255,255,255,0.5);
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    40% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    60% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+/* Search Bar (Home Overlay) */
+.search-container {
+    position: relative;
+    z-index: 20;
+    margin-top: -40px;
+    padding: 0 3rem;
+    display: flex;
+    justify-content: center;
+}
+
+.search-bar {
+    width: 100%;
+    max-width: 1100px;
+    background: rgba(18, 22, 28, 0.95);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.search-icon {
+    color: var(--text-grey);
+    margin-right: 1rem;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    font-family: inherit;
+    flex-grow: 1;
+    outline: none;
+}
+
+.search-filters {
+    display: flex;
+    gap: 1.5rem;
+}
+
+    .search-filters a {
+        color: var(--text-grey);
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+        .search-filters a.active, .search-filters a:hover {
+            color: var(--primary-red);
+        }
+
+/* Movie Grid */
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.movie-card {
+    background: var(--bg-card);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+    .movie-card:hover {
+        transform: translateY(-5px);
+    }
+
+.card-image {
+    height: 380px;
+    background-color: #222;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Specific Card BG placeholders */
+.movie-grid .movie-card:nth-child(1) .card-image {
+    background-image: url('assets/poster_civil_war.png');
+}
+
+.movie-grid .movie-card:nth-child(2) .card-image {
+    background-image: url('assets/poster_cyber_odyssey.png');
+}
+
+.movie-grid .movie-card:nth-child(3) .card-image {
+    background-image: url('assets/poster_whispering.png');
+}
+
+.movie-grid .movie-card:nth-child(4) .card-image {
+    background-image: url('assets/poster_last_sunset.png');
+}
+
+.card-overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+    .card-overlay .genre {
+        background: rgba(0,0,0,0.6);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        backdrop-filter: blur(4px);
+    }
+
+    .card-overlay .rating {
+        background: rgba(0,0,0,0.6);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: #ffcc00;
+        backdrop-filter: blur(4px);
+    }
+
+.card-info {
+    padding: 1.2rem;
+}
+
+    .card-info h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .card-info p {
+        color: var(--text-grey);
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+.btn-block {
+    width: 100%;
+    padding: 0.8rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.movie-card:hover .btn-block {
+    background: var(--primary-red);
+    border-color: var(--primary-red);
+}
+
+/* Experience Section */
+.experience-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+}
+
+.experience-content h2 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.experience-content > p {
+    color: var(--text-grey);
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+    max-width: 90%;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.feature-card {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+}
+
+.feature-icon {
+    font-size: 1.5rem;
+    color: var(--primary-red);
+    margin-bottom: 1rem;
+}
+
+.feature-card h4 {
+    margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+    color: var(--text-grey);
+    font-size: 0.9rem;
+}
+
+.experience-image {
+    position: relative;
+}
+
+.image-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 500px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+    .image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.image-caption {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 2;
+}
+
+    .image-caption h3 {
+        font-size: 2rem;
+        margin-top: 0.5rem;
+    }
+
+/* Club Banner */
+.club-banner-section {
+    padding-bottom: 6rem;
+}
+
+.club-banner {
+    background: linear-gradient(135deg, #c70e1b 0%, #68050a 100%);
+    border-radius: 16px;
+    padding: 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 2px, transparent 2.5px), radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 2px, transparent 2.5px);
+    background-size: 30px 30px;
+}
+
+.club-content {
+    max-width: 600px;
+    z-index: 2;
+}
+
+    .club-content h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .club-content p {
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+.club-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.club-visual {
+    font-size: 15rem;
+    color: rgba(255,255,255,0.1);
+    position: absolute;
+    right: -2rem;
+    bottom: -3rem;
+    transform: rotate(-15deg);
+}
+
+/* 5 Column Grid */
+.movie-grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+}
+
+/* 4 Column Grid */
+.movie-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+/* Vertical Movie Card */
+.movie-card-vertical {
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+    .movie-card-vertical:hover {
+        transform: translateY(-5px);
+    }
+
+.poster-wrapper {
+    position: relative;
+    aspect-ratio: 2/3;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+}
+
+    .poster-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+
+.movie-card-vertical:hover .poster-wrapper img {
+    transform: scale(1.05);
+}
+
+.poster-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.movie-details h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-details p {
+    color: var(--text-grey);
+    font-size: 0.85rem;
+}
+
+/* Club Banner Dark Theme Update */
+.club-banner.dark-theme {
+    background: linear-gradient(to right, #2b1111, #3f0d12);
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Responsive Content */
+/* Responsive Content */
+@media (max-width: 1200px) {
+    .movie-grid-5 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .carousel-slide {
+        padding: 0 4rem;
+    }
+}
+
+@media (max-width: 900px) {
+    /* Carousel Adjustments */
+    .carousel-slide {
+        padding: 0 2rem;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .slide-content {
+        margin-top: 0;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .movie-title {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .movie-description {
+        font-size: 1rem;
+        max-width: 100%;
+    }
+
+    .badge-container {
+        justify-content: center;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .carousel-button {
+        display: none;
+    }
+
+    /* Search Bar Responsive */
+    .search-container {
+        padding: 0 1.5rem;
+        margin-top: -30px;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+        .search-bar input {
+            width: 100%;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 0.8rem;
+            text-align: center;
+        }
+
+    .search-filters {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    /* Grid Adjustments */
+    .movie-grid-5, .movie-grid-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Section Stacking */
+    .experience-section {
+        grid-template-columns: 1fr;
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+        gap: 3rem;
+        text-align: center;
+    }
+
+    .experience-content h2 {
+        font-size: 2.5rem;
+    }
+
+    .experience-content > p {
+        margin: 0 auto 2rem;
+    }
+
+    .features-grid {
+        text-align: left;
+    }
+
+    .club-banner {
+        padding: 3rem 2rem;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .club-content {
+        margin-bottom: 2rem;
+    }
+
+    .club-visual {
+        display: none;
+    }
+
+    .club-actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+        .club-actions .btn {
+            width: 100%;
+        }
+}
+
+@media (max-width: 600px) {
+    .movie-grid-5, .movie-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .movie-title {
+        font-size: 2.2rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .image-wrapper {
+        height: 300px;
+    }
+}

@@ -1,5 +1,4 @@
-﻿using Core;
-using Core.Enums;
+﻿using Core.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace Business.DTOs.Movies
@@ -19,8 +18,8 @@ namespace Business.DTOs.Movies
         public TranslationType Translation { get; set; }
         public List<int>? CinemasIds { get; set; }
         public List<int> ActorsIds { get; set; }
-        public int producerId { get; set; }
+        public List<int> ProducerIds { get; set; }
         public DateTime CreatedDate { get; set; }
-        
+
     }
 }

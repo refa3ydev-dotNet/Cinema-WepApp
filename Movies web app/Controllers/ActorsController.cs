@@ -1,9 +1,7 @@
 ﻿using Business.DTOs.Actors;
 using Business.Managers.Actors;
-using Core;
 using DataAccess.Contexts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Movies_web_app.Services;
 
 namespace Movies_web_app.Controllers
@@ -25,7 +23,7 @@ namespace Movies_web_app.Controllers
         public async Task<IActionResult> Index()
         {
 
-            var actors = await _actorsmanager.GetAllActorsAsync() ;
+            var actors = await _actorsmanager.GetAllActorsAsync();
             return View(actors);
         }
         [HttpGet]
@@ -49,8 +47,9 @@ namespace Movies_web_app.Controllers
                 ProfilePath = "/Images/Actors/" + imageName,
                 FullName = actor.FullName,
                 Bio = actor.Bio,
-                IMDBLink = actor.IMDBLink
-
+                IMDBLink = actor.IMDBLink,
+                BirthDate = actor.BirthDate
+                
             };
             await _actorsmanager.CreateActorAsync(act);
             return RedirectToAction("Index");
@@ -87,7 +86,8 @@ namespace Movies_web_app.Controllers
                 FullName = actor.FullName,
                 Bio = actor.Bio,
                 ProfilePath = actor.ProfilePath,
-                IMDBLink = actor.IMDBLink
+                IMDBLink = actor.IMDBLink,
+                BirthDate = actor.BirthDate
             };
             return View(dto);
         }

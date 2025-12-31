@@ -6,7 +6,7 @@ namespace Core.Entities.Helpers
 {
     public static class EnumHelper
     {
-        public  static List<SelectListItem> GetEnumSelectList<TEnum>()where TEnum : Enum
+        public static List<SelectListItem> GetEnumSelectList<TEnum>() where TEnum : Enum
         {
             return Enum.GetValues(typeof(TEnum))
                 .Cast<TEnum>()

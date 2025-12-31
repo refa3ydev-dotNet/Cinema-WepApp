@@ -1,11 +1,11 @@
-﻿using DataAccess.Contexts;
-using Core;
+﻿using Core;
+using DataAccess.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace DataAccess.Repositories.PRODUCER
 {
-    public class ProducerRepository: IProducerRepository
+    public class ProducerRepository : IProducerRepository
     {
         private readonly MoviesDbContext _context;
 
@@ -18,10 +18,11 @@ namespace DataAccess.Repositories.PRODUCER
             if (id > 0)
             {
                 return await _context.Producers
-     .Include(x => x.Movies)
-     .ThenInclude(m => m.CinemaMovies)
-     .ThenInclude(c => c.Cinema)
-     .FirstOrDefaultAsync(x => x.Id == id);
+                     .Include(x => x.ProducerMovies)
+                     .ThenInclude(m => m.Movie)
+                     .ThenInclude(cm=>cm.CinemaMovies)
+                     .ThenInclude(c => c.Cinema)
+                     .FirstOrDefaultAsync(x => x.Id == id);
             }
             else
             {
@@ -30,7 +31,7 @@ namespace DataAccess.Repositories.PRODUCER
         }
         public async Task<List<Producer>> GetAllProducersAsync()
         {
-            if (_context.Producers!=null)
+            if (_context.Producers != null)
             {
                 return await _context.Producers.ToListAsync();
             }
@@ -51,7 +52,7 @@ namespace DataAccess.Repositories.PRODUCER
             var prod = await _context.Producers.FindAsync(producer.Id);
             if (prod != null)
             {
-                if (!string.IsNullOrEmpty(prod.ProfilePicture) &&producer.ProfilePicture != prod.ProfilePicture)
+                if (!string.IsNullOrEmpty(prod.ProfilePicture) && producer.ProfilePicture != prod.ProfilePicture)
                 {
                     var OldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "Producers", Path.GetFileName(prod.ProfilePicture));
                     if (File.Exists(OldImagePath))
@@ -63,7 +64,7 @@ namespace DataAccess.Repositories.PRODUCER
             }
             else
             {
-                var dbProd= await _context.Producers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == producer.Id);
+                var dbProd = await _context.Producers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == producer.Id);
                 if (dbProd != null && string.IsNullOrEmpty(producer.ProfilePicture))
                 {
                     producer.ProfilePicture = dbProd.ProfilePicture;
@@ -74,10 +75,10 @@ namespace DataAccess.Repositories.PRODUCER
         }
         public async Task DeleteProducerAsync(int id)
         {
-            var prod=await _context.Producers.FindAsync(id);
+            var prod = await _context.Producers.FindAsync(id);
             if (prod != null)
             {
-            _context.Producers.Remove(prod);
+                _context.Producers.Remove(prod);
 
             }
             else
