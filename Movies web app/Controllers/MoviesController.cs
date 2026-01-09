@@ -4,7 +4,6 @@ using Business.Managers.Categories;
 using Business.Managers.Cinemas;
 using Business.Managers.Movies;
 using Business.Managers.Producers;
-using Core;
 using Core.Entities.Helpers;
 using Core.Enums;
 using DataAccess.Contexts;
@@ -23,7 +22,7 @@ namespace Movies_web_app.Controllers
         private readonly IProducersManager _producerManager;
         private readonly ICategoryManager _categoryManager;
         private readonly IImageService _imageServises;
-        public MoviesController(MoviesDbContext context,IMovieManager movieManager, IImageService imageService, IActorsManager actorManager, ICinemasManager cinemaManager, IProducersManager producerManager,ICategoryManager categoryManager)
+        public MoviesController(MoviesDbContext context, IMovieManager movieManager, IImageService imageService, IActorsManager actorManager, ICinemasManager cinemaManager, IProducersManager producerManager, ICategoryManager categoryManager)
         {
             _context = context;
             _movieManager = movieManager;
@@ -36,7 +35,7 @@ namespace Movies_web_app.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             int pageSize = 5;
-            var allMovies= await _movieManager.GetPagedMoviesAsync(page, pageSize);
+            var allMovies = await _movieManager.GetPagedMoviesAsync(page, pageSize);
             return View(allMovies);
         }
         private async Task populatesDropDowns(IEnumerable<int> selectedActors = null, IEnumerable<int> selectedCinemas = null, IEnumerable<int> selectedProducers = null, IEnumerable<int> selectedCategories = null)
@@ -50,7 +49,7 @@ namespace Movies_web_app.Controllers
             {
                 Value = a.Id.ToString(),
                 Text = a.FullName,
-                Selected=selectedActors?.Contains(a.Id) ?? false
+                Selected = selectedActors?.Contains(a.Id) ?? false
             }).ToList();
 
             ViewBag.cinemas = cinemas.Select(a => new SelectListItem
@@ -113,9 +112,9 @@ namespace Movies_web_app.Controllers
                 CategoryIds = movie.CategoryIds,
                 Language = movie.Language,
                 Translation = movie.Translation,
-                ActorsIds= new List<int>(),
+                ActorsIds = new List<int>(),
                 CinemasIds = new List<int>(),
-                producerId = movie.producerId
+                ProducerIds = new List<int>()
 
             };
 
@@ -156,7 +155,7 @@ namespace Movies_web_app.Controllers
                 BackgroundUrl = movie.BackgroundUrl,
                 ActorsIds = movie.ActorsIds,
                 CinemasIds = movie.CinemasIds,
-                producerId = movie.producer.Select(p => p.ID).FirstOrDefault()
+                ProducerIds = movie.ProducerIds
             };
             return View(Dto);
 

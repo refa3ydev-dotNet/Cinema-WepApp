@@ -2,7 +2,7 @@
 
 namespace Movies_web_app.Controllers
 {
-    public class DirectorController1 : Controller
+    public class DirectorController : Controller
     {
         public IActionResult Index()
         {

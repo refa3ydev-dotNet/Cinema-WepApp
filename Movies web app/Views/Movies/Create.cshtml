@@ -53,23 +53,23 @@
             </div>
 
             <div class="form-group">
-                <div class="inline w-100 field">
+                <div class="w-100 field inline">
                     <label class="text-white">Select Categories</label>
                     <select asp-for="CategoryIds" asp-items="@(ViewBag.categories)" id="Categories" multiple class="text-secondary" >
                     </select>
                     </div> 
             </div>
             <div class="form-group">
-                <div class="inline w-100 field">
+                <div class="w-100 field inline">
                     <label class="text-white">Select Actors</label>
                     <select asp-for="ActorsIds" asp-items="@(ViewBag.actors)"  id="Actors" multiple class="text-secondary" >
                     </select>
                     </div> 
             </div>
             <div class="form-group">
-                    <div class="inline w-100 field">
+                    <div class="w-100 field inline">
                         <label class="text-white">Select Porducer</label>
-                    <select asp-for="producerId" asp-items="@(ViewBag.producers)" id="Producers" multiple class="text-secondary" >
+                    <select asp-for="ProducerIds" asp-items="@(ViewBag.producers)" id="Producers" multiple class="text-secondary" >
                     </select>
                     </div> 
             </div>

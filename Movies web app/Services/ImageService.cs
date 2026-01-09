@@ -1,6 +1,6 @@
 ﻿namespace Movies_web_app.Services
 {
-    public class ImageService: IImageService
+    public class ImageService : IImageService
     {
         private readonly IWebHostEnvironment _env;
         public ImageService(IWebHostEnvironment env)
@@ -8,13 +8,13 @@
             _env = env;
         }
 
-        public async Task<string> UploadImageAsync(IFormFile image , string FolderName)
+        public async Task<string> UploadImageAsync(IFormFile image, string FolderName)
         {
             if (image == null || image.Length == 0)
             {
                 return null;
             }
-            string uploadsFolder=Path.Combine(_env.WebRootPath,"images",FolderName);
+            string uploadsFolder = Path.Combine(_env.WebRootPath, "images", FolderName);
             if (!Directory.Exists(uploadsFolder))
             {
                 Directory.CreateDirectory(uploadsFolder);
@@ -39,7 +39,7 @@
             string fullPath = Path.Combine(_env.WebRootPath, relativePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
             if (File.Exists(fullPath))
             {
-                await Task.Run(()=>File.Delete(fullPath));
+                await Task.Run(() => File.Delete(fullPath));
             }
         }
     }

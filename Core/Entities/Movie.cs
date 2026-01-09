@@ -24,7 +24,8 @@ namespace Core
         public string PosterImg { get; set; }
         [Display(Name = "Background Picture")]
         [Required(ErrorMessage = "Background Picture is required")]
-        public string BackgroundImg{ get; set; }
+        public string BackgroundImg { get; set; }
+        [NotMapped]
         public List<int> CategoriesId { get; set; } = new List<int>(); //many to many>
         [Required(ErrorMessage = "Movie Category is required")]
         [Display(Name = "Movie Category")]
@@ -39,13 +40,11 @@ namespace Core
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         //relations
-        public Director director { get; set; }
+        public ICollection<DirectorMovie> DirectorMovies { get; set; }= new List<DirectorMovie>();
         public ICollection<ActorMovie> ActorMovies { get; set; } = new List<ActorMovie>(); //one to many>
         public ICollection<CinemaMovie>? CinemaMovies { get; set; } = new List<CinemaMovie>(); //many to many>
         public ICollection<MovieSchedule> MovieSchedules { get; set; } = new List<MovieSchedule>();
-        [ForeignKey("Producer")]
-        public int ProducerId { get; set; }
-        public List<Producer> producer { get; set; }
+        public ICollection<ProducerMovie> producerMovies { get; set; }=new List<ProducerMovie>();
 
     }
 }

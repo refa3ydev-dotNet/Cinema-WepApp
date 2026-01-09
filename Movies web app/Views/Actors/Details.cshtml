@@ -3,77 +3,98 @@
 
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.FullName;
 }
-<link href="~/css/Actor/Details.css" rel="stylesheet" />
+<link href="~/css/Actor.css" rel="stylesheet" />
+<div class="actor-details-container">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a asp-action="index" asp-controller="Home">Home</a> <pre> > </pre> 
+        <a asp-action="index" asp-controller="Actors" class="breadcrumb-label">Actors</a><pre> > </pre>
+        <span>@Model.FullName</span>
+    </div>
 
-
-<div class="actor-card">
-    <div class="actor-card-header">
-        <img src="@Model.ProfilePath" class="actor-photo" alt="@Model.FullName">
-        <div class="actor-details">
-            <div class="d-flex gap-2 align-items-center">
-
-            <h3 class="actor-name">@Model.FullName</h3>
-            @if (Model.IMDBLink!=null)
-            {
-            <a href="@Model.IMDBLink" class="link-danger text-decoration-none">IMDP Profile</a>
-                
-            }
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <div class="profile-image">
+            <!-- Placeholder using a div, normally an img -->
+            <div style="width: 100%; height: 100%; background: #222; display: flex; align-items: center; justify-content: center; color: #555;">
+                <img src="@Model.ProfilePath" alt="Profile Image" style="max-width: 100%; max-height: 100%;">
             </div>
-            <h5 class="actor-title">Biogarphy</h5>
-            <p class="actor-bio">@Model.Bio</p>
+        </div>
+
+        <div class="profile-info">
+            <div class="profile-header">
+                <h1>@Model.FullName</h1>
+                <div class="admin-controls">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-admin-edit"><i class="fas fa-pen"></i> Edit</a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn-admin-delete"><i class="fas fa-trash"></i> Delete</a>
+                </div>
+            </div>
+
+            <div class="profile-meta">
+                <span><i class="fas fa-birthday-cake"></i> @Model.BirthDate.ToString("yyyy-MM-dd") -(@(DateTime.Now.Year - Model.BirthDate.Year) years)  </span>
+                <span class="meta-dot"></span>
+            </div>
+
+            <div class="profile-bio">
+                <p>@Model.Bio</p>
+            </div>
+
+            @* <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">KNOWN CREDITS</span>
+                    <span class="stat-value">108</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">CAREER START</span>
+                    <span class="stat-value">1984</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">NATIONALITY</span>
+                    <span class="stat-value">Canadian</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">AWARDS</span>
+                    <span class="stat-value">14 Wins</span>
+                </div>
+            </div> *@
         </div>
     </div>
-    <div class="custom-carousel-container">
-        @if (Model.MovieDetails.Count > 3)
+
+    <!-- Filmography Section -->
+    <div class="filmography-section">
+        @if (Model.MovieDetails.Count > 0)
         {
-            <button class="carousel-arrow left" id="carouselPrev">&#8592;</button>
-        }
-        @if (Model.MovieDetails.Count == 0)
-        {
-            <H3>No Movies</H3>
-        }
-        else
-        {
-            <div class="custom-carousel" id="customCarousel">
-                @foreach (var poster in Model.MovieDetails)
-                {
-                    <div class="carousel-poster-wrapper">
-                        <img src="@poster.PosterUrl" class="carousel-poster" alt="Poster">
-                        <div class="poster-play-center">
-                            <svg width="54" height="54" viewBox="0 0 54 54">
-                                <circle cx="27" cy="27" r="26" fill="rgba(0,0,0,0.42)" stroke="#fff" stroke-width="2" />
-                                <polygon points="22,17 38,27 22,37" fill="#fff" />
-                            </svg>
-                        </div>
-                        <div class="poster-titlebar">
-                            <span class="poster-title">@poster.Name</span>
-                        </div>
-                    </div>
-                }
+        <div class="section-header-custom">
+            <div class="title-with-bar">
+                <h2>Appears In</h2>
             </div>
-
+            <a href="#" class="view-all-link">View Full Filmography <i class="fas fa-arrow-right"></i></a>
+        </div>
+            
+        <div class="movies-grid-responsive">
+            <!-- Movie 1 -->
+            @foreach (var movie in Model.MovieDetails)
+            {
+                
+             <div class="movie-card-vertical">
+                <div class="poster-wrapper">
+                    <img src="@movie.PosterUrl" alt="@movie.Name" style="background: #333;">
+                    @* <div class="poster-badge">@movie.</div> *@
+                </div>
+                <div class="movie-details">
+                    <h3>@movie.Name</h3>
+                    @* <p>as John Wick</p> *@
+                </div>
+            </div>
+            }
+        </div>
         }
-        @if (Model.MovieDetails.Count > 3)
-        {
-
-            <button class="carousel-arrow right" id="carouselNext">&#8594;</button>
-        }
-    </div>
-    <div class="d-flex justify-content-between mt-2">
-        <a asp-controller="Actors" asp-action="Index" class="btn btn-outline-secondary">All Actors</a>
-        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="delete-form">
-            <button type="submit" class="btn btn-danger">
-                Delete
-            </button>
-        </form>
-
-        <a asp-controller="Actors" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit</a>
     </div>
 </div>
 
-<script>
+@* <script>
     document.addEventListener('DOMContentLoaded', function() {
         const postersToShow = 3;
         const carousel = document.getElementById('customCarousel');
@@ -162,4 +183,4 @@
             });
         });
     });
-</script>
+</script> *@

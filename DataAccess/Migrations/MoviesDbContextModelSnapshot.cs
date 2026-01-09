@@ -145,7 +145,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Director");
+                    b.ToTable("Directors");
                 });
 
             modelBuilder.Entity("Core.Entities.Relations.ActorMovie", b =>
@@ -176,6 +176,21 @@ namespace DataAccess.Migrations
                     b.HasIndex("MovieId");
 
                     b.ToTable("CinemaMovies");
+                });
+
+            modelBuilder.Entity("Core.Entities.Relations.DirectorMovie", b =>
+                {
+                    b.Property<int>("DirectorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DirectorId", "MovieId");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("DirectorMovies");
                 });
 
             modelBuilder.Entity("Core.Entities.Relations.MovieSchedule", b =>
@@ -212,6 +227,21 @@ namespace DataAccess.Migrations
                     b.ToTable("MovieSchedules");
                 });
 
+            modelBuilder.Entity("Core.Entities.Relations.ProducerMovie", b =>
+                {
+                    b.Property<int>("ProducerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProducerId", "MovieId");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("ProducerMovies");
+                });
+
             modelBuilder.Entity("Core.Entities.Room", b =>
                 {
                     b.Property<int>("Id")
@@ -246,10 +276,6 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CategoriesId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -272,18 +298,10 @@ namespace DataAccess.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<int>("ProducerId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Translation")
                         .HasColumnType("int");
 
-                    b.Property<int>("directorId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("directorId");
 
                     b.ToTable("Movies");
                 });
@@ -315,21 +333,6 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Producers");
-                });
-
-            modelBuilder.Entity("MovieProducer", b =>
-                {
-                    b.Property<int>("MoviesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("producerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MoviesId", "producerId");
-
-                    b.HasIndex("producerId");
-
-                    b.ToTable("MovieProducer");
                 });
 
             modelBuilder.Entity("CategoryMovie", b =>
@@ -385,6 +388,25 @@ namespace DataAccess.Migrations
                     b.Navigation("Movie");
                 });
 
+            modelBuilder.Entity("Core.Entities.Relations.DirectorMovie", b =>
+                {
+                    b.HasOne("Core.Entities.Director", "Director")
+                        .WithMany("DirectorMovie")
+                        .HasForeignKey("DirectorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Movie", "Movie")
+                        .WithMany("DirectorMovies")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Director");
+
+                    b.Navigation("Movie");
+                });
+
             modelBuilder.Entity("Core.Entities.Relations.MovieSchedule", b =>
                 {
                     b.HasOne("Core.Cinema", "Cinema")
@@ -410,6 +432,25 @@ namespace DataAccess.Migrations
                     b.Navigation("Room");
                 });
 
+            modelBuilder.Entity("Core.Entities.Relations.ProducerMovie", b =>
+                {
+                    b.HasOne("Core.Movie", "Movie")
+                        .WithMany("producerMovies")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Producer", "Producer")
+                        .WithMany("ProducerMovies")
+                        .HasForeignKey("ProducerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("Producer");
+                });
+
             modelBuilder.Entity("Core.Entities.Room", b =>
                 {
                     b.HasOne("Core.Cinema", "Cinema")
@@ -419,32 +460,6 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Cinema");
-                });
-
-            modelBuilder.Entity("Core.Movie", b =>
-                {
-                    b.HasOne("Core.Entities.Director", "director")
-                        .WithMany("Movies")
-                        .HasForeignKey("directorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("director");
-                });
-
-            modelBuilder.Entity("MovieProducer", b =>
-                {
-                    b.HasOne("Core.Movie", null)
-                        .WithMany()
-                        .HasForeignKey("MoviesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.Producer", null)
-                        .WithMany()
-                        .HasForeignKey("producerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Core.Actor", b =>
@@ -463,7 +478,7 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Core.Entities.Director", b =>
                 {
-                    b.Navigation("Movies");
+                    b.Navigation("DirectorMovie");
                 });
 
             modelBuilder.Entity("Core.Entities.Room", b =>
@@ -477,7 +492,16 @@ namespace DataAccess.Migrations
 
                     b.Navigation("CinemaMovies");
 
+                    b.Navigation("DirectorMovies");
+
                     b.Navigation("MovieSchedules");
+
+                    b.Navigation("producerMovies");
+                });
+
+            modelBuilder.Entity("Core.Producer", b =>
+                {
+                    b.Navigation("ProducerMovies");
                 });
 #pragma warning restore 612, 618
         }

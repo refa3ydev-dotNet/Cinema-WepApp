@@ -5,7 +5,7 @@ using DataAccess.Repositories.CINEMA;
 
 namespace Business.Managers.Cinemas
 {
-    public class CinemasManager:ICinemasManager
+    public class CinemasManager : ICinemasManager
     {
         private readonly ICinemaRepository _cinemaRepository;
         public CinemasManager(ICinemaRepository cinemarepository)
@@ -38,12 +38,12 @@ namespace Business.Managers.Cinemas
         public async Task UpdateCinemaAsync(UpdateCinemaDto dto)
         {
             var existing = await _cinemaRepository.GetCinemaByIdAsync(dto.Id);
-            if(existing == null) throw new Exception("Cinema not found");
+            if (existing == null) throw new Exception("Cinema not found");
 
             var cinema = dto.ToEntity();
             await _cinemaRepository.UpdateCinemaAsync(cinema);
         }
-        public async Task<PaginationResult<GetAllCinemasDto>> GetPagedCinemasAsync(int page,int pageSize)
+        public async Task<PaginationResult<GetAllCinemasDto>> GetPagedCinemasAsync(int page, int pageSize)
         {
             var result = await _cinemaRepository.GetPagedCinemasAsync(page, pageSize);
             var MappedItems = result.Items.ToDto();

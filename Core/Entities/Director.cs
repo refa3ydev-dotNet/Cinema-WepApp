@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Core.Entities.Relations;
 
 namespace Core.Entities
 {
@@ -12,10 +8,10 @@ namespace Core.Entities
         public string Name { set; get; }
         public string Biography { set; get; }
         public string? ProfilePicture { get; set; }
-        public DateOnly?BirthDate { get; set; }
+        public DateOnly? BirthDate { get; set; }
         public string? IMDB { get; set; }
         // Relations
-        public List<Movie>? Movies { get; set; }
+        public ICollection<DirectorMovie>DirectorMovie { get; set; }=new List<DirectorMovie>();
 
 
 

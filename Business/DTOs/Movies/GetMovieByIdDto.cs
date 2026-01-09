@@ -2,11 +2,6 @@
 using Business.DTOs.Producers;
 using Core.Enums;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.DTOs.Movies
 {
@@ -27,7 +22,8 @@ namespace Business.DTOs.Movies
         public DateTime CreatedDate { get; set; }
         public List<int>? CinemasIds { get; set; }
         public List<int> ActorsIds { get; set; }
-        public List<int> CategoryIds { get; set; } 
+        public List<int> CategoryIds { get; set; }
+        public List<int> ProducerIds { get; set; }
         public List<ProducerInMovieDto> producer { get; set; }
         public List<ActorsInMovieDto> actors { get; set; } = new List<ActorsInMovieDto>();
 

@@ -1,7 +1,6 @@
 ﻿using Business.DTOs.Categories;
 using Business.Managers.Categories;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace Movies_web_app.Controllers
 {
@@ -14,7 +13,7 @@ namespace Movies_web_app.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var categories =await _categoryManager.GetAllCategoriesAsync();
+            var categories = await _categoryManager.GetAllCategoriesAsync();
             return View(categories);
         }
         [HttpGet]
@@ -40,7 +39,7 @@ namespace Movies_web_app.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var category =await _categoryManager.GetCategoryByIdAsync(id);
+            var category = await _categoryManager.GetCategoryByIdAsync(id);
             if (category == null) return View("NotFound");
             var dto = new UpdateCategoryDto
             {

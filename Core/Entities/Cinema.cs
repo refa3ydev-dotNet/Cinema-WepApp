@@ -27,6 +27,6 @@ namespace Core
         //Relationships
         public ICollection<CinemaMovie> CinemaMovies { get; set; } = new List<CinemaMovie>();
         public ICollection<MovieSchedule> movieSchedules { get; set; } = new List<MovieSchedule>();
-        public List<Room> Rooms { get; set; } = new List<Room>(); 
+        public List<Room> Rooms { get; set; } = new List<Room>();
     }
 }

@@ -21,6 +21,7 @@
     <Folder Include="wwwroot\Images\Actors\" />
     <Folder Include="wwwroot\Images\Cinemas\" />
     <Folder Include="wwwroot\Images\Producers\" />
+    <Folder Include="wwwroot\js\Home\" />
   </ItemGroup>
 
   <ItemGroup>

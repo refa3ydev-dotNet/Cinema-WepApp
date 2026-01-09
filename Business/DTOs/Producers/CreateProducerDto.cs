@@ -11,6 +11,6 @@ namespace Business.DTOs.Producers
         public IFormFile ProfilePicture { get; set; }
         public string FullName { get; set; }
         public string Bio { get; set; }
-         public string IMDBLink { get; set; }
+        public string IMDBLink { get; set; }
     }
 }

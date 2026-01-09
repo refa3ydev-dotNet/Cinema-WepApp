@@ -1,16 +1,10 @@
-﻿using Business.DTOs.Actors;
-using Business.DTOs.Producers;
+﻿using Business.DTOs.Producers;
 using Business.Mapping;
 using DataAccess.Repositories.PRODUCER;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Managers.Producers
 {
-    public class ProducersManager: IProducersManager
+    public class ProducersManager : IProducersManager
     {
         private readonly IProducerRepository _producerRepository;
 

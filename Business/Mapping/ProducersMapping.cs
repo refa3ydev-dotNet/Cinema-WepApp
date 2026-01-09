@@ -1,13 +1,6 @@
-﻿using Business.DTOs.Actors;
-using Business.DTOs.Movies;
+﻿using Business.DTOs.Movies;
 using Business.DTOs.Producers;
 using Core;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Mapping
 {
@@ -43,7 +36,7 @@ namespace Business.Mapping
                 FullName = Producer.FullName,
                 Bio = Producer.Bio,
                 ProfilePath = Producer.ProfilePicture,
-                IMDBLink=Producer.IMDB
+                IMDBLink = Producer.IMDB
 
             };
         }
@@ -57,16 +50,18 @@ namespace Business.Mapping
                 FullName = Producer.FullName,
                 Bio = Producer.Bio,
                 ProfilePath = Producer.ProfilePicture,
-                IMDBLink=Producer.IMDB,
-                MovieDetails = Producer.Movies
-                .Select(m => new GetAllMoviesDto
+                IMDBLink = Producer.IMDB,
+                MovieDetails = Producer.ProducerMovies                
+                .Select(m => m.Movie)
+                .Where(m => m != null)
+                .Select(m=> new GetAllMoviesDto
                 {
                     Id = m.Id,
                     Name = m.Name,
                     PosterUrl = m.PosterImg,
                     Price = m.Price,
                     Cinemas = m.CinemaMovies.Select(cm => cm.Cinema.Name).Where(name => name != null).ToList() ?? new List<string>(),
-                    
+
                 }).ToList()
             };
         }
@@ -79,8 +74,8 @@ namespace Business.Mapping
                 FullName = Producer.FullName,
                 Bio = Producer.Bio,
                 ProfilePath = Producer.ProfilePicture,
-                IMDBLink=Producer.IMDB
-                
+                IMDBLink = Producer.IMDB
+
             }).ToList();
         }
 

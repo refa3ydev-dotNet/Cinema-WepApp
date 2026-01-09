@@ -1,12 +1,6 @@
 ﻿using Business.DTOs.Cinemas;
 using Business.DTOs.Movies;
-using Business.DTOs.Producers;
 using Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Mapping
 {
@@ -19,8 +13,8 @@ namespace Business.Mapping
                 Name = dto.Name,
                 Logo = dto.LogoPath,
                 Description = dto.Description,
-                Address=dto.Address,
-                BackgroundPicture=dto.BackgroundPath
+                Address = dto.Address,
+                BackgroundPicture = dto.BackgroundPath
             };
         }
 
@@ -62,12 +56,12 @@ namespace Business.Mapping
                 Description = cinema.Description,
                 Address = cinema.Address,
                 BackgroundPath = cinema.BackgroundPicture,
-                MovieDetails=cinema.CinemaMovies?.Where(x=>x.Movie !=null)
-                .Select(movie=>new GetAllMoviesDto
+                MovieDetails = cinema.CinemaMovies?.Where(x => x.Movie != null)
+                .Select(movie => new GetAllMoviesDto
                 {
-                    Id=movie.Movie.Id,
-                    Name=movie.Movie.Name,
-                    PosterUrl=movie.Movie.PosterImg
+                    Id = movie.Movie.Id,
+                    Name = movie.Movie.Name,
+                    PosterUrl = movie.Movie.PosterImg
                 }).ToList()
             };
         }
