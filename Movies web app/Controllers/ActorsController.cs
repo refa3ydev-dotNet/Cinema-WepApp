@@ -83,6 +83,7 @@ namespace Movies_web_app.Controllers
             if (actor == null) return View("NotFound");
             var dto = new UpdateActorDto
             {
+Id = actor.Id,
                 FullName = actor.FullName,
                 Bio = actor.Bio,
                 ProfilePath = actor.ProfilePath,

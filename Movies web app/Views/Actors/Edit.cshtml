@@ -1,82 +1,95 @@
 ﻿@using Business.DTOs.Actors
 @model UpdateActorDto
 
+
 @{
     ViewData["Title"] = "Edit Actor";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row text">
-    <div class="col-md-8 offset-2">
-        <h1 class="text-white">
-            Edit Actor
-        </h1>
-    </div>
-    <div class="col-md-8 offset-2">
 
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group text-center">
-                <img id="ProfilePicturePreview" src="@Model.ProfilePath" style="max-width: 200px; height: auto;" />
-                <p class="Actor-Name mt-3" id="actorName" style="color:white; font-size:1.5rem; font-weight:bold;"></p>
+<link rel="stylesheet" href="~/css/Actor.css" asp-append-version="true" />
+
+
+
+
+    <div class="actor-details-container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a asp-controller="Home" asp-action="Index">Home </a><pre > > </pre>
+        <a asp-action="Index">Actors </a> <pre> > </pre>
+        <a asp-action="Details" asp-route-id="@Model.Id">@Model.FullName </a> <pre> > </pre>
+            <span>Edit</span>
+        </div>
+
+        <div class="section-header-custom" style="align-items: flex-start; flex-direction: column; gap: 0.5rem; margin-bottom: 3rem;">
+            <h1>Update Actor Profile</h1>
+            <p style="color: var(--text-grey);">Manage actor details, biography and profile imagery.</p>
+            <div style="width: 100%; display: flex; justify-content: flex-end;">
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary" style="border-radius: 50px; font-size: 0.8rem;"><i class="fas fa-eye"></i> View Details</a>
             </div>
-            <div class="form-group text-white">
-                <label asp-for="ProfilePicture" class="control-label">Profile </label>
-                <input asp-for="ProfilePicture" class="form-control" id="ProfilePictureURL" placeholder="" type="file" />
-                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+        </div>
+
+        <!-- Edit Form Card -->
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="admin-form-card" style="margin-bottom: 4rem;" enctype="multipart/form-data">
+            <!-- Left: Image -->
+            <div class="edit-image-section">
+                <div class="image-preview-circle">
+                    <!-- Placeholder Image -->
+                    <img src="@Model.ProfilePath" alt="@Model.FullName" class="current-image">
+                    <div class="status-indicator"></div>
+                </div>
+                <!-- Hidden File Input for Image Upload -->
+            <input asp-for="ProfilePicture" type="file" id="ProfileImage" hidden accept="image/*">
+                <button type="button" class="btn btn-secondary change-photo-btn" onclick="document.getElementById('ProfileImage').click()">
+                    <i class="fas fa-upload"></i> Change Photo
+                </button>
+                <p class="upload-hint" style="text-align: center;">JPG, GIF or PNG. Max size of 800K</p>
             </div>
-            <div class="form-group text-white">
-                <label asp-for="FullName" class="control-label">Full Name</label>
-                <input asp-for="FullName" class="form-control" placeholder="Enter Full Name" value="@Model.FullName"/>
-                <span asp-validation-for="FullName" class="text-danger"></span>
+
+            <!-- Right: Inputs -->
+            <div class="edit-form-section">
+                <!-- Full Name -->
+                <div class="input-group-boxed">
+                    <label asp-for="FullName">Full Name</label>
+                    <input asp-for="FullName" type="text" value="@Model.FullName" class="boxed-input">
+                </div>
+
+                <!-- Bio -->
+                <div class="input-group-boxed">
+                    <label asp-for="Bio">Biography</label>
+                    <textarea asp-for="Bio" class="boxed-input" rows="6">@Model.Bio</textarea>
+                </div>
+
+                <div class="form-row-boxed">
+                    <!-- Date -->
+                    <div class="input-group-boxed">
+                        <label asp-for="BirthDate">Date of Birth</label>
+                        <input asp-for="BirthDate" type="date" value="@Model.BirthDate.ToString("yyyy-MM-dd")" class="boxed-input">
+                    </div>
+
+                    <!-- Nationality -->
+                    <div class="input-group-boxed">
+                        <label asp-for="IMDBLink">IMDB-Link</label>
+                    <input asp-for="IMDBLink" type="text" value="@Model.IMDBLink" class="boxed-input" />
+                    </div>
+                </div>
             </div>
-            <div class="form-group text-white">
-                <label asp-for="Bio" class="control-label">Biography</label>
-                <input asp-for="Bio" class="form-control" placeholder="Enter Biography" value="@Model.Bio"/>
-                <span asp-validation-for="Bio" class="text-danger"></span>
+
+            <!-- Action Buttons -->
+            <div class="form-actions-bar" style="grid-column: 1 / -1; margin-top: 2rem;">
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
             </div>
-            <div class="form-group text-white">
-                <label asp-for="IMDBLink" class="control-label">Biography</label>
-                <input asp-for="IMDBLink" class="form-control" placeholder="Enter IMDB link" value="@Model.IMDBLink"/>
-                <span asp-validation-for="IMDBLink" class="text-danger"></span>
-            </div>
-            <div class="form-group d-flex justify-content-between mb-2 mt-2">
-                <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
-                <input type="submit" value="Update" class="btn btn-outline-success" />
-            </div>
-            <input type="hidden" asp-for="ProfilePath" />
-            <input type="hidden" asp-for="Id" />
         </form>
+
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+            <div class="danger-text">
+                <h3>Delete Actor</h3>
+                <p>Once you delete an actor, there is no going back. Please be certain.</p>
+            </div>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn-danger-outline">Delete this actor</a>
+        </div>
+
     </div>
-
-
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-        // Add the following code if you want the name of the file appear on select
-        $(".custom-file-input").on("change", function () {
-            var fileName = $(this).val().split("\\").pop();
-            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-        });
-    </script>
-    <script>
-
-        $("#ProfilePictureURL").on("change", function () {
-            const [file] = this.files;
-            if (file) {
-                const output = document.getElementById("ProfilePicturePreview");
-                output.src = URL.createObjectURL(file);
-            }
-        });
-    </script>
-    <script>
-        actorNameTag=document.getElementById("actorName");
-        inputNameTag=document.getElementById("actorInputName");
-        window.onchange=function(){
-        actorNameTag.innerHTML=inputNameTag.value;
-        }
-    </script>
-
-        }
