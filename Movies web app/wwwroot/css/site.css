@@ -440,15 +440,19 @@ img {
 @media (max-width: 1024px) {
     /* Header Adjustments */
     .main-header {
-        padding: 1rem 1.5rem;
+        padding: 0.8rem 1.2rem;
+        background: rgba(11, 15, 21, 0.95); /* Better mobile contrast */
+        backdrop-filter: blur(10px);
     }
 
     .logo {
-        font-size: 1.3rem;
+        font-size: 1.25rem;
     }
 
     .mobile-menu-toggle {
         display: block;
+        font-size: 1.4rem;
+        padding: 0.5rem; /* Increase touch target */
     }
 
     /* Mobile Navigation Drawer */
@@ -456,21 +460,16 @@ img {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 85%; /* Slightly wider for better mobile feel */
-        max-width: 400px;
+        width: 100%; /* Full width on mobile for better focus */
         height: 100vh;
-        background: rgba(11, 15, 21, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: #0b0f15; /* Solid background prevents visual noise */
+        display: flex; /* Ensure flex context */
         flex-direction: column;
-        justify-content: flex-start; /* Align to top */
-        padding-top: 6rem; /* Space for close button area */
+        justify-content: center;
         align-items: center;
-        gap: 2rem;
-        transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Smooth ease-out */
-        z-index: 150;
-        box-shadow: -10px 0 30px rgba(0,0,0,0.7);
-        overflow-y: auto; /* Allow scrolling if menu is tall */
+        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 149; /* Just below toggle */
+        padding: 2rem;
     }
 
         .main-nav.active {
@@ -478,102 +477,99 @@ img {
         }
 
         .main-nav a {
-            font-size: 1.3rem; /* Larger touch targets */
+            font-size: 1.5rem;
+            padding: 1rem;
             width: 100%;
             text-align: center;
-            padding: 1rem;
             border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.8);
         }
 
-            .main-nav a:first-child {
-                border-top: 1px solid rgba(255,255,255,0.05);
+            .main-nav a.active {
+                color: var(--primary-red);
+                background: rgba(255,255,255,0.02);
             }
 
     .header-actions {
-        display: none; /* Hide standard header actions */
+        display: none;
     }
 
     .mobile-nav-actions {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 1rem;
+        gap: 1.5rem; /* Larger gap */
         width: 100%;
-        padding: 0 2rem;
+        max-width: 300px;
+        margin-top: 2rem;
     }
 
         .mobile-nav-actions .btn {
             width: 100%;
+            padding: 1rem; /* Larger touch area */
+            font-size: 1.1rem;
         }
 
     /* Typography Scaling */
     h1 {
-        font-size: 2.5rem !important;
+        font-size: 2.2rem !important;
     }
 
     h2 {
-        font-size: 2rem !important;
+        font-size: 1.8rem !important;
     }
 
     /* Section Padding */
     .section {
-        padding: 3rem 1.5rem;
+        padding: 3rem 1.2rem;
     }
 
     .section-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
+        gap: 0.5rem;
         padding-left: 0;
         border-left: none;
-        border-top: 4px solid var(--primary-red);
+        border-top: 3px solid var(--primary-red);
         padding-top: 1rem;
+        margin-bottom: 2rem;
     }
 
     /* Footer Responsive */
     .footer-content {
         flex-direction: column;
-        gap: 3rem;
+        gap: 2.5rem;
         padding: 0 1.5rem;
+        text-align: center;
     }
 
     .footer-links {
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 2rem;
-        width: 100%;
-        justify-content: space-between;
     }
 
     .link-column {
-        min-width: 45%;
+        width: 100%;
     }
 
     .footer-bottom {
         flex-direction: column;
-        gap: 1.5rem;
-        align-items: center;
-        text-align: center;
+        gap: 1rem;
         padding: 2rem 1.5rem;
-    }
-
-    .footer-brand {
-        max-width: 100%;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
 }
 
 /* Small Mobile Adjustments */
 @media (max-width: 480px) {
-    .link-column {
-        width: 100%; /* Stack links fully on small screens */
-        text-align: center;
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     .hero-content h1 {
-        font-size: 2rem !important;
+        font-size: 1.8rem !important;
+    }
+
+    .btn {
+        width: 100%; /* Full width buttons on tiny screens */
     }
 }

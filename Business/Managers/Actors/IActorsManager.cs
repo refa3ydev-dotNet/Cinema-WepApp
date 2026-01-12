@@ -9,6 +9,7 @@ namespace Business.Managers.Actors
         Task<List<GetAllActorsDto>> GetAllActorsAsync();
         Task<GetActorByIdDto> GetActorByIdAsync(int id);
         Task UpdateActorAsync(UpdateActorDto dto);
+        Task<List<GetAllActorsDto>> SearchActorsAsync(string name);
 
     }
 }

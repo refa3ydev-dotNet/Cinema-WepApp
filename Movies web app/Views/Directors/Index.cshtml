@@ -1,0 +1,89 @@
+﻿@using Business.DTOs.Directors
+@model List<GetAllDirectorDto>
+@{
+    ViewData["Title"] = "Directors";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<link href="~/css/Actor.css" rel="stylesheet" asp-append-version="true" />
+
+
+<section class="actors-hero">
+    <div class="hero-content">
+        <h1>Visionary Directors</h1>
+        <p>Explore the masterminds behind the lenses who bring stories to life.</p>
+
+        <div class="actor-search-container">
+            <form action="#" method="get" class="actor-search">
+                <i class="fas fa-search"></i>
+                <input type="text" name="DirectorSearch" placeholder="Search directors by name...">
+                <button type="submit" class="btn-search">Search</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+
+<section class="actors-section">
+    <div class="actors-header">
+        <div class="header-title">
+            <h2>All Directors</h2>
+            <span class="count-badge">@Model.Count</span>
+        </div>
+
+        <!-- View Toggle Buttons -->
+        <div class="view-controls" data-target="directorsGrid" data-storage-key="directorsViewMode">
+            <button class="view-btn active" data-view="grid" title="Grid View"><i class="fas fa-th"></i></button>
+            <button class="view-btn" data-view="list" title="List View"><i class="fas fa-list"></i></button>
+            <!-- Admin Action (Visual Only) -->
+            <a asp-controller="Directors" asp-action="Create" class="btn btn-primary" style="margin-left: 1rem;"><i class="fas fa-plus"></i> Add New Director</a>
+        </div>
+    </div>
+
+    <!-- Directors Grid (Reusing Actor Grid Styles) -->
+    <div class="actors-grid" id="directorsGrid">
+        <!-- Card 1: Christopher Nolan -->
+        @foreach (var director in Model)
+        {
+            
+        <div class="actor-card">
+            <div class="actor-image-wrapper">
+                <!-- Placeholder -->
+                <div style="width:100%; height:100%; background:#222; display:flex; align-items:center; justify-content:center; color:#555;">
+                    <i class="fas fa-video" style="font-size:3rem;"></i>
+                </div>
+                <div class="rank-badge">#1</div>
+            </div>
+            <h3>@director.Name</h3>
+            <p>@director.Biography</p>
+            <div class="actor-actions">
+                <a asp-controller="Directors" asp-action="Details" asp-route-id="@director.Id" class="btn-view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                <div class="action-icons">
+                    <a asp-controller="Directors" asp-action="Edit" asp-route-id="@director.Id" class="action-icon-btn"><i class="fas fa-pen"></i></a>
+                    <form asp-controller="Directors" asp-action="Delete" asp-route-id="@director.Id" method="post">
+                    <button type="submit" class="action-icon-btn delete"><i class="fas fa-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if(Model.Count > 10)
+    {
+        
+    <div class="pagination">
+        <button class="page-arrow"><i class="fas fa-chevron-left"></i></button>
+        <a href="#" class="page-link active">1</a>
+        <a href="#" class="page-link">2</a>
+        <a href="#" class="page-link">3</a>
+        <button class="page-arrow"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    }
+</section>
+
+@section scripts{
+
+<script src="~/js/view-toggle.js"></script>
+}

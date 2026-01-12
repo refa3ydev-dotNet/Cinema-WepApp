@@ -33,7 +33,8 @@ namespace Business.Mapping
 
         public static List<GetAllDirectorDto> ToDto(this List<Director> entity)
         {
-            return entity.Select(director => new GetAllDirectorDto()
+            if (entity == null) return null;
+            return entity.Select(director => new GetAllDirectorDto
             {
                 Name = director.Name,
                 Biography = director.Biography,

@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories.DIRECTOR
 {
-    public class DirectoryRepository : IDirectorRepository
+    public class DirectorRepository : IDirectorRepository
     {
         private readonly MoviesDbContext _context;
-        public DirectoryRepository(MoviesDbContext context)
+        public DirectorRepository(MoviesDbContext context)
         {
             _context = context;
         }
@@ -54,9 +54,9 @@ namespace DataAccess.Repositories.DIRECTOR
             return director;
         }
 
-        public async Task<Director> GetDirectorByNameAsync(string name)
+        public async Task<List<Director>> GetDirectorByNameAsync(string name)
         {
-            Director director = await _context.Directors.FirstOrDefaultAsync(x => x.Name == name);
+            var director = await _context.Directors.Where(x => x.Name.Contains(name)).ToListAsync();
             if (director == null)
             {
                 return null;

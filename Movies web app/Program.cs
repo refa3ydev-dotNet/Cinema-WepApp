@@ -1,3 +1,4 @@
+using Business.Managers.Directors;
 using DataAccess.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Movies_web_app.Services;
@@ -42,6 +43,12 @@ namespace Movies_web_app
             builder.Services.AddScoped<DataAccess.Repositories.CATEGORY.ICategoryRepository,
                 DataAccess.Repositories.CATEGORY.CategoryRepository>();
             builder.Services.AddScoped<IImageService, ImageService>();
+
+            builder.Services.AddScoped<Business.Managers.Directors.IDirectorManager,
+                Business.Managers.Directors.DirectorManager>();
+            builder.Services.AddScoped<DataAccess.Repositories.DIRECTOR.IDirectorRepository,
+                DataAccess.Repositories.DIRECTOR.DirectorRepository>();
+
 
             // ? DbContext configuration using the connection string from appsettings.json
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

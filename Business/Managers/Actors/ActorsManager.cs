@@ -39,5 +39,11 @@ namespace Business.Managers.Actors
             await _actorRepository.UpdateActorAsync(actor);
         }
 
+        public async Task<List<GetAllActorsDto>> SearchActorsAsync(string name)
+        {
+            var actor = await _actorRepository.SearchByNameAsync(name);
+            return actor.ToActor();
+        }
+
     }
 }
