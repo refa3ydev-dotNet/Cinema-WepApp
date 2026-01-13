@@ -16,8 +16,15 @@ namespace Core
         [Display(Name = "Biography")]
         [Required(ErrorMessage = "Biography is required")]
         public string Bio { get; set; }
+        [Display(Name = "Birth Date")]
+        [Required(ErrorMessage = "Birth Date is required")]
         public DateOnly? BirthDate { get; set; }
+        public DateOnly? DeathDate { get; set; }
+        [Display(Name = "IMDB Link")]
         public string? IMDBLink { get; set; }
+        [Display(Name = "Nationality")]
+        [Required(ErrorMessage = "Nationality is required")]
+        public string? Nationality { get; set; }
 
         //relationship
         public ICollection<ActorMovie> ActorMovies { get; set; } = new List<ActorMovie>();

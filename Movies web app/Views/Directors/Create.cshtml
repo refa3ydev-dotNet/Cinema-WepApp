@@ -1,0 +1,99 @@
+﻿@using Business.DTOs.Directors
+@model CreateDirectorDto
+
+@{
+    ViewData["Title"] = "Create New Director";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="/css/Director/Director.css" asp-append-version="true">
+<link rel="stylesheet" href="/css/Actor.css" asp-append-version="true"/>
+<!-- Breadcrumb -->
+<div class="admin-container mt-5">
+
+<div class="admin-breadcrumb">
+    <a asp-controller="Home" asp-action="Index" style="text-decoration: none;">Home</a> / <a asp-controller="Directors" asp-action="Index" style="text-decoration: none;">Directors</a>  / <span style="color:white; font-weight:600;">Create</span>
+</div>
+
+<h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Add New Director</h1>
+<p style="color: #888; font-size: 1rem;">Enter the details below to add a new director to the cinema database.</p>
+
+    <!-- Form Card -->
+    <form asp-controller="Directors" asp-action="Create" enctype="multipart/form-data" method="post" class="create-director-card">
+
+        <!-- Profile Image Row -->
+        <div class="upload-row">
+            <div class="dashed-upload-circle">
+                <i class="fas fa-user-circle" style="font-size: 3rem; color: rgba(255,255,255,0.2);"></i>
+            </div>
+            <div class="upload-info">
+                <h4>Profile Image</h4>
+                <p>Upload a high-quality profile picture. Max size 5MB.</p>
+                <div class="file-btn-group" id="fileUploadGroup">
+                    <input asp-for="ProfilePicture" type="file" id="DirectorImage" hidden accept="image/*">
+                    <button type="button" class="btn-choose-file" onclick="document.getElementById('DirectorImage').click()">
+                        <i class="fas fa-cloud-upload-alt"></i> Choose File
+                    </button>
+                    <span style="color: #666; font-size: 0.9rem;">or</span>
+                    <button type="button" class="btn-text" id="btnSwitchToUrl">Use URL</button>
+                </div>
+
+                <div class="url-input-group" id="urlInputGroup" style="display: none;">
+                    <input asp-for="ProfilePictureUrl" type="url" id="DirectorImageUrl" class="input-custom" placeholder="Paste direct image link (ends in .jpg, .png)" style="width: 100%;">
+                    <button type="button" class="btn-text" id="btnSwitchToFile" style="margin-left: 0.5rem; white-space: nowrap;">Cancel</button>
+                </div>
+
+                <div style="margin-top: 0.5rem;">
+                    <a href="#" class="remove-link">Remove Image</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Name -->
+        <div class="form-group-custom">
+            <label asp-for="Name">Full Name</label>
+            <div class="input-with-icon">
+                <i class="fas fa-user"></i>
+                <input asp-for="Name" type="text" id="DirectorName" class="input-custom" placeholder="e.g. Christopher Nolan">
+            </div>
+        </div>
+
+        <!-- Biography -->
+        <div class="form-group-custom">
+            <label asp-for="Biography" >Biography</label>
+            <div class="input-with-icon" style="align-items: flex-start;">
+                <i class="fas fa-file-alt" style="top: 1.5rem;"></i>
+                <textarea asp-for="Biography" id="DirectorBio" rows="5" class="textarea-custom" placeholder="Write a brief biography describing the director's career and achievements..."></textarea>
+            </div>
+            <div class="char-count">0/500 characters</div>
+        </div>
+
+        <!-- Row: Birth Date & IMDb -->
+        <div class="form-row">
+            <!-- Birth Date -->
+            <div class="form-group-custom" style="flex: 1;">
+                <label asp-for="BirthDate">Birth Date</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-calendar"></i>
+                    <input asp-for="BirthDate" type="date" id="BirthDate" class="input-custom">
+                </div>
+            </div>
+
+            <!-- IMDb Link -->
+            <div class="form-group-custom" style="flex: 1;">
+                <label asp-for="IMDB">IMDb Profile</label>
+                <div class="input-with-icon">
+                    <i class="fab fa-imdb"></i>
+                    <input asp-for="IMDB" type="url" id="ImdbLink" class="input-custom" placeholder="https://imdb.com/name/nm...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-footer">
+            <button type="button" class="btn btn-secondary" style="border:1px solid #333; background:transparent;" onclick="window.history.back()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Director</button>
+        </div>
+</form>
+</div>
+<script src="~/js/create-actor.js" asp-append-version="true"></script>

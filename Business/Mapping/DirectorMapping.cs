@@ -15,7 +15,11 @@ namespace Business.Mapping
                 Biography = dto.Biography,
                 ProfilePicture = dto.ProfilePictureUrl,
                 IMDB = dto.IMDB,
-                BirthDate = dto.BirthDate
+                BirthDate = dto.BirthDate,
+                DeathDate = dto.DeathDate,
+                Nationality = dto.Nationality,
+                
+
             };
         }
 
@@ -27,7 +31,9 @@ namespace Business.Mapping
                 Biography = dto.Biography,
                 ProfilePicture = dto.ProfilePictureUrl,
                 IMDB = dto.IMDB,
-                BirthDate = dto.BirthDate
+                BirthDate = dto.BirthDate,
+                DeathDate = dto.DeathDate,
+                Nationality = dto.Nationality
             };
         }
 
@@ -40,7 +46,9 @@ namespace Business.Mapping
                 Biography = director.Biography,
                 ProfilePictureUrl = director.ProfilePicture,
                 IMDB = director.IMDB,
-                BirthDate = director.BirthDate
+                BirthDate = director.BirthDate,
+                DeathDate = director.DeathDate,
+                Nationality = director.Nationality
             }).ToList();
         }
         public static GetDirectorByIdDto ToDto(this Director entity)
@@ -51,7 +59,9 @@ namespace Business.Mapping
                 Biography = entity.Biography,
                 ProfilePictureUrl = entity.ProfilePicture,
                 IMDB = entity.IMDB,
-                BirthDate = entity.BirthDate
+                BirthDate = entity.BirthDate,
+                DeathDate = entity.DeathDate,
+                Nationality = entity.Nationality
             };
         }
     }

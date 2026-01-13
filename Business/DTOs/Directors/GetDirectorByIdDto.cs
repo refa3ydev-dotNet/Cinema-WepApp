@@ -11,5 +11,7 @@ namespace Business.DTOs.Directors
         public IFormFile? ProfilePicture { get; set; }
         public DateOnly? BirthDate { get; set; }
         public string? IMDB { get; set; }
+        public DateOnly? DeathDate { get; set; }
+        public string Nationality { get; set; }
     }
 }

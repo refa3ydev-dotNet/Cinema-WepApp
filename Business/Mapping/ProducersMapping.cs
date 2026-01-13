@@ -13,7 +13,11 @@ namespace Business.Mapping
                 FullName = dto.FullName,
                 Bio = dto.Bio,
                 ProfilePicture = dto.ProfilePath,
-                IMDB = dto.IMDBLink
+                IMDB = dto.IMDBLink,
+                BirthDate = dto.BirthDate,
+                DeathDate = dto.DeathDate,
+                Nationality = dto.Nationality,
+                
             };
         }
         public static Producer ToEntity(this UpdateProducerDto dto)
@@ -24,7 +28,10 @@ namespace Business.Mapping
                 FullName = dto.FullName,
                 Bio = dto.Bio,
                 ProfilePicture = dto.ProfilePath,
-                IMDB = dto.IMDBLink
+                IMDB = dto.IMDBLink,
+                BirthDate = dto.BirthDate,
+                DeathDate = dto.DeathDate,
+                Nationality = dto.Nationality
             };
 
         }
@@ -36,7 +43,10 @@ namespace Business.Mapping
                 FullName = Producer.FullName,
                 Bio = Producer.Bio,
                 ProfilePath = Producer.ProfilePicture,
-                IMDBLink = Producer.IMDB
+                IMDBLink = Producer.IMDB,
+                BirthDate = Producer.BirthDate,
+                DeathDate = Producer.DeathDate,
+                Nationality = Producer.Nationality
 
             };
         }
@@ -51,6 +61,9 @@ namespace Business.Mapping
                 Bio = Producer.Bio,
                 ProfilePath = Producer.ProfilePicture,
                 IMDBLink = Producer.IMDB,
+                BirthDate = Producer.BirthDate,
+                DeathDate = Producer.DeathDate,
+                Nationality = Producer.Nationality,
                 MovieDetails = Producer.ProducerMovies                
                 .Select(m => m.Movie)
                 .Where(m => m != null)
@@ -74,7 +87,10 @@ namespace Business.Mapping
                 FullName = Producer.FullName,
                 Bio = Producer.Bio,
                 ProfilePath = Producer.ProfilePicture,
-                IMDBLink = Producer.IMDB
+                IMDBLink = Producer.IMDB,
+                BirthDate = Producer.BirthDate,
+                DeathDate = Producer.DeathDate,
+                Nationality = Producer.Nationality
 
             }).ToList();
         }

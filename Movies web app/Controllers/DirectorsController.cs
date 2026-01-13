@@ -63,7 +63,14 @@ namespace Movies_web_app.Controllers
                 dirc.ProfilePictureUrl = "/Images/Directors/" + imageName;
 
             }
-            await _directorManager.CreateDirectorAsync(director);
+            if(director.ProfilePicture == null)
+            {
+                if (director.ProfilePictureUrl != null)
+                {
+                    dirc.ProfilePictureUrl = director.ProfilePictureUrl;
+                }
+            }
+            await _directorManager.CreateDirectorAsync(dirc);
             return RedirectToAction("Index");
         }
     }
