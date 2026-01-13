@@ -14,7 +14,9 @@ namespace Business.Mapping
                 Bio = dto.Bio,
                 ProfilePicture = dto.ProfilePath,
                 IMDBLink = dto.IMDBLink,
-                BirthDate = dto.BirthDate
+                BirthDate = dto.BirthDate,
+                DeathDate = dto.DeathDate,
+                Nationality = dto.Nationality,
             };
         }
         public static Actor ToActor(this UpdateActorDto dto)
@@ -26,7 +28,9 @@ namespace Business.Mapping
                 Bio = dto.Bio,
                 ProfilePicture = dto.ProfilePath,
                 IMDBLink = dto.IMDBLink,
-                BirthDate = dto.BirthDate
+                BirthDate = dto.BirthDate,
+                DeathDate = dto.DeathDate,
+                Nationality = dto.Nationality
             };
 
         }
@@ -39,7 +43,10 @@ namespace Business.Mapping
                 Bio = actor.Bio,
                 ProfilePath = actor.ProfilePicture,
                 IMDBLink = actor.IMDBLink,
-                BirthDate =(DateOnly)actor.BirthDate
+                BirthDate =(DateOnly)actor.BirthDate,
+                DeathDate = actor.DeathDate,
+                Nationality = actor.Nationality,
+                
                 
 
             };
@@ -64,7 +71,9 @@ namespace Business.Mapping
                     Price = m.Movie.Price,
                     Cinemas = m.Movie.CinemaMovies.Select(cm => cm.Cinema.Name).Where(name => name != null).ToList() ?? new List<string>(),
                 }).ToList(),
-                BirthDate = (DateOnly)actor.BirthDate
+                BirthDate = (DateOnly)actor.BirthDate,
+                DeathDate = actor.DeathDate,
+                Nationality = actor.Nationality
             };
         }
         public static List<GetAllActorsDto> ToActor(this List<Actor> actors)
@@ -77,6 +86,9 @@ namespace Business.Mapping
                 Bio = actor.Bio,
                 ProfilePath = actor.ProfilePicture,
                 IMDBLink = actor.IMDBLink,
+                DeathDate = actor.DeathDate,
+                Nationality= actor.Nationality
+                
             }).ToList();
         }
 

@@ -17,5 +17,8 @@ namespace Business.DTOs.Actors
         public string IMDBLink { get; set; }
         public string? ProfilePath { get; set; } // دي هتحط فيها مسار الصورة بعد الرفع
         public DateOnly? BirthDate { get; set; }
+        public DateOnly? DeathDate {  get; set; }
+        public string Nationality { get; set; }
+
     }
 }

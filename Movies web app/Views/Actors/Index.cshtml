@@ -6,47 +6,27 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/Actor.css">
+<link rel="stylesheet" href="~/css/Actor.css" asp-append-version="true" />
 
-
-@* <h1 class="text-danger mt-5 text-center">Welcome in <span class="h1">Actor</span> page</h1>
-
-
-<div class="row text-white">
-    <div class="box">
-        @foreach (var item in Model)
-        {
-            <a asp-controller="Actors" asp-action="Details" asp-route-id="@item.Id">
-
-                <div class="card1" >
-                    <div class="imgBx">
-                        <img src="@item.ProfilePath" alt="images">
-                    </div>
-                    <div class="details">
-                        <h2>@item.FullName<br><span>Actor</span></h2>
-                    </div>
-                </div>
-            </a>
-        }
-    </div>
-</div>
-
-<div style="position:fixed; bottom: 20px; right: 20px">
-
-    <a asp-action="Create" class="btn btn-outline-success rounded-circle rounded"><i class="bi bi-plus-circle-fill"></i></a>
-</div> *@
-@* ///////////////// *@
 <section class="actors-hero">
     <div class="hero-content">
         <h1>Meet the Stars</h1>
         <p>Discover the talented cast and crew behind your favorite blockbusters.</p>
 
         <div class="actor-search-container">
-            <form action="#" method="get" class="actor-search">
-                <i class="fas fa-search"></i>
-                <input type="text" name="ActorSearch" placeholder="Search actors by name...">
-                <button type="submit" class="btn-search">Search</button>
-            </form>
+                <form asp-controller="Actors" asp-action="Index" method="get" class="actor-search">
+
+                    <i class="fas fa-search"></i>
+
+                    <input type="text"
+                       name="searchString"
+                           value="@ViewData["CurrentFilter"]"
+                           placeholder="Search actors by name..." />
+
+                    <button type="submit" class="btn-search">Search</button>
+
+                </form>
+
         </div>
     </div>
 </section>
@@ -59,31 +39,40 @@
             <span class="count-badge">@Model.Count</span>
         </div>
         <!-- Admin Action (Visual Only) -->
-        <a asp-controller="Actors" asp-action="Create" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Actor</a>
+        <div class="view-controls" data-target="directorsGrid" data-storage-key="directorsViewMode">
+            <button class="view-btn active" data-view="grid" title="Grid View"><i class="fas fa-th"></i></button>
+            <button class="view-btn" data-view="list" title="List View"><i class="fas fa-list"></i></button>
+            <!-- Admin Action (Visual Only) -->
+            <a asp-controller="Actors" asp-action="Create" class="btn btn-primary" style="margin-left: 1rem;"><i class="fas fa-plus"></i> Add New Director</a>
+        </div>
     </div>
 
-    <!-- Actors Grid -->
-    <div class="actors-grid">
-        <!-- Card 1: RDJ -->
-        @foreach(var actor in Model)
+    <div class="actors-grid" id="directorsGrid">
+        <!-- Card 1: Christopher Nolan -->
+        @foreach (var actor in Model)
         {
-            
-        <div class="actor-card">
-            <div class="actor-image-wrapper">
-                <img src="@actor.ProfilePath" alt="@actor.FullName" class="actor-image" onerror="this.src='https://via.placeholder.com/150/111/fff?text=RDJ'">
-                @* <div class="rank-badge">#1</div> *@
-            </div>
-            <h3>@actor.FullName</h3>
-            <p>@actor.Bio</p>
-@* @if(authorize.IsInRole("Admin")) *@
-            <div class="actor-actions">
-                    <a class="btn-view-details" asp-controller="Actors" asp-action="Details" asp-route-id="@actor.Id">View Details <i class="fas fa-arrow-right"></i></a>
-                <div class="action-icons">
-                    <a class="action-icon-btn" asp-controller="Actors" asp-action="Edit" asp-route-id="@actor.Id"><i class="fas fa-pen" asp-></i></a>
-                    <a class="action-icon-btn delete" asp-controller="Actors" asp-action="Delete" asp-route-id="@actor.Id"><i class="fas fa-trash"></i></a>
+
+            <div class="actor-card">
+                <div class="actor-image-wrapper">
+                    <!-- Placeholder -->
+                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#555;">
+                        <img src="@actor.ProfilePath" alt="@actor.FullName" class="actor-image" onerror="this.src='https://via.placeholder.com/150/111/fff?text=RDJ'">
+                    </div>
+
+                    @* <div class="rank-badge">#1</div> *@
+                </div>
+                <h3>@actor.FullName</h3>
+                <p>@actor.Bio</p>
+                <div class="actor-actions">
+                    <a asp-controller="Actors" asp-action="Details" asp-route-id="@actor.Id" class="btn-view-details">View Details <i class="fas fa-arrow-right"></i></a>
+                    <div class="action-icons">
+                        <a asp-controller="Actors" asp-action="Edit" asp-route-id="@actor.Id" class="action-icon-btn"><i class="fas fa-pen"></i></a>
+                        <form asp-controller="Actors" asp-action="Delete" asp-route-id="@actor.Id" method="post" onscroll="return confirm('Are you sure you want to delete this actor @actor.FullName?')">
+                            <button type="submit" class="action-icon-btn delete"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
         }
     </div>
 
@@ -104,3 +93,5 @@
 </section>
 
 @* <!-- @RenderBody() End --> *@
+
+    <script src="~/js/view-toggle.js" asp-append-version="true"></script>

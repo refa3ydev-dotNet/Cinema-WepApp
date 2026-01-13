@@ -19,5 +19,7 @@ namespace Business.DTOs.Actors
         public string IMDBLink { get; set; }
         public List<GetAllMoviesDto> MovieDetails { get; set; }
         public DateOnly BirthDate {  get; set; }
+        public DateOnly? DeathDate { get; set; }
+        public string Nationality { get; set; }
     }
 }

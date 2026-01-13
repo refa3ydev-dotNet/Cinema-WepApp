@@ -20,11 +20,24 @@ namespace Movies_web_app.Controllers
             _imageServises = imageServises;
         }
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
+            Console.WriteLine($"Search Term Received: '{searchString}'");
+            ViewData["CurrentFilter"] = searchString;
+            List<GetAllActorsDto> actors;
 
-            var actors = await _actorsmanager.GetAllActorsAsync();
-            return View(actors);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                 actors = await _actorsmanager.SearchActorsAsync(searchString);
+                Console.WriteLine($"Found {actors.Count} actors.");
+            }
+            else
+            {
+                 actors = await _actorsmanager.GetAllActorsAsync();
+                Console.WriteLine("Fetching All Actors.");
+
+            }
+                return View(actors);
         }
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -83,7 +96,7 @@ namespace Movies_web_app.Controllers
             if (actor == null) return View("NotFound");
             var dto = new UpdateActorDto
             {
-Id = actor.Id,
+                Id = actor.Id,
                 FullName = actor.FullName,
                 Bio = actor.Bio,
                 ProfilePath = actor.ProfilePath,

@@ -10,6 +10,10 @@ namespace Business.DTOs.Producers
         public string FullName { get; set; }
         public string Bio { get; set; }
         public string IMDBLink { get; set; }
+        public DateOnly? BirthDate { get; set; }
+        public DateOnly? DeathDate { get; set; }
+        public string Nationality { get; set; }
+
 
     }
 }

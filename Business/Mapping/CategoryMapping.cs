@@ -9,7 +9,10 @@ namespace Business.Mapping
         {
             return new Category()
             {
-                CategoryName = dto.Name
+                CategoryName = dto.Name,
+                Description = dto.Description,
+                ImageUrl = dto.ImageUrl
+                
             };
         }
         public static Category ToEntity(this UpdateCategoryDto dto)
@@ -17,7 +20,9 @@ namespace Business.Mapping
             return new Category()
             {
                 Id = dto.Id,
-                CategoryName = dto.Name
+                CategoryName = dto.Name,
+                Description = dto.Description,
+                ImageUrl = dto.ImageUrl
             };
         }
         public static GetCategoryByIdDto ToDto(this Category category)
@@ -25,7 +30,9 @@ namespace Business.Mapping
             return new GetCategoryByIdDto()
             {
                 Id = category.Id,
-                Name = category.CategoryName
+                Name = category.CategoryName,
+                Description = category.Description,
+                ImageUrl = category.ImageUrl
             };
         }
         public static List<GetAllCategoriesDto> ToDto(this List<Category> categories)
@@ -35,6 +42,8 @@ namespace Business.Mapping
             {
                 Id = x.Id,
                 Name = x.CategoryName,
+                Description = x.Description,
+                ImageUrl = x.ImageUrl
             }).ToList();
         }
     }
