@@ -1,146 +1,106 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
-    // --- CREATE ACTOR UPLOAD LOGIC ---
-    const uploadTrigger = document.getElementById('uploadTrigger');
-    const fileInput = document.getElementById('headshotUpload');
-    const previewImage = document.getElementById('uploadPreview');
-    const placeholder = document.querySelector('.upload-placeholder');
+    // --- GENERIC IMAGE UPLOAD LOGIC ---
+    function setupImageUpload(fileInputId, urlInputId) {
+        const fileInput = document.getElementById(fileInputId);
+        const urlInput = document.getElementById(urlInputId);
 
-    if (uploadTrigger && fileInput) {
-        // Trigger file input on circle click
-        uploadTrigger.addEventListener('click', () => {
-            fileInput.click();
-        });
+        // Common elements (assumes only one upload section per page)
+        const circle = document.querySelector('.dashed-upload-circle');
+        const icon = document.querySelector('.dashed-upload-circle i');
+        const removeLink = document.querySelector('.remove-link');
 
-        // Handle file selection
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
+        const fileGroup = document.getElementById('fileUploadGroup');
+        const urlGroup = document.getElementById('urlInputGroup');
+        const btnSwitchToUrl = document.getElementById('btnSwitchToUrl');
+        const btnSwitchToFile = document.getElementById('btnSwitchToFile');
 
-                reader.onload = (e) => {
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = 'block';
-                    // Hide placeholder text/icon
-                    if (placeholder) {
-                        placeholder.style.display = 'none';
-                    }
-                };
+        if (fileInput && circle) {
 
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    // --- CREATE DIRECTOR UPLOAD LOGIC ---
-    const directorInput = document.getElementById('DirectorImage');
-    const directorUrlInput = document.getElementById('DirectorImageUrl');
-    const directorCircle = document.querySelector('.dashed-upload-circle');
-    const directorIcon = document.querySelector('.dashed-upload-circle i');
-    const removeLink = document.querySelector('.remove-link');
-
-    // Toggle Elements
-    const fileGroup = document.getElementById('fileUploadGroup');
-    const urlGroup = document.getElementById('urlInputGroup');
-    const btnSwitchToUrl = document.getElementById('btnSwitchToUrl');
-    const btnSwitchToFile = document.getElementById('btnSwitchToFile');
-
-    if (directorCircle) {
-
-        // 1. File Upload Logic
-        if (directorInput) {
-            directorInput.addEventListener('change', (e) => {
+            // 1. File Upload
+            fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = (e) => {
-                        updatePreview(e.target.result);
-                    };
+                    reader.onload = (e) => updatePreview(e.target.result);
                     reader.readAsDataURL(file);
                 }
             });
-        }
 
-        // 2. URL Input Logic
-        if (directorUrlInput) {
-            const handleUrlUpdate = (e) => {
-                const url = e.target.value.trim();
+            // 2. URL Input
+            if (urlInput) {
+                const handleUrlUpdate = (e) => {
+                    const url = e.target.value.trim();
+                    if (url.length === 0) {
+                        resetPreview();
+                        return;
+                    }
+                    if (url.length > 5) {
+                        circle.style.borderColor = 'rgba(255, 200, 0, 0.5)'; // Loading
+                        const tempImg = new Image();
+                        tempImg.onload = () => {
+                            updatePreview(url);
+                            circle.style.borderColor = 'rgba(255,255,255,0.1)';
+                        };
+                        tempImg.onerror = () => {
+                            circle.style.borderColor = '#ff4444'; // Error
+                        };
+                        tempImg.src = url;
+                    }
+                };
+                ['input', 'change', 'paste'].forEach(evt =>
+                    urlInput.addEventListener(evt, handleUrlUpdate)
+                );
+            }
 
-                // Reset if empty
-                if (url.length === 0) {
+            // 3. Toggle Buttons
+            if (btnSwitchToUrl && btnSwitchToFile) {
+                btnSwitchToUrl.addEventListener('click', () => {
+                    fileGroup.style.display = 'none';
+                    urlGroup.style.display = 'flex';
+                    fileInput.value = '';
+                });
+                btnSwitchToFile.addEventListener('click', () => {
+                    urlGroup.style.display = 'none';
+                    fileGroup.style.display = 'flex';
+                    if (urlInput) urlInput.value = '';
+                });
+            }
+
+            // 4. Remove
+            if (removeLink) {
+                removeLink.addEventListener('click', (e) => {
+                    e.preventDefault();
                     resetPreview();
-                    return;
-                }
+                });
+            }
 
-                if (url.length > 5) {
-                    // Indicate loading state (optional: yellow border?)
-                    directorCircle.style.borderColor = 'rgba(255, 200, 0, 0.5)';
+            // Helpers
+            function updatePreview(src) {
+                circle.style.backgroundImage = `url('${src}')`;
+                circle.style.backgroundSize = 'cover';
+                circle.style.backgroundPosition = 'center';
+                circle.style.border = '2px solid rgba(255,255,255,0.1)';
+                if (icon) icon.style.display = 'none';
+            }
 
-                    const tempImg = new Image();
-                    tempImg.onload = () => {
-                        updatePreview(url);
-                        directorCircle.style.borderColor = 'rgba(255,255,255,0.1)'; // Success: Reset
-                    };
-                    tempImg.onerror = () => {
-                        // Error: Show red border to indicate invalid URL
-                        directorCircle.style.borderColor = '#ff4444';
-                        // console.log('Image failed to load:', url);
-                    };
-                    tempImg.src = url;
-                }
-            };
-
-            // Listen to multiple events for better responsiveness
-            ['input', 'change', 'paste'].forEach(evt =>
-                directorUrlInput.addEventListener(evt, handleUrlUpdate)
-            );
-        }
-
-        // 3. Toggle Logic
-        if (btnSwitchToUrl && btnSwitchToFile) {
-            btnSwitchToUrl.addEventListener('click', () => {
-                fileGroup.style.display = 'none';
-                urlGroup.style.display = 'flex';
-                // Clear file input if switching
-                if (directorInput) directorInput.value = '';
-            });
-
-            btnSwitchToFile.addEventListener('click', () => {
-                urlGroup.style.display = 'none';
-                fileGroup.style.display = 'flex';
-                // Clear URL input if switching
-                if (directorUrlInput) directorUrlInput.value = '';
-            });
-        }
-
-        // 4. Remove Logic
-        if (removeLink) {
-            removeLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                resetPreview();
-            });
-        }
-
-        // Helper Functions
-        function updatePreview(src) {
-            directorCircle.style.backgroundImage = `url('${src}')`;
-            directorCircle.style.backgroundSize = 'cover';
-            directorCircle.style.backgroundPosition = 'center';
-            directorCircle.style.border = '2px solid rgba(255,255,255,0.1)';
-            if (directorIcon) directorIcon.style.display = 'none';
-        }
-
-        function resetPreview() {
-            if (directorInput) directorInput.value = '';
-            if (directorUrlInput) directorUrlInput.value = '';
-
-            directorCircle.style.backgroundImage = 'none';
-            directorCircle.style.border = '2px dashed rgba(255,255,255,0.2)';
-            if (directorIcon) directorIcon.style.display = 'block';
+            function resetPreview() {
+                fileInput.value = '';
+                if (urlInput) urlInput.value = '';
+                circle.style.backgroundImage = 'none';
+                circle.style.border = '2px dashed rgba(255,255,255,0.2)';
+                if (icon) icon.style.display = 'block';
+            }
         }
     }
 
+    // Initialize for Director
+    setupImageUpload('DirectorImage', 'DirectorImageUrl');
+    // Initialize for Actor
+    setupImageUpload('ActorImage', 'ActorImageUrl');
+
+
     // --- CHARACTER COUNTER LOGIC ---
-    const bioTextarea = document.getElementById('DirectorBio');
+    const bioTextarea = document.getElementById('Biography');
     const charCountDisplay = document.querySelector('.char-count');
 
     if (bioTextarea && charCountDisplay) {
@@ -155,4 +115,57 @@
             }
         });
     }
+
+    // --- DECEASED TOGGLE LOGIC ---
+    function setupDeceasedToggle(checkboxId, groupId) {
+        const checkbox = document.getElementById(checkboxId);
+        const group = document.getElementById(groupId);
+
+        if (checkbox && group) {
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    group.style.display = 'block'; // Or 'flex' depending on layout
+                    // For input-with-icon we probably want block or flex
+                    group.style.display = 'block';
+                } else {
+                    group.style.display = 'none';
+                    // Clear date if unchecked? Optional.
+                    const dateInput = group.querySelector('input');
+                    if (dateInput) dateInput.value = '';
+                }
+            });
+        }
+    }
+
+    // Initialize for Director
+    setupDeceasedToggle('IsDeceased', 'DeathDateGroup');
+
+    // Initialize for Actor
+    setupDeceasedToggle('ActorIsDeceased', 'ActorDeathDateGroup');
+
+    // --- NATIONALITY DROPDOWN LOGIC ---
+    const nationalitySelect = document.getElementById('Nationality');
+
+    if (nationalitySelect) {
+        fetch('https://restcountries.com/v3.1/all?fields=name')
+            .then(response => response.json())
+            .then(data => {
+                // Sort by common name
+                const countries = data.sort((a, b) =>
+                    a.name.common.localeCompare(b.name.common)
+                );
+
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country.name.common; // Value is country name suitable for text field in DB
+                    option.textContent = country.name.common;
+                    nationalitySelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching countries:', error);
+                // Fallback or leave as "Select a country"
+            });
+    }
+
 });

@@ -1,0 +1,261 @@
+﻿/* --- Director Page Styles --- */
+
+/* Specific overrides for this admin view to match mockup perfectly */
+body.director-create-page {
+    background-color: #0b0505; /* Deep dark reddish/brown bg */
+}
+
+/* Admin Header */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 3rem;
+    background: #110505;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.admin-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.logo-icon-box {
+    width: 32px;
+    height: 32px;
+    background: var(--primary-red);
+    border-radius: 4px; /* Slightly rounded */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-user-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.notification-bell {
+    position: relative;
+    color: #ccc;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.notification-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: var(--primary-red);
+    border-radius: 50%;
+}
+
+.user-avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ccc;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.1);
+}
+
+/* Layout */
+.admin-container {
+    max-width: 800px; /* Constrained width like mockup */
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+/* Breadcrumbs */
+.admin-breadcrumb {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+/* Form Card Specifics */
+.create-director-card {
+    background: #160808; /* Slightly lighter than body */
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 3rem;
+    margin-top: 2rem;
+}
+
+/* Dashed Upload */
+.dashed-upload-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px dashed rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2rem;
+    background: rgba(255,255,255,0.02);
+}
+
+.upload-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.upload-info h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.upload-info p {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.file-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-choose-file {
+    background: #2a1010;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--primary-red);
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    padding: 0 0.5rem;
+}
+
+.url-input-group {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.remove-link {
+    color: #888;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+    .remove-link:hover {
+        color: #aaa;
+    }
+
+/* Form Inputs */
+.form-row {
+    display: flex;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+.form-group-custom {
+    margin-bottom: 2rem;
+}
+
+    .form-group-custom label {
+        display: block;
+        margin-bottom: 0.8rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+.input-with-icon {
+    position: relative;
+}
+
+    .input-with-icon i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+    }
+
+.input-custom {
+    width: 100%;
+    background: #0b0505; /* Darker input bg */
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    color: white;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+    .input-custom:focus {
+        border-color: var(--primary-red);
+    }
+
+.textarea-custom {
+    width: 100%;
+    background: #0b0505;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    color: white;
+    font-family: inherit;
+    outline: none;
+    resize: vertical;
+}
+
+    .textarea-custom:focus {
+        border-color: var(--primary-red);
+    }
+
+.char-count {
+    text-align: right;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.action-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 2rem;
+}
+
+.footer-support {
+    text-align: center;
+    margin-top: 4rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+    .footer-support a {
+        color: var(--primary-red);
+    }

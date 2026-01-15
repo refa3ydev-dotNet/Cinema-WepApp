@@ -1,5 +1,6 @@
 ﻿using Business.DTOs.Actors;
 using Business.Managers.Actors;
+using Core.Entities;
 using DataAccess.Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Movies_web_app.Services;
@@ -28,16 +29,16 @@ namespace Movies_web_app.Controllers
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                 actors = await _actorsmanager.SearchActorsAsync(searchString);
+                actors = await _actorsmanager.SearchActorsAsync(searchString);
                 Console.WriteLine($"Found {actors.Count} actors.");
             }
             else
             {
-                 actors = await _actorsmanager.GetAllActorsAsync();
+                actors = await _actorsmanager.GetAllActorsAsync();
                 Console.WriteLine("Fetching All Actors.");
 
             }
-                return View(actors);
+            return View(actors);
         }
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -51,20 +52,43 @@ namespace Movies_web_app.Controllers
             if (!ModelState.IsValid)
             {
                 Console.WriteLine("Model is invalid ❌");
+                foreach (var modelStateKey in ModelState.Keys)
+                {
+                    var modelStateVal = ModelState[modelStateKey];
+                    foreach (var error in modelStateVal.Errors)
+                    {
+                        Console.WriteLine($"Key: {modelStateKey}, Error: {error.ErrorMessage}");
+                    }
+                }
 
                 return View(actor);
             }
-            string imageName = await _imageServises.UploadImageAsync(actor.ProfilePicture, "Actors");
             var act = new CreateActorDto
             {
-                ProfilePath = "/Images/Actors/" + imageName,
                 FullName = actor.FullName,
                 Bio = actor.Bio,
                 IMDBLink = actor.IMDBLink,
-                BirthDate = actor.BirthDate
-                
-            };
-            await _actorsmanager.CreateActorAsync(act);
+                BirthDate = actor.BirthDate,
+                DeathDate = actor.DeathDate,
+                Nationality = actor.Nationality,
+
+
+        };
+            if (act.ProfilePicture != null)
+            {
+                string imageName = await _imageServises.UploadImageAsync(act.ProfilePicture, "Actors");
+                act.ProfilePath = "/Images/Actors/" + imageName;
+
+            }
+            if (actor.ProfilePicture == null)
+            {
+                if (actor.ProfilePath != null)
+                {
+                    act.ProfilePath = actor.ProfilePath;
+                }
+            }
+
+        await _actorsmanager.CreateActorAsync(act);
             return RedirectToAction("Index");
         }
         [HttpPost]

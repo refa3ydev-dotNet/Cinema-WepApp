@@ -20,18 +20,17 @@
 
     <!-- Form Card -->
     <form asp-controller="Directors" asp-action="Create" enctype="multipart/form-data" method="post" class="create-director-card">
-
         <!-- Profile Image Row -->
         <div class="upload-row">
             <div class="dashed-upload-circle">
                 <i class="fas fa-user-circle" style="font-size: 3rem; color: rgba(255,255,255,0.2);"></i>
             </div>
             <div class="upload-info">
-                <h4>Profile Image</h4>
-                <p>Upload a high-quality profile picture. Max size 5MB.</p>
+                <h4>Profile Headshot</h4>
+                <p>Upload a high-quality headshot. Max size 5MB.</p>
                 <div class="file-btn-group" id="fileUploadGroup">
-                    <input asp-for="ProfilePicture" type="file" id="DirectorImage" hidden accept="image/*">
-                    <button type="button" class="btn-choose-file" onclick="document.getElementById('DirectorImage').click()">
+                    <input asp-for="ProfilePicture" type="file" id="ActorImage" hidden accept="image/*"> <!-- Kept name DirectorImage if backend needs it, or change to ActorImage/ProfilePicture -->
+                    <button type="button" class="btn-choose-file" onclick="document.getElementById('ActorImage').click()">
                         <i class="fas fa-cloud-upload-alt"></i> Choose File
                     </button>
                     <span style="color: #666; font-size: 0.9rem;">or</span>
@@ -39,7 +38,7 @@
                 </div>
 
                 <div class="url-input-group" id="urlInputGroup" style="display: none;">
-                    <input asp-for="ProfilePictureUrl" type="url" id="DirectorImageUrl" class="input-custom" placeholder="Paste direct image link (ends in .jpg, .png)" style="width: 100%;">
+                    <input asp-for="ProfilePictureUrl" type="url" id="ActorImageUrl" class="input-custom" placeholder="Paste direct image link (ends in .jpg, .png)" style="width: 100%;">
                     <button type="button" class="btn-text" id="btnSwitchToFile" style="margin-left: 0.5rem; white-space: nowrap;">Cancel</button>
                 </div>
 
@@ -54,24 +53,25 @@
             <label asp-for="Name">Full Name</label>
             <div class="input-with-icon">
                 <i class="fas fa-user"></i>
-                <input asp-for="Name" type="text" id="DirectorName" class="input-custom" placeholder="e.g. Christopher Nolan">
+                <input asp-for="Name" type="text" id="Name" class="input-custom" placeholder="e.g. Robert De Niro">
             </div>
         </div>
 
         <!-- Biography -->
         <div class="form-group-custom">
-            <label asp-for="Biography" >Biography</label>
+            <label asp-for="Biography">Biography</label>
             <div class="input-with-icon" style="align-items: flex-start;">
                 <i class="fas fa-file-alt" style="top: 1.5rem;"></i>
-                <textarea asp-for="Biography" id="DirectorBio" rows="5" class="textarea-custom" placeholder="Write a brief biography describing the director's career and achievements..."></textarea>
+                <textarea asp-for="Biography" id="Biography" rows="5" class="textarea-custom" placeholder="Write a brief biography describing the actor's career and style..."></textarea>
             </div>
             <div class="char-count">0/500 characters</div>
         </div>
 
-        <!-- Row: Birth Date & IMDb -->
-        <div class="form-row">
+        <!-- Row: Birth Date, Nationality, IMDb -->
+        <div class="form-row" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+
             <!-- Birth Date -->
-            <div class="form-group-custom" style="flex: 1;">
+            <div class="form-group-custom" style="flex: 1; min-width: 200px;">
                 <label asp-for="BirthDate">Birth Date</label>
                 <div class="input-with-icon">
                     <i class="fas fa-calendar"></i>
@@ -79,20 +79,47 @@
                 </div>
             </div>
 
+            <!-- Deceased Checkbox & Death Date -->
+            <div class="form-group-custom" style="flex: 1; min-width: 200px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem;">
+                    <label for="IsDeceased" style="margin-bottom: 0; cursor: pointer;">
+                        <input type="checkbox" id="IsDeceased" name="IsDeceased" style="accent-color: var(--primary-red);">
+                        Deceased?
+                    </label>
+                </div>
+
+                <div class="input-with-icon" id="DeathDateGroup" style="display: none;">
+                    <i class="fas fa-skull"></i>
+                    <input asp-for="DeathDate" type="date" id="DeathDate" class="input-custom" placeholder="Death Date">
+                </div>
+            </div>
+
+            <!-- Nationality -->
+            <div class="form-group-custom" style="flex: 1; min-width: 200px;">
+                <label asp-for="Nationality">Nationality</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-globe"></i>
+                    <select asp-for="Nationality" id="Nationality" class="input-custom">
+                        <option value="" disabled selected>Select a country</option>
+                        <!-- Populated via API -->
+                    </select>
+                </div>
+            </div>
+
             <!-- IMDb Link -->
-            <div class="form-group-custom" style="flex: 1;">
+            <div class="form-group-custom" style="flex: 1; min-width: 200px;">
                 <label asp-for="IMDB">IMDb Profile</label>
                 <div class="input-with-icon">
                     <i class="fab fa-imdb"></i>
-                    <input asp-for="IMDB" type="url" id="ImdbLink" class="input-custom" placeholder="https://imdb.com/name/nm...">
+                    <input asp-for="IMDB" type="url" id="IMDB" class="input-custom" placeholder="https://imdb.com/name/nm...">
                 </div>
             </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="action-footer">
-            <button type="button" class="btn btn-secondary" style="border:1px solid #333; background:transparent;" onclick="window.history.back()">Cancel</button>
-            <button type="submit" class="btn btn-primary">Create Director</button>
+            <button type="button" class="btn btn-secondary" style="border:1px solid #333; background:transparent;" onclick="window.location.href='actors.html'">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Actor</button>
         </div>
 </form>
 </div>
