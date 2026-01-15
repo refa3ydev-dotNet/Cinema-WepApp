@@ -11,9 +11,7 @@ namespace Business.DTOs.Actors
 
         [Required]
         public string Bio { get; set; }
-
-        [Required(ErrorMessage = "Profile Picture is required")]
-        public IFormFile ProfilePicture { get; set; }
+        public IFormFile? ProfilePicture { get; set; }
         public string IMDBLink { get; set; }
         public string? ProfilePath { get; set; } // دي هتحط فيها مسار الصورة بعد الرفع
         public DateOnly? BirthDate { get; set; }
