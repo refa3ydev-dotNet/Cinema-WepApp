@@ -89,6 +89,20 @@
             background: var(--primary-red-hover);
         }
 
+
+/* Profile Meta Extras */
+.meta-link {
+    color: var(--text-grey);
+    text-decoration: none;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+    .meta-link:hover {
+        color: #f5c518; /* IMDb Yellow */
+        text-shadow: 0 0 10px rgba(245, 197, 24, 0.3);
+    }
+
 /* Actors List Section */
 .actors-section {
     padding: 4rem 2rem;
@@ -513,10 +527,24 @@
         border-top: none;
         padding-top: 0;
         border-left: 1px solid rgba(255,255,255,0.1);
-        padding-left: 1.5rem;
+        padding-left: 2rem; /* More space from text */
         flex-direction: column;
-        align-items: flex-end;
-        gap: 0.5rem;
+        align-items: center; /* Center horizontally */
+        justify-content: center; /* Center vertically */
+        gap: 1rem;
+        min-width: 140px; /* Ensure generic width */
+    }
+
+    .actors-grid.list-view .btn-view-details {
+        width: auto;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .actors-grid.list-view .action-icons {
+        gap: 1rem;
+        justify-content: center;
+        width: 100%;
     }
 
 
@@ -657,29 +685,114 @@
         height: 150px;
     }
 }
+/* === ACTOR DETAILS PAGE === */
 
-/* Profile Card */
+/* Modern Backdrop Hero */
+.actor-details-hero-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 600px;
+    z-index: 0;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+}
+
+.hero-backdrop-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(30px) brightness(0.3);
+    transform: scale(1.2);
+}
+
+/* Vignette overlay */
+.actor-details-hero-backdrop::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, #0f0505 100%);
+    pointer-events: none;
+}
+
+/* Container */
+.actor-details-container {
+    padding: 8rem 2rem 6rem; /* Top padding for navbar */
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+}
+
+    .breadcrumb a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .breadcrumb a:hover {
+            color: var(--primary-red);
+        }
+
+/* Glass Profile Card */
 .profile-card {
-    background: #1a0b0b; /* Dark reddish bg matching mockup */
-    border-radius: 20px;
-    padding: 3rem;
+    background: rgba(18, 8, 8, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 2.5rem;
     display: flex;
     gap: 3rem;
     align-items: flex-start;
     margin-bottom: 4rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.profile-image {
-    width: 300px;
-    height: 400px; /* Portrait aspect ratio */
-    flex-shrink: 0;
-    border-radius: 12px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    position: relative;
     overflow: hidden;
-    background: #000;
 }
 
-    .profile-image img, .profile-image div {
+    /* Decorative Glow */
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(229, 9, 20, 0.2), transparent 70%);
+        pointer-events: none;
+    }
+
+/* Profile Image */
+.profile-image {
+    width: 280px;
+    height: 380px;
+    flex-shrink: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #1a1a1a;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+    .profile-image img, .profile-image > div {
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -687,12 +800,14 @@
 
 .profile-info {
     flex-grow: 1;
+    z-index: 1;
 }
 
+/* Header */
 .profile-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 1rem;
 }
 
@@ -700,17 +815,19 @@
         font-size: 3rem;
         font-weight: 800;
         line-height: 1;
+        color: #fff;
     }
 
+/* Admin Controls */
 .admin-controls {
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
 .btn-admin-edit, .btn-admin-delete {
     padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: none;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -718,34 +835,33 @@
     gap: 0.5rem;
     font-size: 0.8rem;
     transition: 0.3s;
-}
-
-.btn-admin-edit {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
     color: white;
 }
 
     .btn-admin-edit:hover {
-        background: rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.15);
     }
 
 .btn-admin-delete {
-    background: rgba(229, 9, 20, 0.2);
-    color: var(--primary-red);
+    background: rgba(229, 9, 20, 0.15);
+    border-color: rgba(229, 9, 20, 0.3);
+    color: #ff6b6b;
 }
 
     .btn-admin-delete:hover {
         background: rgba(229, 9, 20, 0.3);
     }
 
+/* Profile Meta */
 .profile-meta {
-    color: var(--primary-red);
-    font-size: 0.95rem;
-    margin-bottom: 2rem;
+    color: var(--text-grey);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
-    font-weight: 500;
+    flex-wrap: wrap;
 }
 
 .meta-dot {
@@ -755,10 +871,11 @@
     border-radius: 50%;
 }
 
+/* Bio */
 .profile-bio p {
-    color: #e0e0e0;
+    color: #c0c0c0;
     line-height: 1.8;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     font-size: 0.95rem;
 }
 
@@ -766,29 +883,266 @@
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-top: 3rem;
+    gap: 1.5rem;
+    margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255,255,255,0.08);
 }
 
 .stat-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+    text-align: left;
+    padding-left: 1rem;
+    border-left: 2px solid rgba(255,255,255,0.1);
 }
 
+    .stat-item:hover {
+        border-left-color: var(--primary-red);
+    }
+
 .stat-label {
-    font-size: 0.75rem;
-    color: var(--text-grey);
-    letter-spacing: 1px;
+    display: block;
+    font-size: 0.7rem;
     text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-grey);
+    margin-bottom: 0.3rem;
 }
 
 .stat-value {
-    font-size: 1.25rem;
-    font-weight: 700;
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
     color: white;
+}
+
+/* Movie Cards */
+.movie-card-vertical {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+/* === MODERN ENHANCEMENTS === */
+
+/* Gradient Name Text */
+.profile-header h1 {
+    background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 50%, #ffffff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+/* Subtle Glow on Card */
+.profile-card {
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+}
+
+    .profile-card:hover {
+        box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 80px rgba(229, 9, 20, 0.15);
+        transform: translateY(-5px);
+    }
+
+/* Profile Image Hover Zoom */
+.profile-image {
+    transition: transform 0.5s ease;
+}
+
+.profile-card:hover .profile-image img,
+.profile-card:hover .profile-image > div {
+    transform: scale(1.05);
+}
+
+/* Enhanced Stats with Accent */
+.stat-item {
+    transition: 0.3s ease;
+}
+
+    .stat-item:hover .stat-value {
+        color: var(--primary-red);
+    }
+
+/* Movie Card Glow on Hover */
+.movie-card-vertical:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.movie-card-vertical .poster-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+    .movie-card-vertical .poster-wrapper::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+        opacity: 0;
+        transition: 0.3s;
+    }
+
+.movie-card-vertical:hover .poster-wrapper::after {
+    opacity: 1;
+}
+
+/* IMDb Link Glow */
+.meta-link {
+    transition: 0.3s;
+}
+
+    .meta-link:hover {
+        color: #f5c518;
+        text-shadow: 0 0 15px rgba(245, 197, 24, 0.5);
+    }
+
+/* === PROFESSIONAL REFINEMENTS === */
+
+/* Refined Typography */
+.profile-header h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    animation: none; /* Remove flashy shimmer for professionalism */
+    background: none;
+    -webkit-text-fill-color: #fff;
+    color: #fff;
+}
+
+/* Subtle Subtitle Effect */
+.profile-meta {
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+}
+
+    .profile-meta i {
+        opacity: 0.7;
+        margin-right: 0.3rem;
+    }
+
+/* Professional Bio Styling */
+.profile-bio {
+    max-width: 700px;
+}
+
+    .profile-bio p:first-child::first-letter {
+        font-size: 2rem;
+        font-weight: 700;
+        float: left;
+        line-height: 1;
+        margin-right: 0.5rem;
+        color: var(--primary-red);
+    }
+
+/* Refined Stats - Clean Lines */
+.stats-grid {
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.05);
+    margin-top: 2.5rem;
+}
+
+.stat-item {
+    border-left: none;
+    padding-left: 0;
+    text-align: center;
+    position: relative;
+}
+
+    .stat-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 60%;
+        background: rgba(255,255,255,0.1);
+    }
+
+.stat-label {
+    font-size: 0.65rem;
+    opacity: 0.5;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Filmography Section Header */
+.section-header-custom {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.title-with-bar {
+    border-left: 3px solid var(--primary-red);
+    padding-left: 1rem;
+}
+
+    .title-with-bar h2 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+    }
+
+.view-all-link {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    transition: 0.3s;
+}
+
+    .view-all-link:hover {
+        opacity: 1;
+    }
+
+/* Movie Card Professional */
+.movie-card-vertical .movie-details h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.movie-card-vertical .movie-details p {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+/* Admin Controls - Subtle */
+.admin-controls {
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+.profile-card:hover .admin-controls {
+    opacity: 1;
+}
+
+.movie-card-vertical:hover {
+    transform: translateY(-8px);
+}
+
+.movie-card-vertical .poster-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 /* Filmography Section */
