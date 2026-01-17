@@ -1,4 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@functions {
+    public string IsActive(string controller, string action)
+    {
+        var routeData = ViewContext.RouteData.Values;
+        var currentController = routeData["controller"] as string;
+        var currentAction = routeData["action"] as string;
+
+        var isActive = string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) &&
+                       string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase);
+
+        return isActive ? "active" : "";
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -20,32 +33,52 @@
         <div class="logo">
             <a class="d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/Images/logo.png" alt="ZCinema" width="40"/> ZCINEMA</a>
         </div>
-        <div class="mobile-menu-toggle">
-            <i class="fas fa-bars"></i>
-        </div>
-
-        <!-- Search Bar (Optional for Global Layout) -->
-        <div class="header-search">
-            <i class="fas fa-search"></i>
-            <input type="text" name="SearchQuery" placeholder="Search movies, cinemas...">
-        </div>
-
-        <nav class="main-nav">
-            <a class="d-flex align-items-center justify-content-center gap-1" asp-controller="Cinemas" asp-action="Index"><i class="bi bi-camera-reels"></i> Cinemas</a>
-            <a class="d-flex align-items-center justify-content-center gap-1" asp-controller="Actors" asp-action="Index"><i class="bi bi-person-square"></i> Actors</a>
-            <a class="d-flex align-items-center justify-content-center gap-1" asp-controller="Producers" asp-action="Index"><i class="bi bi-headset"></i> Producers</a>
-            <a class="d-flex align-items-center justify-content-center gap-1" asp-controller="Categories" asp-action="Index"><i class="bi bi-binoculars-fill"></i> Categories</a>
-            <a class="d-flex align-items-center justify-content-center gap-1" asp-controller="Directors" asp-action="Index"><i class="bi bi-binoculars-fill"></i> Directors</a>
-            <!-- Mobile Only Actions -->
-            <div class="mobile-nav-actions">
-                <a href="login.html" class="sign-in">Sign In</a>
-                <a href="register.html" class="btn btn-primary">Join Club</a>
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
             </div>
-        </nav>
-        <div class="header-actions">
-            <a href="login.html" class="sign-in">Sign In</a>
-            <a href="register.html" class="btn btn-primary">Join Club</a>
-        </div>
+
+            <!-- Header Search Bar -->
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" name="SearchQuery" placeholder="Search movies, cinemas...">
+            </div>
+
+            <nav class="main-nav">
+            <a class="nav-link @IsActive("Home", "Index")"
+               asp-controller="Home" asp-action="Index">
+                Home
+            </a>
+
+            <a class="nav-link @IsActive("Movies", "Index")"
+               asp-controller="Movies" asp-action="Index">
+                Movies
+            </a>
+
+            <a class="nav-link @IsActive("Cinemas", "Index")"
+               asp-controller="Cinemas" asp-action="Index">
+                Cinemas
+            </a>
+
+            <a class="nav-link @IsActive("Actors", "Index")"
+               asp-controller="Actors" asp-action="Index">
+                Actors
+            </a>
+
+            <a class="nav-link @IsActive("Directors", "Index")"
+               asp-controller="Directors" asp-action="Index">
+                Directors
+            </a>
+                <!-- Mobile Only Actions -->
+                <div class="mobile-nav-actions">
+                    <a href="login.html" class="login-link">Login</a>
+                    <a href="register.html" class="btn btn-primary">Sign Up</a>
+                </div>
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="login-link">Login</a>
+                <a href="register.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        
     </header>
         <main role="main" class="pb-3">
             @RenderBody()

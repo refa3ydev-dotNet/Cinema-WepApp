@@ -13,13 +13,22 @@ namespace Business.DTOs.Actors
         [Required]
         public string Bio { get; set; }
 
-        [Required(ErrorMessage = "Profile Picture is required")]
         public IFormFile? ProfilePicture { get; set; }
         public string? ProfilePath { get; set; } // دي هتحط فيها مسار الصورة بعد الرفع
         public string IMDBLink { get; set; }
-        public List<GetAllMoviesDto> MovieDetails { get; set; }
+        public List<GetAllMoviesDto> MovieDetails { get; set; } = new List<GetAllMoviesDto>();
         public DateOnly BirthDate {  get; set; }
         public DateOnly? DeathDate { get; set; }
         public string Nationality { get; set; }
+        public int? Age
+        {
+            get
+            {
+                var endDate=DeathDate??DateOnly.FromDateTime(DateTime.Now);
+                var age= endDate.Year - BirthDate.Year;
+                if (BirthDate > endDate.AddYears(-age)) age--;
+                return age;
+            }
+        }
     }
 }

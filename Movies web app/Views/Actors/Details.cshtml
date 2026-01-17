@@ -6,181 +6,124 @@
     ViewData["Title"] = Model.FullName;
 }
 <link href="~/css/Actor.css" rel="stylesheet" />
-<div class="actor-details-container">
-    <!-- Breadcrumb -->
-    <div class="breadcrumb">
-        <a asp-action="index" asp-controller="Home">Home</a> <pre> > </pre> 
-        <a asp-action="index" asp-controller="Actors" class="breadcrumb-label">Actors</a><pre> > </pre>
-        <span>@Model.FullName</span>
-    </div>
 
-    <!-- Profile Card -->
-    <div class="profile-card">
-        <div class="profile-image">
-            <!-- Placeholder using a div, normally an img -->
-            <div style="width: 100%; height: 100%; background: #222; display: flex; align-items: center; justify-content: center; color: #555;">
-                <img src="@Model.ProfilePath" alt="Profile Image" style="max-width: 100%; max-height: 100%;">
-            </div>
+
+        
+        <!-- Modern Backdrop -->
+        <div class="actor-details-hero-backdrop">
+            <!-- @Model.ProfilePath (blurred) -->
+            <img src="assets/poster_civil_war.png" alt="Backdrop" class="hero-backdrop-img"> 
         </div>
 
-        <div class="profile-info">
-            <div class="profile-header">
-                <h1>@Model.FullName</h1>
-                <div class="admin-controls">
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-admin-edit"><i class="fas fa-pen"></i> Edit</a>
-                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn-admin-delete"><i class="fas fa-trash"></i> Delete</a>
+        <div class="actor-details-container">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a asp-controller="Home" asp-action="Index">Home</a> <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin: 0 0.5rem;"></i>
+                <a asp-controller="Actors" asp-action="Index">Actors</a> <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin: 0 0.5rem;"></i>
+                <span>@Model.FullName</span>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-image">
+                    <!-- Placeholder using a div, normally an img -->
+                    <div style="width: 100%; height: 100%; background: #222; display: flex; align-items: center; justify-content: center; color: #555;">
+                        <img src="@Model.ProfilePath" style="transition: all 0.3s ease-in-out;" alt="Alternate Text" />
+                    </div>
+                </div>
+
+                <div class="profile-info">
+                    <div class="profile-header">
+                        <!-- @Model.FullName -->
+                        <h1>@Model.FullName</h1>
+                        <div class="admin-controls">
+                            <a asp-controller="Actors" asp-action="Edit" asp-route-id="@Model.Id" class="btn-admin-edit" style="text-decoration: none;"><i class="fas fa-pen"></i> Edit</a>
+                            <form asp-controller="Actors" asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                            <button type="button" class="btn-admin-delete"><i class="fas fa-trash"></i> Delete</button>
+                                </form>
+                        </div>
+                    </div>
+
+                    <div class="profile-meta">
+                @if (Model.DeathDate!=null)
+                {
+                        <span><i class="fas fa-birthday-cake"></i> @Model.BirthDate.ToString("MM/dd/yyyy") - <i class="fas fa-skull"></i> Died: @Model.DeathDate.Value.ToString("MM/dd/yyyy") (@Model.Age)</span>
+                    
+                }
+                else
+                {
+
+                        <span><i class="fas fa-birthday-cake"></i> @Model.BirthDate.ToString("MM/dd/yyyy") - (@Model.Age)</span>
+                }
+                <!-- @Model.BirthDate -->
+                        <span class="meta-dot"></span>
+                        <!-- @Model.Nationality -->
+                        <span><i class="fas fa-flag"></i> @Model.Nationality</span>
+                        <span class="meta-dot"></span>
+                        <!-- @Model.DeathDate (Conditional: if (Model.DeathDate.HasValue)) -->
+                        <!-- <span class="meta-dot"></span> -->
+                        
+                        <!-- @Model.IMDBLink -->
+                        <a href="@Model.IMDBLink" target="_blank" class="meta-link"><i class="fab fa-imdb"></i> IMDb Profile</a>
+                    </div>
+
+                    <div class="profile-bio">
+                        <!-- @Model.Bio -->
+                        @Model.Bio
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                    @if (Model.DeathDate.HasValue)
+                    {
+
+                        <span class="stat-label">Death Age</span>
+                            <span class="stat-value">@(Model.DeathDate.Value.Year - Model.BirthDate.Year)</span>
+                    }
+                    else
+                    {
+                    <span class="stat-label">Age</span>
+                            <span class="stat-value">@Model.Age</span>
+                    }
+                    <!-- Derived from Model.MovieDetails.Count -->
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">NATIONALITY</span>
+                            <!-- @Model.Nationality -->
+                            <span class="stat-value">@Model.Nationality</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="profile-meta">
-                <span><i class="fas fa-birthday-cake"></i> @Model.BirthDate.ToString("yyyy-MM-dd") -(@(DateTime.Now.Year - Model.BirthDate.Year) years)  </span>
-                <span class="meta-dot"></span>
-            </div>
-
-            <div class="profile-bio">
-                <p>@Model.Bio</p>
-            </div>
-
-            @* <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-label">KNOWN CREDITS</span>
-                    <span class="stat-value">108</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">CAREER START</span>
-                    <span class="stat-value">1984</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">NATIONALITY</span>
-                    <span class="stat-value">Canadian</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">AWARDS</span>
-                    <span class="stat-value">14 Wins</span>
-                </div>
-            </div> *@
-        </div>
-    </div>
-
-    <!-- Filmography Section -->
+            <!-- Filmography Section -->
+    @if(Model.MovieDetails.Count > 0) { 
     <div class="filmography-section">
-        @if (Model.MovieDetails.Count > 0)
-        {
-        <div class="section-header-custom">
-            <div class="title-with-bar">
-                <h2>Appears In</h2>
-            </div>
-            <a href="#" class="view-all-link">View Full Filmography <i class="fas fa-arrow-right"></i></a>
-        </div>
-            
-        <div class="movies-grid-responsive">
-            <!-- Movie 1 -->
-            @foreach (var movie in Model.MovieDetails)
-            {
-                
-             <div class="movie-card-vertical">
-                <div class="poster-wrapper">
-                    <img src="@movie.PosterUrl" alt="@movie.Name" style="background: #333;">
-                    @* <div class="poster-badge">@movie.</div> *@
+                <div class="section-header-custom">
+                    <div class="title-with-bar">
+                        <h2>Appears In</h2>
+                    </div>
+                    <a href="#" class="view-all-link">View Full Filmography <i class="fas fa-arrow-right"></i></a>
                 </div>
-                <div class="movie-details">
-                    <h3>@movie.Name</h3>
-                    @* <p>as John Wick</p> *@
+
+                <div class="movies-grid-responsive">
+                @foreach (var movie in Model.MovieDetails)
+                {
+                    
+                <!-- Movie Card -->
+                    <div class="movie-card-vertical">
+                        <div class="poster-wrapper">
+                            @* <!-- @movie.PosterPath --> *@
+                            <img src="@movie.PosterUrl" alt="John Wick" style="background: #333;">
+                            <div class="poster-badge">8.5</div>
+                        </div>
+                        <div class="movie-details">
+                            @* <!-- @movie.Title --> *@
+                            <h3>@movie.Name</h3>
+                        </div>
+                    </div>
+                }
                 </div>
             </div>
-            }
+    }
         </div>
-        }
-    </div>
-</div>
-
-@* <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const postersToShow = 3;
-        const carousel = document.getElementById('customCarousel');
-        const wrappers = Array.from(carousel.children);
-        let startIdx = 0;
-
-        function renderCarousel() {
-            if(wrappers.length>0){
-
-            wrappers.forEach((wrapper, i) => {
-                // Calculate the correct position for each poster
-                let idx = (startIdx + i) % wrappers.length;
-                if (i < postersToShow) {
-                    wrappers[idx].style.display = 'flex';
-                } else {
-                    wrappers[idx].style.display = 'none';
-                }
-            });
-            }
-            // Reorder DOM so visible posters are always first
-            for (let i = 0; i < wrappers.length; i++) {
-                carousel.appendChild(wrappers[(startIdx + i) % wrappers.length]);
-            }
-        }
-
-        document.getElementById('carouselPrev').onclick = function() {
-            startIdx = (startIdx - 1 + wrappers.length) % wrappers.length;
-            renderCarousel();
-        };
-        document.getElementById('carouselNext').onclick = function() {
-            startIdx = (startIdx + 1) % wrappers.length;
-            renderCarousel();
-        };
-
-        renderCarousel();
-    });
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: "btn btn-success me-3",
-        cancelButton: "btn btn-danger"
-      },
-      buttonsStyling: false
-    });
-
-
-    // أربط كل فورم حذف بكود SweetAlert
-    document.querySelectorAll('.delete-form').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault(); // امنع الإرسال المؤقتًا
-
-            swalWithBootstrapButtons.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                background: "#1e1e1e", // اللون الغامق للخلفية
-                color: "#f1f1f1",       // اللون الفاتح للنص
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it!",
-                cancelButtonText: "No, cancel!",
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                        swalWithBootstrapButtons.fire({
-                        title: "Deleted!",
-                        text: "Your file has been deleted.",
-                        icon: "success",
-                        background: "#1e1e1e",
-                        color: "#f1f1f1"
-                    }).then(() => {
-                    form.submit(); 
-                });;
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    swalWithBootstrapButtons.fire({
-                        title: "Cancelled",
-                        text: "Your file is safe :)",
-                        icon: "error",
-                        background: "#1e1e1e",
-                        color: "#f1f1f1"
-                    });
-                }
-            });
-        });
-    });
-</script> *@
