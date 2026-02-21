@@ -38,21 +38,36 @@ namespace Movies_web_app.Controllers
             {
                 return View(cinema);
             }
-            string logoImageName = await _imageServises.UploadImageAsync(cinema.Logo, "Cinemas");
-            string backgroundImageName = await _imageServises.UploadImageAsync(cinema.BackgroundPicture, "Cinemas");
             var cinemaModel = new CreateCinemaDto
             {
-                LogoPath = "/Images/Cinemas/" + logoImageName,
                 Name = cinema.Name,
                 Description = cinema.Description,
-                BackgroundPath = "/Images/Cinemas/" + backgroundImageName,
                 Address = cinema.Address
             };
+            if(cinema.Logo != null)
+            {
+                string logoImageName = await _imageServises.UploadImageAsync(cinema.Logo, "Cinemas");
+                cinemaModel.LogoPath = "/Images/Cinemas/" + logoImageName;
+            }
+            if (cinema.BackgroundPicture != null)
+            {
+                string backgroundImageName = await _imageServises.UploadImageAsync(cinema.BackgroundPicture, "Cinemas");
+                cinemaModel.BackgroundPath = "/Images/Cinemas/" + backgroundImageName;
+            }
+            if (cinema.Logo==null)
+            {
+                cinemaModel.LogoPath = cinema.LogoPath;
+            }
+            if (cinema.BackgroundPicture == null)
+            {
+                cinemaModel.BackgroundPath = cinema.BackgroundPath;
+            }
             await _cinemaManager.CreateCinemaAsync(cinemaModel);
             return RedirectToAction("Index");
         }
         public async Task<IActionResult> Details(int id)
         {
+            if(id<=0) return View("NotFound");
             var cinema = await _cinemaManager.GetCinemaByIdAsync(id);
             if (cinema == null) return View("NotFound");
             return View(cinema);
@@ -74,35 +89,54 @@ namespace Movies_web_app.Controllers
             return View(dto);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(UpdateCinemaDto cinema)
+        public async Task<IActionResult> Edit(UpdateCinemaDto dto)
         {
             if (!ModelState.IsValid)
             {
-                return View(cinema);
+                return View(dto);
             }
-            if (cinema.Logo != null)
+            var exsistingCinema = await _cinemaManager.GetCinemaByIdAsync(dto.Id);
+            if (exsistingCinema == null) return View("NotFound");
+            if (dto.Logo != null)
             {
-                if (!string.IsNullOrEmpty(cinema.LogoPath))
+                if (!string.IsNullOrEmpty(dto.LogoPath) && !exsistingCinema.LogoPath.StartsWith("http"))
                 {
-                    await _imageServises.DeleteImageAsync(cinema.LogoPath);
+                    await _imageServises.DeleteImageAsync(exsistingCinema.LogoPath);
                 }
-                string logoImageName = await _imageServises.UploadImageAsync(cinema.Logo, "Cinemas");
-                cinema.LogoPath = "/Images/Cinemas/" + logoImageName;
+
+                string logoImageName = await _imageServises.UploadImageAsync(dto.Logo, "Cinemas");
+                dto.LogoPath = "/Images/Cinemas/" + logoImageName;
 
             }
-            if (cinema.BackgroundPicture != null)
+            else if(!string.IsNullOrEmpty(dto.LogoPath ) && dto.LogoPath != exsistingCinema.LogoPath)
             {
-                if (!string.IsNullOrEmpty(cinema.BackgroundPath))
+                if(!string.IsNullOrEmpty(exsistingCinema.LogoPath) && !exsistingCinema.LogoPath.StartsWith("http"))
                 {
-                    await _imageServises.DeleteImageAsync(cinema.BackgroundPath);
+                    await _imageServises.DeleteImageAsync(exsistingCinema.LogoPath);
                 }
-                string backgroundImageName = await _imageServises.UploadImageAsync(cinema.BackgroundPicture, "Cinemas");
-                cinema.BackgroundPath = "/Images/Cinemas/" + backgroundImageName;
-
             }
 
-            await _cinemaManager.UpdateCinemaAsync(cinema);
-            return RedirectToAction("Details", new { id = cinema.Id });
+            if(dto.BackgroundPicture != null)
+            {
+                if (!string.IsNullOrEmpty(exsistingCinema.BackgroundPath) && !exsistingCinema.BackgroundPath.StartsWith("http"))
+                {
+                    await _imageServises.DeleteImageAsync(exsistingCinema.BackgroundPath);
+                }
+
+                    string backgroundImageName = await _imageServises.UploadImageAsync(dto.BackgroundPicture, "Cinemas");
+                    dto.BackgroundPath = "/Images/Cinemas/" + backgroundImageName;
+            }
+            else if(!string.IsNullOrEmpty(dto.BackgroundPath) && dto.BackgroundPath != exsistingCinema.BackgroundPath)
+            {
+                if (!string.IsNullOrEmpty(exsistingCinema.BackgroundPath) && !exsistingCinema.BackgroundPath.StartsWith("http"))
+                {
+                    await _imageServises.DeleteImageAsync(exsistingCinema.BackgroundPath);
+                }
+            }
+
+
+            await _cinemaManager.UpdateCinemaAsync(dto);
+            return RedirectToAction("Details", new { id = dto.Id });
 
         }
         [HttpPost]

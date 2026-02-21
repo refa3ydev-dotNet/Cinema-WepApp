@@ -7,164 +7,226 @@
     var BackgroundPath = Model.BackgroundPath;
 }
 
-<link href="~/css/Actor/Details.css" rel="stylesheet" />
-@if(!string.IsNullOrEmpty(BackgroundPath))
-{
-    <style>
-        body {
-        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('@BackgroundPath') center / cover no-repeat;
-        background-attachment: fixed; 
-        height: 100vh; 
-        margin: 0;
-        }
-    </style>
-
-}
-
-<div class="actor-card">
-    <div class="actor-card-header">
-        <img src="@Model.LogoPath" class="actor-photo" alt="@Model.Name">
-        <div class="actor-details">
-            <h3 class="actor-name">@Model.Name</h3>
-            <h5 class="actor-title">Description</h5>
-            <p class="actor-bio">@Model.Description</p>
-            <br />
-            <h5 class="actor-title">Address</h5>
-            <p class="actor-bio">@Model.Address</p>
+<link href="~/css/Cinemas/Cinema.css" rel="stylesheet" asp-append-version="true"/>
+<section class="details-hero">
+    <!-- BackgroundPath -->
+    <img src="@Model.BackgroundPath" alt="@Model.Name" class="details-hero-img">
+    <div class="details-hero-overlay">
+        <div class="details-hero-content">
+            <div class="details-left">
+                <div class="details-badge-row">
+                    <span class="status-badge">OPEN NOW</span>
+                </div>
+                <div class="details-title" style="display: flex; align-items: center; gap: 1.5rem;">
+                    <!-- LogoPath -->
+                    <img src="@Model.LogoPath"
+                         alt="@Model.Name"
+                         style="width: 100px; height: 100px; object-fit: contain; border-radius: 50%; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"
+                         class="cinema-logo">
+                    <!-- Name -->
+                    <h1>@Model.Name</h1>
+                </div>
+                <!-- Description -->
+                <p class="details-subtitle">@Model.Description</p>
+            </div>
+            <div class="details-actions">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-hero-secondary" style="text-decoration: none;">
+                    <i class="fas fa-edit"></i> Edit Cinema
+                </a>
+                <button class="btn-hero-primary"><i class="fas fa-ticket-alt"></i> View Schedule</button>
+            </div>
         </div>
     </div>
-    <div class="custom-carousel-container">
-        @if (Model.MovieDetails.Count > 3)
+</section>
+
+<!-- Glassmorphism Info Grid -->
+<section class="details-grid">
+    <!-- Location Card -->
+    <div class="glass-card">
+        <div class="info-icon-large">
+            <i class="fas fa-map-marker-alt"></i>
+        </div>
+        <h4>Location</h4>
+        <!-- Address -->
+        <p>@Model.Address</p>
+        <a href="https://www.google.com/maps/search/?api=1&query=@Uri.EscapeDataString(@Model.Address)" target="_blank" rel="noopener noreferrer" class="btn-text-link">Get Directions <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <!-- Contact Card -->
+    <div class="glass-card">
+        <div class="info-icon-large">
+            <i class="fas fa-phone-alt"></i>
+        </div>
+        <h4>Contact & Hours</h4>
+        <p>Box Office: (555) 123-4567<br>Open Daily: 10:00 AM - 2:00 AM</p>
+        <a href="#" class="btn-text-link">Call Cinema <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <!-- Map Card -->
+    <div class="glass-card map-card-container" style="padding: 0; overflow: hidden; position: relative;">
+        @if (!string.IsNullOrEmpty(Model.Address))
         {
-            <button class="carousel-arrow left" id="carouselPrev">&#8592;</button>
-        }
-        @if (Model.MovieDetails.Count == 0)
-        {
-            <H3>No Movies</H3>
+            <iframe src="https://maps.google.com/maps?q=@Uri.EscapeDataString(Model.Address)&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    width="100%" height="100%" style="border:0; position: absolute; inset: 0;" allowfullscreen=""
+                    loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
         }
         else
         {
-            <div class="custom-carousel" id="customCarousel">
-                @foreach (var poster in Model.MovieDetails)
-                {
-                    <div class="carousel-poster-wrapper">
-                        <img src="@poster.PosterUrl" class="carousel-poster" alt="Poster">
-                        <div class="poster-play-center">
-                            <svg width="54" height="54" viewBox="0 0 54 54">
-                                <circle cx="27" cy="27" r="26" fill="rgba(0,0,0,0.42)" stroke="#fff" stroke-width="2" />
-                                <polygon points="22,17 38,27 22,37" fill="#fff" />
-                            </svg>
-                        </div>
-                        <div class="poster-titlebar">
-                            <span class="poster-title">@poster.Name</span>
-                        </div>
-                    </div>
-                }
+            <div style="display:flex; justify-content:center; align-items:center; height:100%; width:100%; background:#eee; color:#888; position: absolute; inset: 0;">
+                <p>No Address</p>
             </div>
-
         }
-        @if (Model.MovieDetails.Count > 3)
-        {
-
-            <button class="carousel-arrow right" id="carouselNext">&#8594;</button>
-        }
+        <button class="btn-map-float" style="pointer-events: none;">Open Map</button>
     </div>
-    <div class="d-flex justify-content-between mt-2">
-        <a asp-controller="Cinemas" asp-action="Index" class="btn btn-outline-secondary"> <i class="bi bi-film"></i>All Cinemas</a>
-        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="delete-form">
-            <button type="submit" class="btn btn-danger">
-                <i class="bi bi-trash-fill"></i> Delete
-            </button>
-        </form>
+</section>
 
-        <a asp-controller="Cinemas" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary gap-2"><i class="bi bi-pencil"></i>Edit</a>
+@* <!-- Main Content Layout -->
+<div class="section">
+
+    <!-- Now Showing -->
+    <div class="section-header" style="border-left: none; padding-left: 0;">
+        <h2 class="section-title">Now Showing</h2>
+        <div style="flex-grow: 1;"></div>
+        <div class="nav-arrows" style="display: flex; gap: 0.5rem;">
+            <button class="nav-arrow" id="btn-scroll-left"><i class="fas fa-chevron-left"></i></button>
+            <button class="nav-arrow" id="btn-scroll-right"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <div class="movie-carousel-container" id="now-showing-carousel"
+         style="margin-top: 2rem; margin-bottom: 2rem; display: flex; overflow-x: auto; gap: 2rem; scroll-snap-type: x mandatory; padding-bottom: 1rem; scrollbar-width: none;">
+        <!-- MovieDetails (List<GetAllMoviesDto>) -->
+        <!-- Movie -->
+        <div class="movie-card-vertical">
+            <div class="poster-wrapper">
+                <img src="assets/poster_civil_war.png" alt="Dune">
+                <span class="age-badge">PG-13</span>
+            </div>
+            <div class="movie-details">
+                <h3>Dune: Part Two</h3>
+                <p>Sci-Fi • 2h 46m</p>
+            </div>
+        </div>
+
+        <!-- Movie -->
+        <div class="movie-card-vertical">
+            <div class="poster-wrapper">
+                <img src="assets/poster_godzilla_x_kong.png" alt="Furiosa">
+                <span class="age-badge red-badge">R</span>
+            </div>
+            <div class="movie-details">
+                <h3>Furiosa: A Mad Max Saga</h3>
+                <p>Action • 2h 28m</p>
+            </div>
+        </div>
+
+        <!-- Movie -->
+        <div class="movie-card-vertical">
+            <div class="poster-wrapper">
+                <img src="assets/poster_last_sunset.png" alt="Inside Out 2">
+                <span class="age-badge blue-badge">PG</span>
+            </div>
+            <div class="movie-details">
+                <h3>Inside Out 2</h3>
+                <p>Animation • 1h 36m</p>
+            </div>
+        </div>
+
+        <!-- Movie -->
+        <div class="movie-card-vertical">
+            <div class="poster-wrapper">
+                <img src="assets/poster_whispering.png" alt="The Fall Guy">
+                <span class="age-badge">PG-13</span>
+            </div>
+            <div class="movie-details">
+                <h3>The Fall Guy</h3>
+                <p>Action/Comedy • 2h 6m</p>
+            </div>
+        </div>
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const postersToShow = 3;
-        const carousel = document.getElementById('customCarousel');
-        const wrappers = Array.from(carousel.children);
-        let startIdx = 0;
+<!-- Coming Soon -->
+<div class="section">
+    <div class="section-header" style="border-left: none; padding-left: 0;">
+        <h2 class="section-title">Coming Soon</h2>
+        <div style="flex-grow: 1;"></div>
+        <div class="nav-arrows" style="display: flex; gap: 0.5rem;">
+            <button class="nav-arrow" id="btn-scroll-left-new"><i class="fas fa-chevron-left"></i></button>
+            <button class="nav-arrow" id="btn-scroll-right-new"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
 
-        function renderCarousel() {
-            wrappers.forEach((wrapper, i) => {
-                // Calculate the correct position for each poster
-                let idx = (startIdx + i) % wrappers.length;
-                if (i < postersToShow) {
-                    wrappers[idx].style.display = 'flex';
-                } else {
-                    wrappers[idx].style.display = 'none';
-                }
+    <div class="movie-carousel-container" id="new-showing-carousel"
+         style="margin-top: 2rem; margin-bottom: 2rem; display: flex; overflow-x: auto; gap: 2rem; scroll-snap-type: x mandatory; padding-bottom: 1rem; scrollbar-width: none;">
+
+        <!-- Movie -->
+        <div class="movie-card-vertical">
+            <div class="poster-wrapper">
+                <img src="assets/poster_cyber_odyssey.png" alt="Cyber Odyssey">
+                <span class="age-badge red-badge">R</span>
+            </div>
+            <div class="movie-details">
+                <h3>Cyber Odyssey</h3>
+                <p>Sci-Fi • 2h 15m</p>
+            </div>
+        </div>
+
+        <!-- Movie -->
+        <div class="movie-card-vertical">
+            <div class="poster-wrapper">
+                <img src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg"
+                     alt="Deadpool & Wolverine">
+                <span class="age-badge red-badge">R</span>
+            </div>
+            <div class="movie-details">
+                <h3>Deadpool & Wolverine</h3>
+                <p>Action/Comedy • 2h 7m</p>
+            </div>
+        </div>
+    </div> *@
+</div>
+
+</main>
+
+
+<!-- End Layout Footer -->
+<script src="site.js"></script>
+
+<!-- Carousel Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const carousel = document.getElementById('now-showing-carousel');
+        const btnLeft = document.getElementById('btn-scroll-left');
+        const btnRight = document.getElementById('btn-scroll-right');
+
+        const carouselNew = document.getElementById('new-showing-carousel');
+        const btnLeftNew = document.getElementById('btn-scroll-left-new');
+        const btnRightNew = document.getElementById('btn-scroll-right-new');
+
+        if (carousel && btnLeft && btnRight) {
+            const scrollAmount = 200; // Scroll distance
+
+            btnLeft.addEventListener('click', () => {
+                carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
             });
-            // Reorder DOM so visible posters are always first
-            for (let i = 0; i < wrappers.length; i++) {
-                carousel.appendChild(wrappers[(startIdx + i) % wrappers.length]);
-            }
+
+            btnRight.addEventListener('click', () => {
+                carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            });
         }
 
-        document.getElementById('carouselPrev').onclick = function() {
-            startIdx = (startIdx - 1 + wrappers.length) % wrappers.length;
-            renderCarousel();
-        };
-        document.getElementById('carouselNext').onclick = function() {
-            startIdx = (startIdx + 1) % wrappers.length;
-            renderCarousel();
-        };
+        if (carouselNew && btnLeftNew && btnRightNew) {
+            const scrollAmount = 200; // Scroll distance
 
-        renderCarousel();
-    });
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: "btn btn-success me-3",
-        cancelButton: "btn btn-danger"
-      },
-      buttonsStyling: false
-    });
-
-
-    // أربط كل فورم حذف بكود SweetAlert
-    document.querySelectorAll('.delete-form').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault(); // امنع الإرسال المؤقتًا
-
-            swalWithBootstrapButtons.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                background: "#1e1e1e", // اللون الغامق للخلفية
-                color: "#f1f1f1",       // اللون الفاتح للنص
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it!",
-                cancelButtonText: "No, cancel!",
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                        swalWithBootstrapButtons.fire({
-                        title: "Deleted!",
-                        text: "Your file has been deleted.",
-                        icon: "success",
-                        background: "#1e1e1e",
-                        color: "#f1f1f1"
-                    }).then(() => {
-                    form.submit();
-                });;
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    swalWithBootstrapButtons.fire({
-                        title: "Cancelled",
-                        text: "Your file is safe :)",
-                        icon: "error",
-                        background: "#1e1e1e",
-                        color: "#f1f1f1"
-                    });
-                }
+            btnLeftNew.addEventListener('click', () => {
+                carouselNew.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
             });
-        });
+
+            btnRightNew.addEventListener('click', () => {
+                carouselNew.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            });
+        }
     });
 </script>

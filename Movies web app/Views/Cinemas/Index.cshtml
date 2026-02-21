@@ -8,8 +8,8 @@
     ViewData["Title"] = "Cinemas";
 }
 
-<link href="~/css/Actor/list.css" rel="stylesheet" />
-<h1 class="text-danger text-center mt-5">Welcome in <span class="h1">Cinema</span> page</h1>
+<link href="~/css/Cinemas/Cinema.css" rel="stylesheet" asp-append-version="true"/>
+@* <h1 class="text-danger text-center mt-5">Welcome in <span class="h1">Cinema</span> page</h1>
 <div class="row text-white">
     <div class="box row">
         @foreach (var item in Model.Items)
@@ -68,4 +68,79 @@
         </ul>
     </nav>
 
-</div>
+</div> *@
+<!-- Hero Section -->
+<section class="cinemas-hero">
+    <div class="hero-content">
+        <h1>Discover Our <br><span class="highlight">Locations</span></h1>
+        <p>Find the nearest cinema and experience the magic of movies in our premium theaters equipped with Dolby Atmos and IMAX.</p>
+
+        <div class="cinema-search-container">
+            <div class="search-icon-wrapper"><i class="fas fa-search"></i></div>
+            <input type="text" class="cinema-search-input" placeholder="Search cinemas by name or city...">
+            <button class="btn-search-pill">Search</button>
+        </div>
+    </div>
+</section>
+
+<!-- Cinemas List Section -->
+<section class="cinemas-section">
+    <div class="cinemas-header">
+        <div class="header-left">
+            <h2>All Cinemas</h2>
+            <p>Showing 6 locations nearby</p>
+        </div>
+
+        <div class="header-actions">
+            <a asp-action="Create" class="btn-add-cinema" style="text-decoration:none;"><i class="fas fa-plus"></i> Add New Cinema</a>
+        </div>
+    </div>
+
+    <!-- Cinemas Grid -->
+    <div class="cinemas-grid">
+        <!-- Card 1: Grand Central -->
+        @foreach (var item in Model.Items)
+        {
+            
+        <div class="cinema-card">
+            <div class="card-image-container">
+                <img src="@item.BackgroundPath" alt="@item.Name">
+                <div class="rating-badge"><i class="fas fa-star"></i> 4.8</div>
+            </div>
+            <div class="card-content">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h3>@item.Name</h3>
+                    <div class="card-icons gap-2 d-flex">
+                        <i class="fas fa-video"></i>
+                        <i class="fas fa-volume-up"></i>
+                    </div>
+                </div>
+                <div class="card-location">
+                        <i class="fas fa-map-marker-alt position-relative mt-1" ></i> @item.Address
+                </div>
+                <p class="card-description">
+                        @(item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description)
+                </p>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn-card-action" style="display:block; text-align:center; text-decoration:none;">View Details</a>
+            </div>
+        </div>
+        }
+
+    </div>
+
+    <!-- Pagination (Visual) -->
+    @if(Model.TotalPages > 1)
+    {
+        
+    <div class="pagination">
+        <button class="page-arrow"><i class="fas fa-chevron-left"></i></button>
+        <a href="#" class="page-link active">1</a>
+        <a href="#" class="page-link">2</a>
+        <a href="#" class="page-link">3</a>
+        <span style="color: grey;">...</span>
+        <a href="#" class="page-link">8</a>
+        <button class="page-arrow"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    }
+</section>
+

@@ -13,7 +13,7 @@ namespace Core
         public string Name { get; set; }
         [Display(Name = "Cinema Logo")]
         [Required(ErrorMessage = "Cinema Logo is required")]
-        public string Logo { get; set; }
+        public string? Logo { get; set; }
         [Display(Name = "Cinema Description")]
         [Required(ErrorMessage = "Cinema Description is required")]
         public string Description { get; set; }
@@ -22,7 +22,7 @@ namespace Core
         public string Address { get; set; }
         [Display(Name = "Cinema Background Picture")]
         [Required(ErrorMessage = "Cinema Background Picture is required")]
-        public string BackgroundPicture { get; set; }
+        public string? BackgroundPicture { get; set; }
 
         //Relationships
         public ICollection<CinemaMovie> CinemaMovies { get; set; } = new List<CinemaMovie>();

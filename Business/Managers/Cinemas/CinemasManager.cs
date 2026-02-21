@@ -31,8 +31,9 @@ namespace Business.Managers.Cinemas
         }
         public async Task<GetCinemaByIdDto> GetCinemaByIdAsync(int id)
         {
+            if (id<=0) return null;
             var cinema = await _cinemaRepository.GetCinemaByIdAsync(id);
-            if (cinema == null) throw new Exception("Cinema not found");
+            if (cinema == null) return null;
             return cinema.ToDto();
         }
         public async Task UpdateCinemaAsync(UpdateCinemaDto dto)
