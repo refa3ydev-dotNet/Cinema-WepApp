@@ -69,7 +69,7 @@ namespace DataAccess.Contexts
             });
             modelBuilder.Entity<ProducerMovie>()
                 .HasOne(m => m.Movie)
-                .WithMany(dm => dm.producerMovies)
+                .WithMany(dm => dm.ProducerMovies)
                 .HasForeignKey(m => m.MovieId);
             modelBuilder.Entity<ProducerMovie>()
                 .HasOne(m => m.Producer)

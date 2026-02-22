@@ -43,20 +43,12 @@ namespace DataAccess.Repositories.MOVIE
         }
         public async Task<List<Movie>> GetAllMoviesAsync()
         {
-            var movs = await _context.Movies.Include(x => x.ActorMovies)
-                .ThenInclude(y => y.Actor)
-                .Include(x => x.CinemaMovies)
-                .ThenInclude(y => y.Cinema)
+            var movs = await _context.Movies
+                .Include(x => x.ActorMovies).ThenInclude(y => y.Actor)
+                .Include(x => x.CinemaMovies).ThenInclude(y => y.Cinema)
+                .Include(x => x.Categories)
                 .ToListAsync();
-            if (movs != null)
-            {
-
-                return movs;
-            }
-            else
-            {
-                return null;
-            }
+                return movs ?? new List<Movie>();
         }
         public async Task AddMovieAsync(Movie movie)
         {
@@ -66,18 +58,36 @@ namespace DataAccess.Repositories.MOVIE
 
         public async Task UpdateMovieAsync(Movie movie)
         {
-            var mov = await _context.Movies.FindAsync(movie.Id);
-            if (mov != null)
+            var dbmovie = await _context.Movies
+                .Include(x => x.ActorMovies)
+                .Include(x => x.CinemaMovies)
+                .Include(x => x.Categories)
+                .Include(x => x.ProducerMovies)
+                .Include(x => x.DirectorMovies)
+                .FirstOrDefaultAsync(x => x.Id == movie.Id);
+
+            if (dbmovie != null)
             {
-                if (!string.IsNullOrEmpty(mov.PosterImg) && movie.PosterImg != mov.PosterImg)
+                _context.Entry(dbmovie).CurrentValues.SetValues(movie);
+                dbmovie.Categories.Clear();
+                foreach (var category in movie.Categories)
                 {
-                    var OldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "Movies", Path.GetFileName(mov.PosterImg));
-                    if (File.Exists(OldImagePath))
-                    {
-                        System.IO.File.Delete(OldImagePath);
-                    }
+                    dbmovie.Categories.Add(category);
                 }
-                _context.Entry(mov).CurrentValues.SetValues(movie);
+
+                _context.ActorMovies.RemoveRange(dbmovie.ActorMovies);
+                dbmovie.ActorMovies = movie.ActorMovies;
+
+                _context.CinemaMovies.RemoveRange(dbmovie.CinemaMovies);
+                dbmovie.CinemaMovies = movie.CinemaMovies;
+
+                _context.ProducerMovies.RemoveRange(dbmovie.ProducerMovies);
+                dbmovie.ProducerMovies = movie.ProducerMovies;
+
+                _context.DirectorMovies.RemoveRange(dbmovie.DirectorMovies);
+                dbmovie.DirectorMovies = movie.DirectorMovies;
+
+                await _context.SaveChangesAsync();
             }
             else
             {
@@ -88,21 +98,33 @@ namespace DataAccess.Repositories.MOVIE
                 }
 
             }
-            await _context.SaveChangesAsync();
         }
         public async Task DeleteMovieAsync(int id)
         {
             var mov = await _context.Movies.FindAsync(id);
             if (mov != null)
             {
+                string[] imageToDelete = {mov.PosterImg,mov.BackgroundImg};
+                foreach (var image in imageToDelete)
+                {
+                    if (!string.IsNullOrEmpty(image) && !image.StartsWith("http"))
+                    {
+                        var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", image.TrimStart('/'));
+
+                        if (File.Exists(imagePath))
+                        {
+                            File.Delete(imagePath);
+                        }
+                    }
+                }
                 _context.Movies.Remove(mov);
+            await _context.SaveChangesAsync();
 
             }
             else
             {
                 return;
             }
-            await _context.SaveChangesAsync();
         }
 
         public async Task<List<Movie>> SearchByNameAsync(string name)
@@ -115,10 +137,10 @@ namespace DataAccess.Repositories.MOVIE
         }
         public async Task<PaginationResult<Movie>> GetPagedMoviesAsync(int page, int pageSize)
         {
-            var Query = _context.Movies.Include(m => m.CinemaMovies)
-                .ThenInclude(c => c.Cinema)
-                .Include(x => x.ActorMovies)
-                .ThenInclude(y => y.Actor);
+            var Query = _context.Movies
+                .Include(m => m.CinemaMovies).ThenInclude(c => c.Cinema)
+                .Include(x => x.ActorMovies).ThenInclude(y => y.Actor)
+                .Include(x => x.Categories);
             var totalCount = await _context.Movies.CountAsync();
             var TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 

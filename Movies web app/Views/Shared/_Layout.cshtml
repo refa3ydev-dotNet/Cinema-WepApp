@@ -31,7 +31,112 @@
     <!-- Navbar -->
     <header class="main-header">
         <div class="logo">
-            <a class="d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/Images/logo.png" alt="ZCinema" width="40"/> ZCINEMA</a>
+            <a class="d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 140" width="65%" height="100%">
+                    <defs>
+                        <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FF3366" />
+                            <stop offset="100%" stop-color="#E50914" />
+                        </linearGradient>
+
+                        <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFFFFF" />
+                            <stop offset="100%" stop-color="#B0B0C5" />
+                        </linearGradient>
+
+                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+
+                        <mask id="ticketHoles">
+                            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                            <circle cx="25" cy="67" r="8" fill="black" />
+                            <circle cx="80" cy="67" r="8" fill="black" />
+                        </mask>
+                    </defs>
+
+                    <style>
+                        /* تنسيق كلمة Flick */
+                        .text-flick {
+                            font-family: 'Segoe UI', system-ui, sans-serif;
+                            font-weight: 900;
+                            font-size: 58px;
+                            fill: url(#silverGrad);
+                            font-style: italic;
+                            letter-spacing: -1px;
+                        }
+
+                        /* تنسيق كلمة It */
+                        .text-it {
+                            font-family: 'Segoe UI', system-ui, sans-serif;
+                            font-weight: 900;
+                            font-size: 58px;
+                            fill: url(#redGrad);
+                            font-style: italic;
+                        }
+
+                        /* الخط مخفي في الوضع الطبيعي */
+                        .swoosh {
+                            stroke-dasharray: 400;
+                            stroke-dashoffset: 400;
+                            opacity: 0;
+                        }
+
+                        /* تفعيل حركة الخط فقط عند التمرير (Hover) */
+                        svg:hover .swoosh {
+                            animation: flickAnim 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                        }
+
+                        /* أنيميشن الأيقونة الطافية مستمر بهدوء */
+                        .ticket-icon {
+                            transform-origin: 50px 70px;
+                            animation: floatAnim 4s ease-in-out infinite;
+                        }
+
+                        @@keyframes flickAnim {
+                            0% {
+                                stroke-dashoffset: 400;
+                                opacity: 0;
+                            }
+
+                            15% {
+                                opacity: 1;
+                            }
+
+                            70% {
+                                stroke-dashoffset: 0;
+                                opacity: 1;
+                            }
+
+                            100% {
+                                stroke-dashoffset: 0;
+                                opacity: 0;
+                            }
+                        }
+
+                        @@keyframes floatAnim {
+                            0%, 100% {
+                                transform: translateY(0) rotate(-4deg);
+                            }
+
+                            50% {
+                                transform: translateY(-6px) rotate(4deg);
+                            }
+                        }
+                    </style>
+
+                    <g class="ticket-icon">
+                        <rect x="25" y="40" width="55" height="55" rx="8" fill="none" stroke="url(#redGrad)" stroke-width="5" mask="url(#ticketHoles)" />
+                        <path d="M 42 52 L 65 67 L 42 82 Z" fill="url(#silverGrad)" />
+                    </g>
+
+                    <path class="swoosh" d="M 95 105 Q 230 130 380 90" fill="none" stroke="url(#redGrad)" stroke-width="4" stroke-linecap="round" filter="url(#glow)" />
+
+                    <text x="100" y="85" class="text-flick">Flick</text>
+                    <text x="240" y="85" class="text-it" filter="url(#glow)">It</text>
+                </svg>
+            </a>
         </div>
             <div class="mobile-menu-toggle">
                 <i class="fas fa-bars"></i>
@@ -89,7 +194,112 @@
         <div class="footer-content">
             <div class="footer-brand">
                 <div class="logo">
-                    <i class="fas fa-ticket-alt"></i> CINEPLEX
+                    <a class="d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 140" width="65%" height="100%">
+                            <defs>
+                                <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FF3366" />
+                                    <stop offset="100%" stop-color="#E50914" />
+                                </linearGradient>
+
+                                <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF" />
+                                    <stop offset="100%" stop-color="#B0B0C5" />
+                                </linearGradient>
+
+                                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="5" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+
+                                <mask id="ticketHoles">
+                                    <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                                    <circle cx="25" cy="67" r="8" fill="black" />
+                                    <circle cx="80" cy="67" r="8" fill="black" />
+                                </mask>
+                            </defs>
+
+                            <style>
+                                /* تنسيق كلمة Flick */
+                                .text-flick {
+                                    font-family: 'Segoe UI', system-ui, sans-serif;
+                                    font-weight: 900;
+                                    font-size: 58px;
+                                    fill: url(#silverGrad);
+                                    font-style: italic;
+                                    letter-spacing: -1px;
+                                }
+
+                                /* تنسيق كلمة It */
+                                .text-it {
+                                    font-family: 'Segoe UI', system-ui, sans-serif;
+                                    font-weight: 900;
+                                    font-size: 58px;
+                                    fill: url(#redGrad);
+                                    font-style: italic;
+                                }
+
+                                /* الخط مخفي في الوضع الطبيعي */
+                                .swoosh {
+                                    stroke-dasharray: 400;
+                                    stroke-dashoffset: 400;
+                                    opacity: 0;
+                                }
+
+                                /* تفعيل حركة الخط فقط عند التمرير (Hover) */
+                                svg:hover .swoosh {
+                                    animation: flickAnim 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                                }
+
+                                /* أنيميشن الأيقونة الطافية مستمر بهدوء */
+                                .ticket-icon {
+                                    transform-origin: 50px 70px;
+                                    animation: floatAnim 4s ease-in-out infinite;
+                                }
+
+                                @@keyframes flickAnim {
+                                    0% {
+                                        stroke-dashoffset: 400;
+                                        opacity: 0;
+                                    }
+
+                                    15% {
+                                        opacity: 1;
+                                    }
+
+                                    70% {
+                                        stroke-dashoffset: 0;
+                                        opacity: 1;
+                                    }
+
+                                    100% {
+                                        stroke-dashoffset: 0;
+                                        opacity: 0;
+                                    }
+                                }
+
+                                @@keyframes floatAnim {
+                                    0%, 100% {
+                                        transform: translateY(0) rotate(-4deg);
+                                    }
+
+                                    50% {
+                                        transform: translateY(-6px) rotate(4deg);
+                                    }
+                                }
+                            </style>
+
+                            <g class="ticket-icon">
+                                <rect x="25" y="40" width="55" height="55" rx="8" fill="none" stroke="url(#redGrad)" stroke-width="5" mask="url(#ticketHoles)" />
+                                <path d="M 42 52 L 65 67 L 42 82 Z" fill="url(#silverGrad)" />
+                            </g>
+
+                            <path class="swoosh" d="M 95 105 Q 230 130 380 90" fill="none" stroke="url(#redGrad)" stroke-width="4" stroke-linecap="round" filter="url(#glow)" />
+
+                            <text x="100" y="85" class="text-flick">Flick</text>
+                            <text x="240" y="85" class="text-it" filter="url(#glow)">It</text>
+                        </svg>
+                    </a>
                 </div>
                 <p>Experience the magic of movies in the most immersive way possible. Comfort, technology, and service combined.</p>
                 <div class="social-links">

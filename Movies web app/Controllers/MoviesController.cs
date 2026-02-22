@@ -88,7 +88,7 @@ namespace Movies_web_app.Controllers
 
             if (!ModelState.IsValid)
             {
-                await populatesDropDowns(movie.ActorsIds, movie.CinemasIds, movie.CategoryIds);
+                await populatesDropDowns(movie.ActorsIds, movie.CinemasIds, movie.ProducerIds, movie.CategoryIds);
                 var errors = ModelState
                     .Where(m => m.Value.Errors.Any())
                     .Select(m => new
@@ -100,23 +100,34 @@ namespace Movies_web_app.Controllers
 
                 return View(movie);
             }
-            string PosterImgName = await _imageServises.UploadImageAsync(movie.PosterImg, "Movies");
-            string BackgroundImgName = await _imageServises.UploadImageAsync(movie.BackgroundImg, "Movies");
             var movieDto = new CreateMovieDto
             {
-                PosterUrl = "/Images/Movies/" + PosterImgName,
-                BackgroundUrl = "/Images/Movies/" + BackgroundImgName,
                 Name = movie.Name,
                 Description = movie.Description,
                 Price = movie.Price,
                 CategoryIds = movie.CategoryIds,
                 Language = movie.Language,
                 Translation = movie.Translation,
-                ActorsIds = new List<int>(),
-                CinemasIds = new List<int>(),
-                ProducerIds = new List<int>()
+
+                ActorsIds = movie.ActorsIds ?? new List<int>(),
+                CinemasIds = movie.CinemasIds ?? new List<int>(),
+                ProducerIds = movie.ProducerIds ?? new List<int>()
 
             };
+            if (movie.PosterImg != null)
+            {
+
+                string PosterImgName = await _imageServises.UploadImageAsync(movie.PosterImg, "Movies");
+                movieDto.PosterUrl = "/Images/Movies/" + PosterImgName;
+            }
+            else if (movie.PosterUrl != null) movieDto.PosterUrl = movie.PosterUrl;
+
+            if (movie.BackgroundImg != null)
+            {
+                string BackgroundImgName = await _imageServises.UploadImageAsync(movie.BackgroundImg, "Movies");
+                movieDto.BackgroundUrl = "/Images/Movies/" + BackgroundImgName;
+            }
+            else if (movie.BackgroundUrl != null) movieDto.BackgroundUrl = movie.BackgroundUrl;
 
             await _movieManager.CreateMovieAsync(movieDto);
             return RedirectToAction("Index");
@@ -142,7 +153,7 @@ namespace Movies_web_app.Controllers
             {
                 return View("NotFound");
             }
-            await populatesDropDowns();
+            await populatesDropDowns(movie.ActorsIds, movie.CinemasIds, movie.ProducerIds, movie.CategoryIds);
             var Dto = new UpdateMovieDto
             {
                 Name = movie.Name,
@@ -160,7 +171,75 @@ namespace Movies_web_app.Controllers
             return View(Dto);
 
         }
+        [HttpPost]
+        public async Task<IActionResult> Edit(UpdateMovieDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                await populatesDropDowns(dto.ActorsIds, dto.CinemasIds, dto.ProducerIds, dto.CategoryIds);
+                var errors = ModelState
+                    .Where(m => m.Value.Errors.Any())
+                    .Select(m => new
+                    {
+                        Key = m.Key,
+                        Errors = m.Value.Errors.Select(e => e.ErrorMessage)
+                    }).ToList();
+                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(errors));
+                return View(dto);
+            }
+            var existingMovie = await _movieManager.GetMovieByIdAsync(dto.Id);
+            if (existingMovie == null) return View("NotFound");
+
+            //var movieDto = new UpdateMovieDto
+            //{
+            //    Name = movie.Name,
+            //    Description = movie.Description,
+            //    Price = movie.Price,
+            //    CategoryIds = movie.CategoryIds,
+            //    Language = movie.Language,
+            //    Translation = movie.Translation,
+            //    ActorsIds = movie.ActorsIds ?? new List<int>(),
+            //    CinemasIds = movie.CinemasIds ?? new List<int>(),
+            //    ProducerIds = movie.ProducerIds ?? new List<int>()
+            //};
+
+            if (dto.PosterImg != null)
+            {
+                if (!string.IsNullOrEmpty(dto.PosterUrl) && !existingMovie.PosterUrl.StartsWith("http"))
+                {
+                    await _imageServises.DeleteImageAsync(existingMovie.PosterUrl);
+                }
+                string PosterImgName = await _imageServises.UploadImageAsync(dto.PosterImg, "Movies");
+                dto.PosterUrl = "/Images/Movies/" + PosterImgName;
+
+            }
+            else if (!string.IsNullOrEmpty(dto.PosterUrl) && dto.PosterUrl != existingMovie.PosterUrl)
+            {
+                if (!string.IsNullOrEmpty(existingMovie.PosterUrl) && !existingMovie.PosterUrl.StartsWith("http"))
+                {
+                    await _imageServises.DeleteImageAsync(existingMovie.PosterUrl);
+                }
+            }
+            if (dto.BackgroundImg != null)
+            {
+                if (!string.IsNullOrEmpty(dto.BackgroundUrl) && !existingMovie.BackgroundUrl.StartsWith("http"))
+                {
+                    await _imageServises.DeleteImageAsync(existingMovie.BackgroundUrl);
+                }
+                string BackgroundImgName = await _imageServises.UploadImageAsync(dto.BackgroundImg, "Movies");
+                dto.BackgroundUrl = "/Images/Movies/" + BackgroundImgName;
+            }
+            else if (!string.IsNullOrEmpty(dto.BackgroundUrl) && dto.BackgroundUrl != existingMovie.BackgroundUrl)
+            {
+                if (!string.IsNullOrEmpty(existingMovie.BackgroundUrl) && !existingMovie.BackgroundUrl.StartsWith("http"))
+                {
+                    await _imageServises.DeleteImageAsync(existingMovie.BackgroundUrl);
+                }
+            }
+            await _movieManager.UpdateMovieAsync(dto);
+            return RedirectToAction("Index");
 
 
+        }
     }
 }

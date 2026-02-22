@@ -44,7 +44,7 @@ namespace Core
         public ICollection<ActorMovie> ActorMovies { get; set; } = new List<ActorMovie>(); //one to many>
         public ICollection<CinemaMovie>? CinemaMovies { get; set; } = new List<CinemaMovie>(); //many to many>
         public ICollection<MovieSchedule> MovieSchedules { get; set; } = new List<MovieSchedule>();
-        public ICollection<ProducerMovie> producerMovies { get; set; }=new List<ProducerMovie>();
+        public ICollection<ProducerMovie> ProducerMovies { get; set; }=new List<ProducerMovie>();
 
     }
 }

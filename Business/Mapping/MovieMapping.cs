@@ -22,7 +22,7 @@ namespace Business.Mapping
                 Categories = categories.Where(c => dto.CategoryIds.Contains(c.Id)).ToList(),
                 Language = dto.Language,
                 Translation = dto.Translation,
-                producerMovies = dto.ProducerIds.Select(ProducerId=>new ProducerMovie
+                ProducerMovies = dto.ProducerIds.Select(ProducerId=>new ProducerMovie
                 {
                     ProducerId=ProducerId
                 }).ToList()??new List<ProducerMovie>(),
@@ -89,7 +89,7 @@ namespace Business.Mapping
                 CategoryName = movie.Categories.Where(X => X.CategoryName != null).Select(mv => mv.CategoryName).ToList(),
                 Language = movie.Language,
                 Translation = movie.Translation,
-                producer = movie.producerMovies.Select(P => new ProducerInMovieDto
+                producer = movie.ProducerMovies.Select(P => new ProducerInMovieDto
                 {
                     ID = P.ProducerId,
                     Name = P.Producer.FullName
