@@ -20,6 +20,7 @@
     <Folder Include="ViewModel\" />
     <Folder Include="wwwroot\Images\Actors\" />
     <Folder Include="wwwroot\Images\Cinemas\" />
+    <Folder Include="wwwroot\Images\Movies\" />
     <Folder Include="wwwroot\Images\Producers\" />
     <Folder Include="wwwroot\js\Home\" />
   </ItemGroup>
@@ -33,6 +34,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>
 
 </Project>

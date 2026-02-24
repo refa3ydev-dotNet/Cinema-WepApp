@@ -1,0 +1,17 @@
+﻿using Business.DTOs.Accounts;
+using Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Business.Managers.Accounts
+{
+    public interface IAccountManager
+    {
+         Task<IdentityResult> RegisterUserAsync(RegisterDto registerDto);
+         Task<ApplicationUser> GetUserByEmailAsync(string email);
+         Task<bool> CheckPasswordAsync(ApplicationUser user, string password);
+         Task<IdentityResult> UpdateUserAsync(ApplicationUser user);
+    }
+}

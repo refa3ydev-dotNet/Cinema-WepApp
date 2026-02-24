@@ -1,13 +1,17 @@
 using Business.Managers.Directors;
+using Core.Entities;
 using DataAccess.Contexts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Movies_web_app.Helper;
 using Movies_web_app.Services;
 
 namespace Movies_web_app
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -49,11 +53,20 @@ namespace Movies_web_app
             builder.Services.AddScoped<DataAccess.Repositories.DIRECTOR.IDirectorRepository,
                 DataAccess.Repositories.DIRECTOR.DirectorRepository>();
 
-
             // ? DbContext configuration using the connection string from appsettings.json
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MoviesDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            builder.Services.AddIdentity < ApplicationUser, IdentityRole>(Options =>
+            {
+                Options.Password.RequireDigit = true;
+                Options.Password.RequireLowercase = true;
+                Options.Password.RequireUppercase = true;
+                Options.Password.RequireNonAlphanumeric = false;
+                Options.Password.RequiredLength = 8;
+            })
+            .AddEntityFrameworkStores<MoviesDbContext>().AddDefaultTokenProviders();
 
             var app = builder.Build();
 
@@ -70,13 +83,14 @@ namespace Movies_web_app
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
+            await AppDbInitializer.TaskSeedRoleAsync(app);
             app.Run();
         }
     }

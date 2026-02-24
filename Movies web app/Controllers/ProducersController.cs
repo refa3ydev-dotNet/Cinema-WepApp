@@ -1,5 +1,6 @@
 ﻿using Business.DTOs.Producers;
 using Business.Managers.Producers;
+using Core.Enums;
 using DataAccess.Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Movies_web_app.Services;
@@ -34,10 +35,10 @@ namespace Movies_web_app.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateProducerDto Producer)
         {
-            Console.WriteLine("Create Action Hit ✅");
+            
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("Model is invalid ❌");
+                
                 foreach (var state in ModelState)
                 {
                     foreach (var error in state.Value.Errors)
@@ -54,8 +55,8 @@ namespace Movies_web_app.Controllers
             }
             if (Producer.ProfilePicture != null)
             {
-                string imageName = await _imageServises.UploadImageAsync(Producer.ProfilePicture, "Producers");
-                Producer.ProfilePath = "/Images/Producers/" + imageName;
+                Producer.ProfilePath =
+                    await _imageServises.UploadImageAsync(Producer.ProfilePicture, "Producers", ImageType.Profile);
             }
             await _producersManager.CreateProducerAsync(Producer);
             return RedirectToAction("Index");
@@ -66,11 +67,9 @@ namespace Movies_web_app.Controllers
             var Producer = await _producersManager.GetProducerByIdAsync(id);
             if (Producer == null) return View("NotFound");
             if (!string.IsNullOrEmpty(Producer.ProfilePath))
-            {
-                var relativePath = Path.Combine("wwwroot", Producer.ProfilePath);
-                Console.WriteLine("Path: " + Producer.ProfilePicture);
+            { 
 
-                await _imageServises.DeleteImageAsync(relativePath);
+                await _imageServises.DeleteImageAsync(Producer.ProfilePath);
             }
 
             await _producersManager.DeleteProducerAsync(id);
@@ -109,8 +108,8 @@ namespace Movies_web_app.Controllers
                 {
                     await _imageServises.DeleteImageAsync(dto.ProfilePath);
                 }
-                string imageName = await _imageServises.UploadImageAsync(dto.ProfilePicture, "Producers");
-                dto.ProfilePath = "/Images/Producers/" + imageName;
+                dto.ProfilePath = 
+                        await _imageServises.UploadImageAsync(dto.ProfilePicture, "Producers", ImageType.Profile);
             }
             await _producersManager.UpdateProducerAsync(dto);
 

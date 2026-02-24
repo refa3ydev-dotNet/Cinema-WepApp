@@ -117,15 +117,15 @@ namespace Movies_web_app.Controllers
             if (movie.PosterImg != null)
             {
 
-                string PosterImgName = await _imageServises.UploadImageAsync(movie.PosterImg, "Movies");
-                movieDto.PosterUrl = "/Images/Movies/" + PosterImgName;
+                movieDto.PosterUrl = 
+                        await _imageServises.UploadImageAsync(movie.PosterImg, "Movies", ImageType.Poster);
             }
             else if (movie.PosterUrl != null) movieDto.PosterUrl = movie.PosterUrl;
 
             if (movie.BackgroundImg != null)
             {
-                string BackgroundImgName = await _imageServises.UploadImageAsync(movie.BackgroundImg, "Movies");
-                movieDto.BackgroundUrl = "/Images/Movies/" + BackgroundImgName;
+                movieDto.BackgroundUrl = 
+                        await _imageServises.UploadImageAsync(movie.BackgroundImg, "Movies", ImageType.Background);
             }
             else if (movie.BackgroundUrl != null) movieDto.BackgroundUrl = movie.BackgroundUrl;
 
@@ -209,8 +209,9 @@ namespace Movies_web_app.Controllers
                 {
                     await _imageServises.DeleteImageAsync(existingMovie.PosterUrl);
                 }
-                string PosterImgName = await _imageServises.UploadImageAsync(dto.PosterImg, "Movies");
-                dto.PosterUrl = "/Images/Movies/" + PosterImgName;
+                dto.PosterUrl =
+                        await _imageServises.UploadImageAsync(dto.PosterImg, "Movies",ImageType.Poster);
+
 
             }
             else if (!string.IsNullOrEmpty(dto.PosterUrl) && dto.PosterUrl != existingMovie.PosterUrl)
@@ -226,8 +227,9 @@ namespace Movies_web_app.Controllers
                 {
                     await _imageServises.DeleteImageAsync(existingMovie.BackgroundUrl);
                 }
-                string BackgroundImgName = await _imageServises.UploadImageAsync(dto.BackgroundImg, "Movies");
-                dto.BackgroundUrl = "/Images/Movies/" + BackgroundImgName;
+                dto.BackgroundUrl =
+                    await _imageServises.UploadImageAsync(dto.BackgroundImg, "Movies",ImageType.Background);
+
             }
             else if (!string.IsNullOrEmpty(dto.BackgroundUrl) && dto.BackgroundUrl != existingMovie.BackgroundUrl)
             {

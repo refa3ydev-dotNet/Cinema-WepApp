@@ -1,6 +1,7 @@
 ﻿using Business.DTOs.Actors;
 using Business.Managers.Actors;
 using Core.Entities;
+using Core.Enums;
 using DataAccess.Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Movies_web_app.Services;
@@ -48,10 +49,8 @@ namespace Movies_web_app.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateActorDto actor)
         {
-            Console.WriteLine("Create Action Hit ✅");
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("Model is invalid ❌");
                 foreach (var modelStateKey in ModelState.Keys)
                 {
                     var modelStateVal = ModelState[modelStateKey];
@@ -63,32 +62,15 @@ namespace Movies_web_app.Controllers
 
                 return View(actor);
             }
-            var act = new CreateActorDto
+
+            if (actor.ProfilePicture != null)
             {
-                FullName = actor.FullName,
-                Bio = actor.Bio,
-                IMDBLink = actor.IMDBLink,
-                BirthDate = actor.BirthDate,
-                DeathDate = actor.DeathDate,
-                Nationality = actor.Nationality,
-
-
-        };
-            if (act.ProfilePicture != null)
-            {
-                string imageName = await _imageServises.UploadImageAsync(act.ProfilePicture, "Actors");
-                act.ProfilePath = "/Images/Actors/" + imageName;
-
+                actor.ProfilePath =
+                                 await _imageServises.UploadImageAsync(actor.ProfilePicture, "Actors", ImageType.Profile);
             }
-            if (actor.ProfilePicture == null)
-            {
-                if (actor.ProfilePath != null)
-                {
-                    act.ProfilePath = actor.ProfilePath;
-                }
-            }
+            
 
-        await _actorsmanager.CreateActorAsync(act);
+        await _actorsmanager.CreateActorAsync(actor);
             return RedirectToAction("Index");
         }
         [HttpPost]
@@ -97,11 +79,8 @@ namespace Movies_web_app.Controllers
             var actor = await _actorsmanager.GetActorByIdAsync(id);
             if (actor == null) return View("NotFound");
             if (!string.IsNullOrEmpty(actor.ProfilePath))
-            {
-                var relativePath = Path.Combine("wwwroot", actor.ProfilePath);
-                Console.WriteLine("Path: " + actor.ProfilePath);
-
-                await _imageServises.DeleteImageAsync(relativePath);
+            { 
+                await _imageServises.DeleteImageAsync(actor.ProfilePath);
             }
 
             await _actorsmanager.DeleteActorAsync(id);
@@ -125,7 +104,9 @@ namespace Movies_web_app.Controllers
                 Bio = actor.Bio,
                 ProfilePath = actor.ProfilePath,
                 IMDBLink = actor.IMDBLink,
-                BirthDate = actor.BirthDate
+                BirthDate = actor.BirthDate,
+                DeathDate = actor.DeathDate,
+                Nationality = actor.Nationality
             };
             return View(dto);
         }
@@ -142,8 +123,9 @@ namespace Movies_web_app.Controllers
                 {
                     await _imageServises.DeleteImageAsync(dto.ProfilePath);
                 }
-                string imageName = await _imageServises.UploadImageAsync(dto.ProfilePicture, "Actors");
-                dto.ProfilePath = "/Images/Actors/" + imageName;
+                dto.ProfilePath = 
+                 await _imageServises.UploadImageAsync(dto.ProfilePicture, "Actors",ImageType.Profile);
+
             }
             await _actorsmanager.UpdateActorAsync(dto);
 

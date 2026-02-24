@@ -1,5 +1,6 @@
 ﻿using Business.DTOs.Directors;
 using Business.Managers.Directors;
+using Core.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Movies_web_app.Services;
 
@@ -59,11 +60,11 @@ namespace Movies_web_app.Controllers
             };
             if (director.ProfilePicture != null)
             {
-                string imageName = await _imageService.UploadImageAsync(director.ProfilePicture, "Directors");
-                dirc.ProfilePictureUrl = "/Images/Directors/" + imageName;
+                dirc.ProfilePictureUrl =
+                await _imageService.UploadImageAsync(director.ProfilePicture, "Directors", ImageType.Profile);
 
             }
-            if(director.ProfilePicture == null)
+            if (director.ProfilePicture == null)
             {
                 if (director.ProfilePictureUrl != null)
                 {
