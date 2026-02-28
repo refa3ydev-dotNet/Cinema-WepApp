@@ -1,0 +1,88 @@
+﻿@model Business.DTOs.Accounts.ProfilePictureDto
+@{
+    ViewData["Title"] = "Profile Setup";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+<div class="auth-right-pane">
+    <div class="auth-box">
+        <div class="auth-header" style="text-align: center;">
+            <h2>Welcome aboard!</h2>
+            <p>Add a profile picture so people know you</p>
+        </div>
+
+        <form asp-action="SetupProfile" id="profileForm" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Email" />
+            <input type="hidden" asp-for="Role" />
+            <div class="upload-circle-container">
+                <!-- The clickable upload circle -->
+                <div class="upload-circle" id="circleTrigger">
+                    <i class="fas fa-camera"></i>
+                    <span>Upload</span>
+                    <img id="imagePreview" class="upload-preview-img" alt="Preview">
+                </div>
+
+                <!-- Hidden file input -->
+                <input asp-for="ProfilePictureFile" type="file" id="fileInput" accept="image/*" style="display: none;">
+
+                <div class="upload-controls">
+                    <!-- Button explicitly for uploading -->
+
+                    <div class="divider">or use web link</div>
+
+                    <!-- Or provide a URL directly -->
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <input asp-for="ProfilePictureUrl" type="url" class="form-control" id="imageUrl""
+                               placeholder="https://example.com/avatar.jpg">
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-links">
+                <button type="submit" name="actionType" value="Skip" class="btn btn-link auth-link p-0" style="color: #8b949e; text-decoration: none; border: none; background: none;">
+                    Skip for now
+                </button>
+                <button type="submit" class="btn btn-primary" name="actionType" value="Save">
+                    Continue <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    // Handle image preview
+    const fileInput = document.getElementById('fileInput');
+    const imgUrl = document.getElementById('imageUrl');
+    const imgPreview = document.getElementById('imagePreview');
+    const circleTrigger = document.getElementById('circleTrigger');
+
+    // Trigger file select when clicking the circle
+    circleTrigger.addEventListener('click', () => fileInput.click());
+
+    // Preview from file upload
+    fileInput.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imgPreview.src = e.target.result;
+                imgPreview.style.display = 'block';
+                imgUrl.value = ''; // clear url if file selected
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    // Preview from URL
+    imgUrl.addEventListener('input', function () {
+        if (this.value) {
+            imgPreview.src = this.value;
+            imgPreview.style.display = 'block';
+            fileInput.value = ''; // clear file if url typed
+        } else {
+            imgPreview.style.display = 'none';
+        }
+    });
+
+
+</script>

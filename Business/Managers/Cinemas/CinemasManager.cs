@@ -13,10 +13,13 @@ namespace Business.Managers.Cinemas
             _cinemaRepository = cinemarepository;
         }
 
-        public async Task CreateCinemaAsync(CreateCinemaDto dto)
+        public async Task<int> CreateCinemaAsync(CreateCinemaDto dto)
         {
             var cinema = dto.ToEntity();
+            cinema.IsApproved = false;
+            
             await _cinemaRepository.AddCinemaAsync(cinema);
+            return cinema.Id;
         }
         public async Task DeleteCinemaAsync(int id)
         {
@@ -54,6 +57,17 @@ namespace Business.Managers.Cinemas
                 CurrentPage = result.CurrentPage,
                 TotalPages = result.TotalPages
             };
+        }
+
+        public async Task<List<GetAllCinemasDto>> GetPendingCinemasAsync()
+        {
+            var cinemas =await _cinemaRepository.GetPendingCinemasAsync();
+            return cinemas.ToDto();
+        }
+
+        public async Task ApproveCinemaAsync(int id)
+        {
+            await _cinemaRepository.ApproveCinemaAsync(id);
         }
     }
 }

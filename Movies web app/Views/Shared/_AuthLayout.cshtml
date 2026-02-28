@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CINEPLEX</title>
+    <!-- Start Layout CSS -->
+    <link rel="stylesheet" href="~/css/Account/Account.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="auth-split-layout">
+
+        <!-- Animated Posters Left Pane -->
+        <div class="auth-left-pane">
+            <div class="movies-grid-anim">
+                <!-- Track 1 -->
+                <div class="movie-track">
+                    <div class="poster-group">
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                    </div>
+                    <!-- Duplicate for infinite scroll -->
+                    <div class="poster-group">
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                    </div>
+                </div>
+                <!-- Track 2 -->
+                <div class="movie-track">
+                    <div class="poster-group">
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                    </div>
+                    <!-- Duplicate for infinite scroll -->
+                    <div class="poster-group">
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                    </div>
+                </div>
+                <!-- Track 3 -->
+                <div class="movie-track">
+                    <div class="poster-group">
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                    </div>
+                    <!-- Duplicate for infinite scroll -->
+                    <div class="poster-group">
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                        <div class="poster-box"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Right Pane -->
+        
+        @RenderBody()
+    </div>
+
+</body>
+
+</html>

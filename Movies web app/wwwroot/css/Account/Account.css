@@ -1,0 +1,870 @@
+﻿/* --- Split Layout Auth Pages (Form + Animated Posters) --- */
+
+/* Reset & Base */
+.auth-split-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background: #0f1115;
+    font-family: 'Outfit', sans-serif;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+/* Left Pane: Animated Movies Grid */
+.auth-left-pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    z-index: 1;
+}
+
+@media (min-width: 900px) {
+    .auth-left-pane {
+        position: relative;
+        flex: 1.2;
+        width: auto;
+        height: auto;
+    }
+}
+
+/* Gradient overlay to fade the posters nicely */
+.auth-left-pane::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #0f1115 0%, transparent 40%, transparent 60%, #0f1115 100%), linear-gradient(180deg, #0f1115 0%, transparent 20%, transparent 80%, #0f1115 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Base perspective for the 3D effect */
+.auth-left-pane::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 0%, rgba(15, 17, 21, 0.8) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Scrolling Tracks container - Modern 3D Wall Effect */
+.movies-grid-anim {
+    display: flex;
+    gap: 1.5rem;
+    /* Wider gap for breathing room */
+    padding: 2rem;
+    width: 150%;
+    height: 200%;
+    position: absolute;
+    top: -50%;
+    left: -25%;
+    opacity: 0.6;
+    transform: perspective(1000px) rotateX(15deg) rotateY(-15deg) rotateZ(5deg) scale(0.9);
+    transform-origin: center center;
+    transition: transform 0.5s ease-out;
+}
+
+.movie-track {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 33.333%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Two identical groups inside each track that slide seamlessly */
+.poster-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: scrollTrack 60s linear infinite;
+}
+
+/* Stagger animations for visual interest */
+.movie-track:nth-child(even) .poster-group {
+    animation: scrollTrackReverse 70s linear infinite;
+}
+
+.movie-track:nth-child(3) .poster-group {
+    animation-duration: 80s;
+}
+
+.poster-box {
+    width: 100%;
+    padding-bottom: 150%;
+    /* 2:3 aspect ratio perfectly maintained */
+    background-color: #1a1e24;
+    border-radius: 12px;
+    /* Modern rounded corners like Apple TV cards */
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .poster-box::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        pointer-events: none;
+    }
+
+/* Track 1 */
+.movie-track:nth-child(1) .poster-box:nth-child(8n+1) {
+    background-image: url('https://i.pinimg.com/736x/9c/33/72/9c3372b423b124d6c090275051a21ce4.jpg');
+}
+
+.movie-track:nth-child(1) .poster-box:nth-child(8n+2) {
+    background-image: url('https://image.tmdb.org/t/p/w500/8c4a8kE7PizaGQQnditMmI1xbRp.jpg');
+}
+
+.movie-track:nth-child(1) .poster-box:nth-child(8n+3) {
+    background-image: url('https://image.tmdb.org/t/p/w500/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg');
+}
+
+.movie-track:nth-child(1) .poster-box:nth-child(8n+4) {
+    background-image: url('https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg');
+}
+
+.movie-track:nth-child(1) .poster-box:nth-child(8n+5) {
+    background-image: url('https://image.tmdb.org/t/p/w500/saHP97rTPS5eLmrLQEcANmKrsFl.jpg');
+}
+
+.movie-track:nth-child(1) .poster-box:nth-child(8n+6) {
+    background-image: url('https://image.tmdb.org/t/p/w500/plhlTegK5uO5cR3jFwO1JbS2qP.jpg');
+}
+
+.movie-track:nth-child(1) .poster-box:nth-child(8n+7) {
+    background-image: url('https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg');
+}
+
+.movie-track:nth-child(1) .poster-box:nth-child(8n+8) {
+    background-image: url('https://image.tmdb.org/t/p/w500/bptfVGEQuv6vDTIMVCHjJ9Dz8PX.jpg');
+}
+
+/* Track 2 */
+.movie-track:nth-child(2) .poster-box:nth-child(8n+1) {
+    background-image: url('https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg');
+}
+
+.movie-track:nth-child(2) .poster-box:nth-child(8n+2) {
+    background-image: url('https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg');
+}
+
+.movie-track:nth-child(2) .poster-box:nth-child(8n+3) {
+    background-image: url('https://image.tmdb.org/t/p/w500/aKuFiU82s5ISJpGZp7YkIr3kCUd.jpg');
+}
+
+.movie-track:nth-child(2) .poster-box:nth-child(8n+4) {
+    background-image: url('https://image.tmdb.org/t/p/w500/7BuH8itoSrLExs2GIrFNRo9pzZ3.jpg');
+}
+
+.movie-track:nth-child(2) .poster-box:nth-child(8n+5) {
+    background-image: url('https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg');
+}
+
+.movie-track:nth-child(2) .poster-box:nth-child(8n+6) {
+    background-image: url('https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkBg8lWOb.jpg');
+}
+
+.movie-track:nth-child(2) .poster-box:nth-child(8n+7) {
+    background-image: url('https://image.tmdb.org/t/p/w500/8OKmBV5ZRz311mUxN8mLSZehk22.jpg');
+}
+
+.movie-track:nth-child(2) .poster-box:nth-child(8n+8) {
+    background-image: url('https://image.tmdb.org/t/p/w500/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg');
+}
+
+/* Track 3 */
+.movie-track:nth-child(3) .poster-box:nth-child(8n+1) {
+    background-image: url('https://image.tmdb.org/t/p/w500/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg');
+}
+
+.movie-track:nth-child(3) .poster-box:nth-child(8n+2) {
+    background-image: url('https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg');
+}
+
+.movie-track:nth-child(3) .poster-box:nth-child(8n+3) {
+    background-image: url('https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MvlLcyIo.jpg');
+}
+
+.movie-track:nth-child(3) .poster-box:nth-child(8n+4) {
+    background-image: url('https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg');
+}
+
+.movie-track:nth-child(3) .poster-box:nth-child(8n+5) {
+    background-image: url('https://image.tmdb.org/t/p/w500/811DjJTon9gD6hZ8nCjBg9zP4EA.jpg');
+}
+
+.movie-track:nth-child(3) .poster-box:nth-child(8n+6) {
+    background-image: url('https://image.tmdb.org/t/p/w500/kOVEVeg59E0wsnXmF9nrh6OmWII.jpg');
+}
+
+.movie-track:nth-child(3) .poster-box:nth-child(8n+7) {
+    background-image: url('https://image.tmdb.org/t/p/w500/1LrLLWGKIGdZA01qv1KjksyM7fR.jpg');
+}
+
+.movie-track:nth-child(3) .poster-box:nth-child(8n+8) {
+    background-image: url('https://image.tmdb.org/t/p/w500/xVKG2S1qA9X1oW5gEicvA9EvyfR.jpg');
+}
+
+@keyframes scrollTrack {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(calc(-100% - 1.5rem));
+    }
+}
+
+@keyframes scrollTrackReverse {
+    0% {
+        transform: translateY(calc(-100% - 1.5rem));
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Right Pane: Form Container */
+.auth-right-pane {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    z-index: 5;
+    background: transparent;
+    /* transparent on mobile so background animation shows */
+}
+
+@media (min-width: 900px) {
+    .auth-right-pane {
+        background: #0f1115;
+    }
+}
+
+/* Elegant Card Design */
+.auth-box {
+    background: #161b22;
+    width: 100%;
+    max-width: 440px;
+    padding: 2.5rem 2rem;
+    /* Reduced vertical padding */
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 2;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+    .auth-box.register-box {
+        max-width: 550px;
+        padding: 2rem;
+        /* Even tighter for the larger register box */
+    }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Typography */
+.auth-header {
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 20;
+    /* Reduced from 2.5rem */
+}
+
+    .auth-header h2 {
+        font-size: 1.8rem;
+        /* Slightly smaller */
+        color: #ffffff;
+        margin-bottom: 0.25rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    .auth-header p {
+        color: #8b949e;
+        font-size: 0.95rem;
+        /* Slightly smaller */
+        line-height: 1.4;
+    }
+
+/* Logo in auth box */
+.auth-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #e50914;
+    margin-bottom: 1.5rem;
+    /* Reduced from 3rem */
+    text-decoration: none;
+}
+
+/* Form Styling */
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+    .form-row .form-group {
+        flex: 1;
+    }
+
+@media (max-width: 576px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+    /* Reduced from 1.5rem */
+    position: relative;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #c9d1d9;
+    font-size: 0.85rem;
+    /* Slightly smaller */
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    background: #161b22;
+    border: 1px solid #30363d;
+    padding: 0.75rem 0.85rem;
+    /* Tighter padding inside input */
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+    .form-control::placeholder {
+        color: #484f58;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #e50914;
+        background: #0d1117;
+        box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.15);
+    }
+
+/* Regex Live Validation UI */
+.password-requirements {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    margin-top: 0.25rem;
+    padding: 0.85rem;
+    background: #1c2128;
+    /* Slightly lighter inner box for contrast */
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    display: none;
+    /* shown via JS when typing */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.password-requirements-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #8b949e;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.req-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.req-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: #c9d1d9;
+    background: #22272e;
+    border: 1px solid #444c56;
+    padding: 0.4rem 0.6rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+    .req-item i {
+        font-size: 0.7rem;
+        color: #8b949e;
+        transition: color 0.3s ease;
+    }
+
+    .req-item.valid {
+        background: rgba(46, 160, 67, 0.15);
+        border-color: rgba(46, 160, 67, 0.4);
+        color: #3fb950;
+        font-weight: 500;
+    }
+
+        .req-item.valid i::before {
+            content: "\f00c";
+            /* check icon */
+        }
+
+        .req-item.valid i {
+            color: #3fb950;
+        }
+
+    .req-item.invalid {
+        background: rgba(248, 81, 73, 0.1);
+        border-color: rgba(248, 81, 73, 0.3);
+        color: #ff7b72;
+    }
+
+        .req-item.invalid i::before {
+            content: "\f00d";
+            /* times icon */
+        }
+
+        .req-item.invalid i {
+            color: #ff7b72;
+        }
+
+/* Button */
+.btn-primary.auth-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    background: #e50914;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: block;
+    margin-top: 1rem;
+}
+
+    .btn-primary.auth-btn:hover {
+        background: #f6121d;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+    }
+
+.btn-outline.auth-btn {
+    background: transparent;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+}
+
+    .btn-outline.auth-btn:hover {
+        background: #30363d;
+        color: #ffffff;
+    }
+
+/* Links */
+.auth-link {
+    color: #e50914;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+    .auth-link:hover {
+        color: #ff4d4d;
+        text-decoration: underline;
+    }
+
+/* Modern Segmented Role Selection (iOS Style Slider) */
+.role-selection {
+    display: flex;
+    background: rgba(13, 17, 23, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    padding: 0.35rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* The sliding red background pill */
+.role-slider {
+    position: absolute;
+    top: 0.35rem;
+    left: 0.35rem;
+    height: calc(100% - 0.7rem);
+    width: calc(50% - 0.35rem);
+    background: linear-gradient(135deg, #e50914 0%, #b8070f 100%);
+    border-radius: 8px;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+    z-index: -1;
+}
+
+/* Slide to the second option */
+.role-selection.agent-active .role-slider {
+    transform: translateX(100%);
+}
+
+
+
+.role-card {
+    flex: 1;
+    cursor: pointer;
+    text-align: center;
+}
+
+    .role-card input[type="radio"] {
+        display: none;
+    }
+
+.role-card-content {
+    padding: 0.7rem;
+    border-radius: 8px;
+    transition: all 0.4s ease;
+}
+
+    .role-card-content span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #8b949e;
+        transition: color 0.4s ease;
+    }
+
+.role-card input[type="radio"]:checked + .role-card-content span {
+    color: #ffffff;
+}
+
+/* Agent specific fields container */
+.agent-fields {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(-10px);
+    margin-bottom: 0;
+}
+
+    .agent-fields.active {
+        max-height: 300px;
+        opacity: 1;
+        transform: translateY(0);
+        margin-bottom: 0.5rem;
+    }
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+    .form-check input {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 4px;
+        cursor: pointer;
+        position: relative;
+    }
+
+        .form-check input:checked {
+            background: #e50914;
+            border-color: #e50914;
+        }
+
+        .form-check input::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: white;
+            font-size: 11px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.2s;
+        }
+
+        .form-check input:checked::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+    .form-check label {
+        font-size: 0.9rem;
+        color: #8b949e;
+        user-select: none;
+    }
+
+/* Custom Scrollbar for Right Pane if content overflows height */
+.auth-right-pane {
+    overflow-y: auto;
+}
+
+    .auth-right-pane::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .auth-right-pane::-webkit-scrollbar-track {
+        background: #0f1115;
+    }
+
+    .auth-right-pane::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 10px;
+    }
+
+/* Image Upload Circle Component for Onboarding */
+.upload-circle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.upload-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #22272e;
+    border: 2px dashed #444c56;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+    .upload-circle:hover {
+        border-color: #e50914;
+        background: rgba(229, 9, 20, 0.05);
+    }
+
+    .upload-circle i {
+        font-size: 2rem;
+        color: #484f58;
+        margin-bottom: 0.5rem;
+        transition: color 0.3s ease;
+    }
+
+    .upload-circle span {
+        font-size: 0.75rem;
+        color: #8b949e;
+        font-weight: 600;
+    }
+
+    .upload-circle:hover i {
+        color: #e50914;
+    }
+
+.upload-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    z-index: 5;
+}
+
+.upload-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    color: #484f58;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0.5rem 0;
+}
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #30363d;
+    }
+
+    .divider::before {
+        margin-right: 1rem;
+    }
+
+    .divider::after {
+        margin-left: 1rem;
+    }
+
+.action-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+/* Pending Activation State */
+.pending-icon {
+    font-size: 5rem;
+    color: #e50914;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 15px rgba(229, 9, 20, 0.4));
+}
+
+.success-icon {
+    font-size: 5rem;
+    color: #3fb950;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 15px rgba(63, 185, 80, 0.4));
+}
+
+/* Cinema Banner Header Layout */
+/* Cinema Banner Header Layout */
+.cinema-banner-setup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 180px;
+    background: #161b22;
+    border-top-left-radius: 20px;
+    /* Match auth-box radius */
+    border-top-right-radius: 20px;
+    border-bottom: 1px solid #30363d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+/* Spacer to push form content below the absolute banner */
+.banner-spacer {
+    height: 120px;
+    width: 100%;
+}
+
+.cinema-banner-setup:hover {
+    background: #22272e;
+}
+
+.cinema-banner-setup .upload-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #8b949e;
+    z-index: 2;
+}
+
+.cinema-banner-setup:hover .upload-prompt {
+    color: white;
+}
+
+.cinema-banner-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    z-index: 1;
+    opacity: 0.6;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    /* Dim slightly for overlay contrast */
+}
+
+/* Overlapping Avatar Logo */
+.cinema-avatar-setup {
+    position: absolute;
+    bottom: -40px;
+    /* Overlap by 40px */
+    left: 2rem;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #0d1117;
+    border: 3px solid #0d1117;
+    /* Matches form background to cut out the banner */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    z-index: 30;
+    /* Higher than auth-header z-index 20 so it remains clickable */
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #8b949e;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+    .cinema-avatar-setup:hover {
+        border-color: #e50914;
+        color: #e50914;
+    }
+
+.cinema-avatar-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    z-index: 5;
+    background: white;
+    /* Give logos a white backing usually */
+}

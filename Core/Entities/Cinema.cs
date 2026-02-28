@@ -23,6 +23,7 @@ namespace Core
         [Display(Name = "Cinema Background Picture")]
         [Required(ErrorMessage = "Cinema Background Picture is required")]
         public string? BackgroundPicture { get; set; }
+        public bool IsApproved { get; set; }=false;
 
         //Relationships
         public ICollection<CinemaMovie> CinemaMovies { get; set; } = new List<CinemaMovie>();

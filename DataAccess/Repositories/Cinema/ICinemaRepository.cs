@@ -14,6 +14,9 @@ namespace DataAccess.Repositories.CINEMA
         Task<List<Cinema>> SearchByNameAsync(string name);
         Task<List<Cinema>> SearchByMovieAsync(string name);
         Task<int> GetCinemasCountAsync();
+        Task <List<Cinema>> GetPendingCinemasAsync();
+        Task ApproveCinemaAsync(int id);
+        Task DeActivateCinemaAsync(int id);
         Task<PaginationResult<Cinema>> GetPagedCinemasAsync(int page, int pageSize);
     }
 }

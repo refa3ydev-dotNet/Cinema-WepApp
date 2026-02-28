@@ -33,12 +33,13 @@ namespace Business.Managers.Accounts
                 LastName = registerDto.LastName,
                 Email = registerDto.Email,
                 IsApproved = IsAutoApproved,
-                //Gender=registerDto.Gender,
+                Gender=registerDto.Gender,
+                UserName = registerDto.Email.Split('@')[0]+new Random().Next(1000, 9999).ToString(),
             };
             var result =await _userManager.CreateAsync(newUser, registerDto.Password);
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(newUser, "Customer");
+                await _userManager.AddToRoleAsync(newUser, registerDto.Role);
             }
             return result;
         }

@@ -137,6 +137,32 @@ namespace DataAccess.Repositories.CINEMA
             };
         }
 
+        public async Task<List<Cinema>> GetPendingCinemasAsync()
+        {
+            return await _context.Cinemas
+                .Where(x => x.IsApproved == false)
+                .ToListAsync();
+        }
 
+        public async Task ApproveCinemaAsync(int id)
+        {
+            var cinema =await _context.Cinemas.FindAsync(id);
+            if (cinema != null)
+            {
+                cinema.IsApproved = true;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeActivateCinemaAsync(int id)
+        {
+            var cinema =await _context.Cinemas.FindAsync(id);
+            if (cinema != null)
+            {
+                cinema.IsApproved = false;
+                await _context.SaveChangesAsync();
+            }
+            
+        }
     }
 }

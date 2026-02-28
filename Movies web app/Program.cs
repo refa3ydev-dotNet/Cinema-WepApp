@@ -52,6 +52,7 @@ namespace Movies_web_app
                 Business.Managers.Directors.DirectorManager>();
             builder.Services.AddScoped<DataAccess.Repositories.DIRECTOR.IDirectorRepository,
                 DataAccess.Repositories.DIRECTOR.DirectorRepository>();
+            builder.Services.AddScoped<Business.Managers.Accounts.IAccountManager, Business.Managers.Accounts.AccountManager>();
 
             // ? DbContext configuration using the connection string from appsettings.json
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

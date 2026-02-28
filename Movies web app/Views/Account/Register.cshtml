@@ -1,0 +1,289 @@
+﻿
+@model Business.DTOs.Accounts.RegisterDto
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+<div class="auth-right-pane">
+    <div class="auth-box register-box">
+        
+            <a class="d-flex align-items-center auth-logo" asp-area="" asp-controller="Home" asp-action="Index">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 140" width="65%" height="100%">
+                    <defs>
+                        <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FF3366" />
+                            <stop offset="100%" stop-color="#E50914" />
+                        </linearGradient>
+
+                        <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFFFFF" />
+                            <stop offset="100%" stop-color="#B0B0C5" />
+                        </linearGradient>
+
+                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+
+                        <mask id="ticketHoles">
+                            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                            <circle cx="25" cy="67" r="8" fill="black" />
+                            <circle cx="80" cy="67" r="8" fill="black" />
+                        </mask>
+                    </defs>
+
+                    <style>
+                        /* تنسيق كلمة Flick */
+                        .text-flick {
+                            font-family: 'Segoe UI', system-ui, sans-serif;
+                            font-weight: 900;
+                            font-size: 58px;
+                            fill: url(#silverGrad);
+                            font-style: italic;
+                            letter-spacing: -1px;
+                        }
+
+                        /* تنسيق كلمة It */
+                        .text-it {
+                            font-family: 'Segoe UI', system-ui, sans-serif;
+                            font-weight: 900;
+                            font-size: 58px;
+                            fill: url(#redGrad);
+                            font-style: italic;
+                        }
+
+                        /* الخط مخفي في الوضع الطبيعي */
+                        .swoosh {
+                            stroke-dasharray: 400;
+                            stroke-dashoffset: 400;
+                            opacity: 0;
+                        }
+
+                        /* تفعيل حركة الخط فقط عند التمرير (Hover) */
+                        svg:hover .swoosh {
+                            animation: flickAnim 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                        }
+
+                        /* أنيميشن الأيقونة الطافية مستمر بهدوء */
+                        .ticket-icon {
+                            transform-origin: 50px 70px;
+                            animation: floatAnim 4s ease-in-out infinite;
+                        }
+
+                        @@keyframes flickAnim {
+                            0% {
+                                stroke-dashoffset: 400;
+                                opacity: 0;
+                            }
+
+                            15% {
+                                opacity: 1;
+                            }
+
+                            70% {
+                                stroke-dashoffset: 0;
+                                opacity: 1;
+                            }
+
+                            100% {
+                                stroke-dashoffset: 0;
+                                opacity: 0;
+                            }
+                        }
+
+                        @@keyframes floatAnim {
+                            0%, 100% {
+                                transform: translateY(0) rotate(-4deg);
+                            }
+
+                            50% {
+                                transform: translateY(-6px) rotate(4deg);
+                            }
+                        }
+                    </style>
+
+                    <g class="ticket-icon">
+                        <rect x="25" y="40" width="55" height="55" rx="8" fill="none" stroke="url(#redGrad)" stroke-width="5" mask="url(#ticketHoles)" />
+                        <path d="M 42 52 L 65 67 L 42 82 Z" fill="url(#silverGrad)" />
+                    </g>
+
+                    <path class="swoosh" d="M 95 105 Q 230 130 380 90" fill="none" stroke="url(#redGrad)" stroke-width="4" stroke-linecap="round" filter="url(#glow)" />
+
+                    <text x="100" y="85" class="text-flick">Flick</text>
+                    <text x="240" y="85" class="text-it" filter="url(#glow)">It</text>
+                </svg>
+            </a>
+        
+
+        <div class="auth-header" style="text-align: left;">
+            <h2>Create your account</h2>
+            <p>Join Flickit for a premium movie experience</p>
+        </div>
+
+        <form asp-action="Register" asp-controller="Account" method="post" id="registerForm" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger mb-3" style="font-weight: bold; text-align: center;"></div>
+            <!-- Role Selection -->
+            <div class="role-selection">
+                <div class="role-slider"></div>
+                <label class="role-card">
+                    <input type="radio" asp-for="Role"  value="Customer" checked>
+                    <div class="role-card-content">
+                        <span>Standard User</span>
+                    </div>
+                </label>
+                <label class="role-card">
+                    <input type="radio" asp-for="Role" value="CinemaAgent">
+                    <div class="role-card-content">
+                        <span>Agent Partner</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="FirstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="FirstName" asp-for="FirstName" placeholder="John"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="LastName" asp-for="LastName" placeholder="Doe"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="Email" asp-for="Email"
+                           placeholder="you@example.com" required>
+                    <span asp-validation-for="Email" class="text-danger" style="font-size: 0.85em; display: block; margin-top: 5px;"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Gender" class="form-label">Gender</label>
+                    <select class="form-control" id="Gender" asp-for="Gender" required
+                            style="appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill=%22%23c9d1d9%22 height=%2224%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/></svg>'); background-repeat: no-repeat; background-position-x: 95%; background-position-y: center;">
+                        <option value="" disabled selected>Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    
+                    <!-- Regex matching C# Identity: length 8, lowercase, uppercase, digit. No special char needed. -->
+                    <input type="password" class="form-control" id="Password" asp-for="Password"
+                           placeholder="••••••••" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
+                           title="Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.">
+
+                    <!-- Real-time Validation UI -->
+                    <div class="password-requirements" id="pwdReqs">
+                        <div class="password-requirements-title">Password must contain:</div>
+                        <div class="req-chips">
+                            <div class="req-item" id="req-length">
+                                <i class="fas fa-circle"></i> 8+ characters
+                            </div>
+                            <div class="req-item" id="req-lower"><i class="fas fa-circle"></i> Lowercase</div>
+                            <div class="req-item" id="req-upper"><i class="fas fa-circle"></i> Uppercase</div>
+                            <div class="req-item" id="req-number"><i class="fas fa-circle"></i> Number</div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger" style="font-size: 0.85em; display: block; margin-top: 5px;"></span>
+
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="ConfirmPassword" asp-for="ConfirmPassword"
+                           placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <div class="form-check" style="margin-bottom: 1rem;">
+                <input type="checkbox" id="AcceptTerms" name="AcceptTerms" required>
+                <label for="AcceptTerms">
+                    I agree to the <a href="#" class="auth-link">Terms of Service</a> & <a href="#" class="auth-link">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary auth-btn">Create Account</button>
+
+            <div style="margin-top: 1.25rem; text-align: center;">
+                <p style="color: #8b949e; font-size: 0.95rem;">
+                    Already have an account? <a asp-action="Login" class="auth-link">Sign in here</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="site.js"></script>
+<script>
+    // Live Regex Validation Visualizer matching C# Identity constraints
+    const pwdInput = document.getElementById('Password');
+    const reqBox = document.getElementById('pwdReqs');
+    const reqLen = document.getElementById('req-length');
+    const reqLow = document.getElementById('req-lower');
+    const reqUpp = document.getElementById('req-upper');
+    const reqNum = document.getElementById('req-number');
+
+    pwdInput.addEventListener('focus', () => {
+        reqBox.style.display = 'block';
+    });
+
+    pwdInput.addEventListener('input', () => {
+        const val = pwdInput.value;
+
+        // 1. Length check (8 chars min)
+        if (val.length >= 8) {
+            reqLen.className = 'req-item valid';
+        } else {
+            reqLen.className = 'req-item invalid';
+        }
+
+        // 2. Lowercase check
+        if (/[a-z]/.test(val)) {
+            reqLow.className = 'req-item valid';
+        } else {
+            reqLow.className = 'req-item invalid';
+        }
+
+        // 3. Uppercase check
+        if (/[A-Z]/.test(val)) {
+            reqUpp.className = 'req-item valid';
+        } else {
+            reqUpp.className = 'req-item invalid';
+        }
+
+        // 4. Number (Digit) check
+        if (/\d/.test(val)) {
+            reqNum.className = 'req-item valid';
+        } else {
+            reqNum.className = 'req-item invalid';
+        }
+    });
+
+    pwdInput.addEventListener('blur', () => {
+        reqBox.style.display = 'none';
+    });
+        // Handle Role Toggles (Slider + Agent Fields)
+        const roleContainer = document.querySelector('.role-selection');
+        const roleRadios = roleContainer.querySelectorAll('input[type="radio"]');
+
+        roleRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const isAgent = e.target.value === 'CinemaAgent';
+
+                // Toggle sliding pill background
+                if (isAgent) {
+                    roleContainer.classList.add('agent-active');
+                } else {
+                    roleContainer.classList.remove('agent-active');
+                }
+            });
+        });
+
+</script>

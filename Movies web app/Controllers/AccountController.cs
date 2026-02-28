@@ -42,13 +42,18 @@ namespace Movies_web_app.Controllers
             {
                 var newUser= await _accountManager.GetUserByEmailAsync(dto.Email);
                 await _signInManager.SignInAsync(newUser, isPersistent :false);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("SetupProfile", new { email = dto.Email ,Role=dto.Role });
             }
-            foreach (var error in result.Errors)
+            else
             {
-                ModelState.AddModelError("", error.Description);
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+                
+                return View(dto);
+
             }
-            return RedirectToAction("SetupProfile", new { email = dto.Email ,Role=dto.Role });
         }
         [HttpGet]
         public IActionResult SetupProfile(string email,string Role)
@@ -79,9 +84,10 @@ namespace Movies_web_app.Controllers
                 }
                 await _accountManager.UpdateUserAsync(user);
             }
+            await _signInManager.SignInAsync(user, isPersistent: true);
             if (dto.Role == "CinemaAgent")
             {
-                return RedirectToAction("AgentCreateCinema", "Cinemas");
+                return RedirectToAction("Create", "Cinemas");
             }
             else
             {
