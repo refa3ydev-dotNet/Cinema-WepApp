@@ -16,7 +16,7 @@ namespace Business.Managers.Cinemas
         public async Task<int> CreateCinemaAsync(CreateCinemaDto dto)
         {
             var cinema = dto.ToEntity();
-            cinema.IsApproved = false;
+            cinema.ApprovalStatus.Equals("Pending");
             
             await _cinemaRepository.AddCinemaAsync(cinema);
             return cinema.Id;

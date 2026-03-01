@@ -18,6 +18,7 @@ namespace DataAccess.Repositories.CINEMA
             if (id > 0)
             {
                 return await _context.Cinemas
+                    //.Where(x=>x.ApprovalStatus.Equals("Approved"))
                     .Include(x => x.CinemaMovies)
                     .ThenInclude(Task => Task.Movie)
                     .FirstOrDefaultAsync(x => x.Id == id);
@@ -140,7 +141,7 @@ namespace DataAccess.Repositories.CINEMA
         public async Task<List<Cinema>> GetPendingCinemasAsync()
         {
             return await _context.Cinemas
-                .Where(x => x.IsApproved == false)
+                .Where(x => x.ApprovalStatus.Equals("Pending"))
                 .ToListAsync();
         }
 
@@ -149,7 +150,7 @@ namespace DataAccess.Repositories.CINEMA
             var cinema =await _context.Cinemas.FindAsync(id);
             if (cinema != null)
             {
-                cinema.IsApproved = true;
+                cinema.ApprovalStatus.Equals("Approved");
                 await _context.SaveChangesAsync();
             }
         }
@@ -159,7 +160,7 @@ namespace DataAccess.Repositories.CINEMA
             var cinema =await _context.Cinemas.FindAsync(id);
             if (cinema != null)
             {
-                cinema.IsApproved = false;
+                cinema.ApprovalStatus.Equals("Declined");
                 await _context.SaveChangesAsync();
             }
             

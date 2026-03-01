@@ -1,0 +1,26 @@
+﻿@{
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Pending Approval";
+}
+
+
+<div class="auth-right-pane">
+    <div class="auth-box" style="text-align: center; padding: 3rem 2rem;">
+
+        <i class="fas fa-clock pending-icon"></i>
+
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Activation Pending</h2>
+
+        <p style="color: #8b949e; margin-bottom: 2rem; line-height: 1.6;">
+            Thank you for applying to be a Cinema Agent with Flickit! <br>
+            Your account and cinema details have been sent to an administrator for review.
+        </p>
+
+        <div style="background: rgba(229, 9, 20, 0.1); border: 1px solid rgba(229, 9, 20, 0.2); border-radius: 8px; padding: 1rem; margin-bottom: 2.5rem; color: #ffebed; font-size: 0.9rem;">
+            <i class="fas fa-info-circle"></i> We will notify you via email as soon as your account is
+            activated.
+        </div>
+
+        <a asp-action="Index" asp-controller="Home" class="btn btn-outline auth-btn">Return to Homepage</a>
+    </div>
+</div>

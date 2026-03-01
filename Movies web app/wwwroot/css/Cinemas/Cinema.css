@@ -345,6 +345,76 @@ body {
 
 .details-left {
     max-width: 650px;
+    display: flex;
+    flex-direction: column;
+}
+
+.details-subtitle {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--cinema-text-muted);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.4s ease;
+}
+
+/* Pure CSS Read More Logic */
+.read-more-container {
+    position: relative;
+    width: 100%;
+}
+
+.read-more-toggle {
+    display: none;
+}
+
+    /* Initially clamped to 3 lines */
+    .read-more-toggle ~ .details-subtitle {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Expanded state */
+    .read-more-toggle:checked ~ .details-subtitle {
+        -webkit-line-clamp: unset;
+        line-clamp: unset;
+        max-height: none;
+    }
+
+/* The Read More / Show Less Button */
+.read-more-btn {
+    display: inline-block;
+    color: var(--cinema-primary);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .read-more-btn:hover {
+        color: #ff1f2d;
+        text-decoration: underline;
+    }
+
+/* Dynamic Text Content based on checked state */
+.read-more-toggle ~ .read-more-btn::after {
+    content: attr(data-read-more);
+}
+
+.read-more-toggle:checked ~ .read-more-btn::after {
+    content: attr(data-read-less);
+}
+
+.cinema-logo {
+    flex-shrink: 0;
+    /* Make sure the logo never squishes */
 }
 
 .details-title h1 {
@@ -892,7 +962,6 @@ body {
         border-color: var(--cinema-primary);
         box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.15);
         background: #331a1a;
-        color: white;
     }
 
     .form-control::placeholder {

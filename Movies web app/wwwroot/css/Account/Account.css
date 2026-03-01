@@ -373,7 +373,10 @@
     color: #ffffff;
     font-size: 0.95rem;
     font-family: inherit;
+    font-family: inherit;
     transition: all 0.2s ease;
+    padding-right: 2.5rem;
+    /* Make room for the eye icon */
 }
 
     .form-control::placeholder {
@@ -385,6 +388,33 @@
         border-color: #e50914;
         background: #0d1117;
         box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.15);
+    }
+
+/* Password Toggle Icon */
+.password-toggle-wrapper {
+    position: relative;
+    display: block;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.85rem;
+    transform: translateY(-50%);
+    color: #8b949e;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    z-index: 5;
+    background: transparent;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .password-toggle:hover {
+        color: #c9d1d9;
     }
 
 /* Regex Live Validation UI */
@@ -543,11 +573,9 @@
 }
 
 /* Slide to the second option */
-.role-selection.agent-active .role-slider {
+.role-selection:has(.role-card:nth-of-type(2) input:checked) .role-slider {
     transform: translateX(100%);
 }
-
-
 
 .role-card {
     flex: 1;

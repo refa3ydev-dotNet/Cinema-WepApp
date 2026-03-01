@@ -1,0 +1,33 @@
+﻿@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Stay Signed In";
+}
+
+<div class="auth-right-pane">
+    <div class="auth-box" style="margin-top: -5rem;">
+        <a asp-action="Index" asp-controller="Home" class="auth-logo">
+            <i class="fas fa-ticket-alt"></i> FlickIt
+        </a>
+
+        <div class="auth-header" style="text-align: left;">
+            <h2 style="font-size: 1.8rem;">Stay signed in?</h2>
+            <p>Do this to reduce the number of times you are asked to sign in on this device.</p>
+        </div>
+
+        <form asp-action="RememberMe" asp-controller="Account" method="post">
+
+            <input type="hidden" name="email" value="@ViewBag.Email" />
+
+            <div class="form-check" style="margin-bottom: 2rem;">
+                <input type="checkbox" id="DontShowAgain" name="DontShowAgain" class="form-check-input" style="cursor: pointer;">
+                <label for="DontShowAgain" class="form-check-label" style="cursor: pointer;">Don't show this again</label>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" name="actionType" value="No" class="btn btn-outline auth-btn" style="margin-top: 0; color: white; border: 1px solid #30363d; background: transparent;">No</button>
+
+                <button type="submit" name="actionType" value="Yes" class="btn btn-primary auth-btn" style="margin-top: 0;">Yes</button>
+            </div>
+        </form>
+    </div>
+</div>

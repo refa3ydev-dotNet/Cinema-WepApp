@@ -24,6 +24,11 @@ namespace Business.Managers.Accounts
             return await _userManager.FindByEmailAsync(email);
         }
 
+        public async Task<IList<string>> GetUserRolesAsync(ApplicationUser user)
+        {
+            return await _userManager.GetRolesAsync(user);
+        }
+
         public async Task<IdentityResult> RegisterUserAsync(RegisterDto registerDto)
         {
             bool IsAutoApproved = registerDto.Role == "Customer";

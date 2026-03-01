@@ -13,5 +13,7 @@ namespace Business.Managers.Accounts
          Task<ApplicationUser> GetUserByEmailAsync(string email);
          Task<bool> CheckPasswordAsync(ApplicationUser user, string password);
          Task<IdentityResult> UpdateUserAsync(ApplicationUser user);
+        Task<IList<string>> GetUserRolesAsync(ApplicationUser user);
+
     }
 }

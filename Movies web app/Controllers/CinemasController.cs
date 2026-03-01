@@ -1,25 +1,31 @@
 ﻿using Business.DTOs.Cinemas;
+using Business.Managers.Accounts;
+using Business.Managers.Actors;
 using Business.Managers.Cinemas;
 using Core.Enums;
 using DataAccess.Contexts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies_web_app.Services;
+using System.Security.Claims;
 
 namespace Movies_web_app.Controllers
 {
     public class CinemasController : Controller
     {
         private readonly MoviesDbContext _context;
+        private readonly IAccountManager _accountmanager;
         private readonly ICinemasManager _cinemaManager;
         private readonly IImageService _imageServises;
 
 
 
-        public CinemasController(MoviesDbContext context, ICinemasManager cinemaManager, IImageService imageServices)
+        public CinemasController(MoviesDbContext context, ICinemasManager cinemaManager, IImageService imageServices, IAccountManager accountManager)
         {
             _context = context;
             _cinemaManager = cinemaManager;
             _imageServises = imageServices;
+                _accountmanager = accountManager;
         }
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1)
@@ -28,46 +34,75 @@ namespace Movies_web_app.Controllers
             var allCinemas = await _cinemaManager.GetPagedCinemasAsync(page, pageSize);
             return View(allCinemas);
         }
+        [Authorize(Roles = "CinemaAgent")]
         [HttpGet]
         public async Task<IActionResult> Create()
         {
+           var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = await _accountmanager.GetUserByEmailAsync(userEmail);
+
+
+            if (currentUser != null && currentUser.CinemaId != null)
+            {
+                return RedirectToAction("Details", "Cinemas", new { id = currentUser.CinemaId });
+            }
+            
             return View();
         }
+        [Authorize(Roles = "CinemaAgent")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateCinemaDto cinema)
         {
+
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser=await _accountmanager.GetUserByEmailAsync(userEmail);
+            if (currentUser != null && currentUser.CinemaId != null && currentUser.CinemaId != 0)
+            {
+
+                return RedirectToAction("Details", "Cinemas", new { id = currentUser.CinemaId });
+            }
             if (!ModelState.IsValid)
             {
                 return View(cinema);
+            }
+            string logoPath = cinema.LogoPath;
+            if(cinema.Logo != null)
+            {
+                logoPath =
+                    await _imageServises.UploadImageAsync(cinema.Logo, "Cinemas",ImageType.Profile);
+
+            }
+            string backgroundPath = cinema.BackgroundPath;
+            if (cinema.BackgroundPicture != null)
+            {
+                backgroundPath =
+                    await _imageServises.UploadImageAsync(cinema.BackgroundPicture, "Cinemas",ImageType.Background);
+
             }
             var cinemaModel = new CreateCinemaDto
             {
                 Name = cinema.Name,
                 Description = cinema.Description,
-                Address = cinema.Address
+                Address = cinema.Address,
+                LogoPath = logoPath,
+                BackgroundPath = backgroundPath
+
             };
-            if(cinema.Logo != null)
-            {
-                cinemaModel.LogoPath =
-await _imageServises.UploadImageAsync(cinema.Logo, "Cinemas",ImageType.Profile);
+            var newCinemaId = await _cinemaManager.CreateCinemaAsync(cinemaModel);
 
-            }
-            if (cinema.BackgroundPicture != null)
+            if(currentUser!=null&& newCinemaId>0)
             {
-                cinemaModel.BackgroundPath =
-await _imageServises.UploadImageAsync(cinema.BackgroundPicture, "Cinemas",ImageType.Background);
-
+                currentUser.CinemaId = newCinemaId;
+                await _accountmanager.UpdateUserAsync(currentUser);
             }
-            if (cinema.Logo==null)
-            {
-                cinemaModel.LogoPath = cinema.LogoPath;
-            }
-            if (cinema.BackgroundPicture == null)
-            {
-                cinemaModel.BackgroundPath = cinema.BackgroundPath;
-            }
-            await _cinemaManager.CreateCinemaAsync(cinemaModel);
-            return RedirectToAction("Index");
+           
+            return RedirectToAction("PendingApproval");
+        }
+        [Authorize(Roles = "CinemaAgent")]
+        [HttpGet]
+        public async Task<IActionResult> PendingApproval()
+        {
+            return View();
         }
         public async Task<IActionResult> Details(int id)
         {

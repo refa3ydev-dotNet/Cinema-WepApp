@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Entities.Relations;
+using Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Core
@@ -23,7 +24,7 @@ namespace Core
         [Display(Name = "Cinema Background Picture")]
         [Required(ErrorMessage = "Cinema Background Picture is required")]
         public string? BackgroundPicture { get; set; }
-        public bool IsApproved { get; set; }=false;
+        public ApprovalStatus ApprovalStatus { get; set; }= ApprovalStatus.Pending;
 
         //Relationships
         public ICollection<CinemaMovie> CinemaMovies { get; set; } = new List<CinemaMovie>();
