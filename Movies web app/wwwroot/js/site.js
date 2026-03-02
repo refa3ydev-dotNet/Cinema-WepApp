@@ -1,7 +1,7 @@
 ﻿document.addEventListener('DOMContentLoaded', () => {
     // Header Scroll Effect
     const header = document.querySelector('.main-header');
-    
+
     if (header) {
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
@@ -18,7 +18,7 @@
             e.preventDefault();
             const targetId = this.getAttribute('href');
             if (targetId === '#') return;
-            
+
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 targetElement.scrollIntoView({
@@ -75,4 +75,15 @@
             });
         });
     }
+
+    // --- ACTIVE LINK HIGHLIGHTING ---
+    const currentPath = window.location.pathname;
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href'))) {
+            // Remove active from all
+            navLinks.forEach(l => l.classList.remove('active'));
+            // Add to current
+            link.classList.add('active');
+        }
+    });
 });

@@ -310,26 +310,37 @@ body {
 
 .details-hero {
     position: relative;
-    height: 70vh;
-    min-height: 500px;
+    /* Let the container grow naturally based on content */
+    min-height: 70vh;
     width: 100%;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .details-hero-img {
+    /* Absolute positioning behind the normal flow content */
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    z-index: 0;
 }
 
 /* Gradient Overlay for text readability */
 .details-hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, var(--cinema-bg) 5%, rgba(15, 5, 5, 0.8) 25%, transparent 60%);
+    /* Removed absolute positioning so it sits in normal document flow */
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(to top, var(--cinema-bg) 0%, rgba(15, 5, 5, 0.9) 35%, transparent 80%);
+    /* Flex allows us to push content down to the bottom of the min-height */
     display: flex;
-    align-items: flex-end;
-    padding-bottom: 6rem;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex-grow: 1;
+    padding-top: 10rem;
+    padding-bottom: 4rem;
+    /* Adds resilient spacing above the bottom content */
 }
 
 .details-hero-content {
@@ -338,27 +349,45 @@ body {
     margin: 0 auto;
     padding: 0 2rem;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 3rem;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.details-left {
-    max-width: 650px;
+/* Header Row (Logo, Title, Buttons) */
+.details-hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    gap: 2rem;
+    flex-wrap: wrap;
+    /* Allows wrapping gracefully on smaller screens */
+}
+
+.details-title-area {
     display: flex;
     flex-direction: column;
 }
 
-.details-subtitle {
-    font-size: 1.15rem;
-    line-height: 1.6;
-    color: var(--cinema-text-muted);
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    transition: all 0.4s ease;
+/* Description Row (Now separated below Hero) */
+.cinema-description-section {
+    padding: 2rem 4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 5;
+    background-color: var(--cinema-bg);
 }
 
-/* Pure CSS Read More Logic */
+.details-hero-description {
+    width: 100%;
+}
+
+.cinema-logo {
+    flex-shrink: 0;
+}
+
+/* Pure CSS Read More Logic with Animation */
 .read-more-container {
     position: relative;
     width: 100%;
@@ -368,21 +397,37 @@ body {
     display: none;
 }
 
-    /* Initially clamped to 3 lines */
-    .read-more-toggle ~ .details-subtitle {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+/* Base text styling */
+.description-content {
+    /* Magic layout trick: use a max-height transition instead of grid for dynamic text clamping compatibility */
+    max-height: 4.8rem;
+    /* roughly 3 lines at 1.6 line height */
+    transition: max-height 0.4s ease-out;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
 
-    /* Expanded state */
-    .read-more-toggle:checked ~ .details-subtitle {
+/* Base visible text acts like a normal paragraph until expanded */
+.details-subtitle {
+    margin: 0;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--cinema-text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* Trigger Expansion */
+.read-more-toggle:checked ~ .description-content {
+    /* Set a large max-height for dynamic MVC content to smoothly expand into */
+    max-height: 2000px;
+}
+
+    .read-more-toggle:checked ~ .description-content .details-subtitle {
         -webkit-line-clamp: unset;
         line-clamp: unset;
-        max-height: none;
     }
 
 /* The Read More / Show Less Button */
@@ -410,11 +455,6 @@ body {
 
 .read-more-toggle:checked ~ .read-more-btn::after {
     content: attr(data-read-less);
-}
-
-.cinema-logo {
-    flex-shrink: 0;
-    /* Make sure the logo never squishes */
 }
 
 .details-title h1 {
@@ -518,8 +558,8 @@ body {
     grid-template-columns: 1fr 1fr 1.6fr;
     gap: 2rem;
     max-width: 1400px;
-    margin: -4rem auto 4rem;
-    /* Overlap Hero */
+    /* Normal document flow margin without visual collisions or negative hacks */
+    margin: 0 auto 4rem;
     padding: 0 2rem;
     position: relative;
     z-index: 10;
