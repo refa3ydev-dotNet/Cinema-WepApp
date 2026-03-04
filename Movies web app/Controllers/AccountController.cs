@@ -88,13 +88,8 @@ namespace Movies_web_app.Controllers
                 }
                 await _accountManager.UpdateUserAsync(user);
             }
-            var custumClaims = new List<Claim>
-                        {
-                            new Claim("FirstName",user.FirstName??""),
-                            new Claim("LastName",user.LastName??""),
-                            new Claim("ProfilePictureURL",user.ProfilePictureUrl??(user.Gender=="Male"?"/images/male.png":"/images/female.png"))
-                        };
-            await _signInManager.SignInWithClaimsAsync(user, isPersistent: true, custumClaims);
+
+            await _signInManager.SignInAsync(user, isPersistent: true);
             
             if (dto.Role == "CinemaAgent")
             {
@@ -128,13 +123,8 @@ namespace Movies_web_app.Controllers
                     if(Request.Cookies.TryGetValue("AutoRememberMe",out string cookieValue))
                     {
                         bool isPersistent = cookieValue == "true";
-                        var custumClaims = new List<Claim>
-                        {
-                            new Claim("FirstName",user.FirstName??""),
-                            new Claim("LastName",user.LastName??""),
-                            new Claim("ProfilePictureURL",user.ProfilePictureUrl??(user.Gender=="Male"?"/images/male.png":"/images/female.png"))
-                        };
-                        await _signInManager.SignInWithClaimsAsync(user, isPersistent: isPersistent, custumClaims);
+                        
+                        await _signInManager.SignInAsync(user, isPersistent: isPersistent);
                         
                         var userRoles= await _accountManager.GetUserRolesAsync(user);
                         if(userRoles.Contains("CinemaAgent")&& user.CinemaId == null)
@@ -145,17 +135,13 @@ namespace Movies_web_app.Controllers
 
                     }
                     return RedirectToAction("RememberMe", new { email = dto.Email });
-                    //var result =await _signInManager.PasswordSignInAsync(user,dto.Password,isPersistent:dto.RememberMe,lockoutOnFailure:false);
-                    //if (result.Succeeded)
-                    //{
-                    //    return RedirectToAction("Index", "Home");
-                    //}
+
                 }
             }
             ModelState.AddModelError("","Invalid Email or Password");
             return View(dto);
         }
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -185,13 +171,8 @@ namespace Movies_web_app.Controllers
                 };
                 Response.Cookies.Append("AutoRememberMe", isPersistent.ToString(), options);
             }
-            var custumClaims = new List<Claim>
-                        {
-                            new Claim("FirstName",user.FirstName??""),
-                            new Claim("LastName",user.LastName??""),
-                            new Claim("ProfilePictureURL",user.ProfilePictureUrl??(user.Gender=="Male"?"/images/male.png":"/images/female.png"))
-                        };
-            await _signInManager.SignInWithClaimsAsync(user, isPersistent: isPersistent, custumClaims);
+
+            await _signInManager.SignInAsync(user, isPersistent: isPersistent);
             var userRoles = await _accountManager.GetUserRolesAsync(user);
             if (userRoles.Contains("CinemaAgent") && user.CinemaId == null)
             {

@@ -48,42 +48,96 @@
     revealElements.forEach(el => observer.observe(el));
 
     // --- MOBILE MENU ---
-    const menuToggle = document.querySelector('.mobile-menu-toggle');
-    const mainNav = document.querySelector('.main-nav');
-    const navLinks = document.querySelectorAll('.main-nav a');
-    const menuIcon = menuToggle ? menuToggle.querySelector('i') : null;
+    const menuToggles = document.querySelectorAll('.mobile-menu-toggle');
 
-    if (menuToggle && mainNav) {
-        menuToggle.addEventListener('click', () => {
-            mainNav.classList.toggle('active');
-            // Toggle icon
-            if (mainNav.classList.contains('active')) {
-                menuIcon?.classList.remove('fa-bars');
-                menuIcon?.classList.add('fa-times');
-            } else {
-                menuIcon?.classList.remove('fa-times');
-                menuIcon?.classList.add('fa-bars');
+    if (menuToggles.length > 0) {
+        menuToggles.forEach(toggle => {
+            // Find the nearest header and its corresponding main-nav
+            const header = toggle.closest('.main-header');
+            if (!header) return;
+
+            const mainNav = header.querySelector('.main-nav');
+            const navLinks = mainNav ? mainNav.querySelectorAll('a') : [];
+
+            // Support both <i class="... mobile-menu-toggle"> and <div class="mobile-menu-toggle"><i>...</div>
+            const menuIcon = toggle.tagName.toLowerCase() === 'i' ? toggle : toggle.querySelector('i');
+
+            if (mainNav) {
+                toggle.addEventListener('click', () => {
+                    mainNav.classList.toggle('active');
+                    toggle.classList.toggle('active'); // Add active class to the toggle itself
+
+                    // Toggle body scroll
+                    document.body.classList.toggle('no-scroll');
+
+                    // Toggle icon
+                    if (mainNav.classList.contains('active')) {
+                        menuIcon?.classList.remove('fa-bars');
+                        menuIcon?.classList.add('fa-times');
+                    } else {
+                        menuIcon?.classList.remove('fa-times');
+                        menuIcon?.classList.add('fa-bars');
+                    }
+                });
+
+                // Close menu when a link is clicked
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mainNav.classList.remove('active');
+                        toggle.classList.remove('active');
+                        document.body.classList.remove('no-scroll');
+                        menuIcon?.classList.remove('fa-times');
+                        menuIcon?.classList.add('fa-bars');
+                    });
+                });
             }
-        });
-
-        // Close menu when a link is clicked
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mainNav.classList.remove('active');
-                menuIcon?.classList.remove('fa-times');
-                menuIcon?.classList.add('fa-bars');
-            });
         });
     }
 
     // --- ACTIVE LINK HIGHLIGHTING ---
     const currentPath = window.location.pathname;
-    navLinks.forEach(link => {
+    const allNavLinks = document.querySelectorAll('.main-nav a, .main-nav .nav-link');
+    allNavLinks.forEach(link => {
         if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href'))) {
             // Remove active from all
-            navLinks.forEach(l => l.classList.remove('active'));
+            allNavLinks.forEach(l => l.classList.remove('active'));
             // Add to current
             link.classList.add('active');
         }
     });
+
+    // --- PROFILE DROPDOWN MENU ---
+    const profileTriggers = document.querySelectorAll('.nav-profile-trigger');
+    const allDropdowns = document.querySelectorAll('.nav-dropdown');
+
+    if (profileTriggers.length > 0) {
+        // Toggle dropdown on click
+        profileTriggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent the body click listener from immediately firing
+                const parentDropdown = trigger.closest('.nav-dropdown');
+
+                // Close other open dropdowns first (if multiple exist on a page)
+                allDropdowns.forEach(dropdown => {
+                    if (dropdown !== parentDropdown) {
+                        dropdown.classList.remove('active');
+                    }
+                });
+
+                if (parentDropdown) {
+                    parentDropdown.classList.toggle('active');
+                }
+            });
+        });
+
+        // Close dropdown when clicking anywhere else on the page
+        document.addEventListener('click', (e) => {
+            allDropdowns.forEach(dropdown => {
+                if (!dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        });
+    }
 });

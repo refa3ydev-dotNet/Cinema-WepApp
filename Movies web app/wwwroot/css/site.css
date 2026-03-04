@@ -27,6 +27,11 @@ body {
     overflow-x: hidden;
 }
 
+    body.no-scroll {
+        overflow: hidden;
+        /* Prevent scrolling when mobile menu is open */
+    }
+
 /* Typography */
 h1,
 h2,
@@ -200,36 +205,50 @@ img {
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-    .main-nav a,
-    .main-nav .nav-link {
-        /* Added .nav-link for Blazor */
-        position: relative;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.65) !important;
-        /* Override Bootstrap */
-        padding: 0.6rem 1rem;
-        border-radius: 100px;
-        transition: all 0.3s ease;
-        overflow: hidden;
-        white-space: nowrap;
-        text-decoration: none !important;
-        /* Remove Bootstrap underline */
+/* Mobile Toggle Icon Base Style */
+.mobile-menu-toggle {
+    display: none;
+    /* Hidden by default on desktop */
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+    .mobile-menu-toggle:hover {
+        transform: scale(1.1);
     }
 
-        .main-nav a:hover,
-        .main-nav .nav-link:hover,
-        .main-nav a.active,
-        .main-nav .nav-link.active {
-            color: white !important;
-            background: rgba(255, 255, 255, 0.1);
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
-        }
+.main-nav a,
+.main-nav .nav-link {
+    /* Added .nav-link for Blazor */
+    position: relative;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.65) !important;
+    /* Override Bootstrap */
+    padding: 0.6rem 1rem;
+    border-radius: 100px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
+    text-decoration: none !important;
+    /* Remove Bootstrap underline */
+}
 
-        /* Remove old underline */
-        .main-nav a::after {
-            display: none;
-        }
+    .main-nav a:hover,
+    .main-nav .nav-link:hover,
+    .main-nav a.active,
+    .main-nav .nav-link.active {
+        color: white !important;
+        background: rgba(255, 255, 255, 0.1);
+        text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+    }
+
+    /* Remove old underline */
+    .main-nav a::after {
+        display: none;
+    }
 
 /* Search Bar - Icon Only Expanding */
 .header-search {
@@ -383,7 +402,7 @@ img {
     transition: transform 0.3s;
 }
 
-.nav-dropdown:hover .profile-chevron {
+.nav-dropdown.active .profile-chevron {
     transform: rotate(180deg);
 }
 
@@ -398,6 +417,8 @@ img {
     border-radius: 12px;
     padding: 0.5rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: block;
+    /* Override Bootstrap's native display: none */
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
@@ -405,7 +426,7 @@ img {
     z-index: 1050;
 }
 
-.nav-dropdown:hover .dropdown-menu {
+.nav-dropdown.active .dropdown-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -736,7 +757,7 @@ img {
 
 /* Responsive Styles for Layout */
 .mobile-menu-toggle {
-    display: none;
+    display: none !important;
     font-size: 1.5rem;
     color: white;
     cursor: pointer;
@@ -763,30 +784,38 @@ img {
     }
 
     .mobile-menu-toggle {
-        display: block;
+        display: block !important;
         font-size: 1.4rem;
         padding: 0.5rem;
+        position: relative;
+        z-index: 1100;
+        /* Must be higher than .main-nav (1050) */
         /* Increase touch target */
     }
 
-    /* Mobile Navigation Drawer */
+        /* When menu is active, ensure the toggle stays fixed in the top right */
+        .mobile-menu-toggle.active {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+        }
+
     .main-nav {
         position: fixed;
         top: 0;
-        right: -100%;
+        right: -120%;
         width: 100%;
-        /* Full width on mobile for better focus */
         height: 100vh;
-        background: #0b0f15;
-        /* Solid background prevents visual noise */
+        background: rgba(5, 7, 10, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         display: flex;
-        /* Ensure flex context */
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 149;
-        /* Just below toggle */
+        gap: 2rem;
+        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1050;
         padding: 2rem;
     }
 
@@ -808,6 +837,10 @@ img {
                 background: rgba(255, 255, 255, 0.02);
             }
 
+    .header-search {
+        display: none;
+    }
+
     .header-actions {
         display: none;
     }
@@ -816,17 +849,17 @@ img {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
-        /* Larger gap */
         width: 100%;
         max-width: 300px;
         margin-top: 2rem;
+        align-items: center;
     }
 
         .mobile-nav-actions .btn {
             width: 100%;
             padding: 1rem;
-            /* Larger touch area */
             font-size: 1.1rem;
+            justify-content: center;
         }
 
     /* Typography Scaling */
@@ -893,71 +926,4 @@ img {
         width: 100%;
         /* Full width buttons on tiny screens */
     }
-}
-
-/* Mobile Navigation Styles */
-@media (max-width: 1024px) {
-    .main-header {
-        padding: 1rem 1.5rem;
-    }
-
-        .main-header.scrolled {
-            padding: 0.8rem 1.5rem;
-        }
-
-    .mobile-menu-toggle {
-        display: block;
-        z-index: 1001;
-    }
-
-    .main-nav {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        /* Hidden by default */
-        width: 100%;
-        height: 100vh;
-        background: rgba(5, 7, 10, 0.98);
-        -webkit-backdrop-filter: blur(20px);
-        backdrop-filter: blur(20px);
-        flex-direction: column;
-        justify-content: center;
-        gap: 2rem;
-        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 999;
-    }
-
-        .main-nav.active {
-            right: 0;
-        }
-
-        .main-nav a {
-            font-size: 1.5rem;
-            color: white;
-        }
-
-    .header-search {
-        display: none;
-    }
-
-    .header-actions {
-        display: none;
-    }
-
-    /* Show authentication links in mobile menu */
-    .mobile-nav-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        align-items: center;
-        margin-top: 1rem;
-        width: 100%;
-        max-width: 200px;
-    }
-
-        .mobile-nav-actions .btn {
-            width: 100%;
-            text-align: center;
-            justify-content: center;
-        }
 }

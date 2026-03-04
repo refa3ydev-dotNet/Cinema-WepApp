@@ -31,46 +31,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link href='~/Images/logo.png's rel="icon" />
-    <style>
-        body {
-            padding-top: 100px;
-            background-color: #0b0f15;
-            color: white;
-            padding-bottom: 200px;
-        }
-
-        .demo-section {
-            margin: 4rem auto;
-            max-width: 1200px;
-            padding: 2rem;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            position: relative;
-            min-height: 250px;
-        }
-
-        .demo-title {
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background: #0b0f15;
-            padding: 0 10px;
-            color: #8b949e;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Overriding the fixed position for demo purposes so they stack */
-        .demo-section .main-header {
-            position: relative;
-            top: 0;
-            left: 0;
-            transform: none;
-            width: 100%;
-        }
-    </style>
+    <link href='~/Images/logo.png' rel="icon" />
+    
 
 </head>
 <body>
@@ -104,6 +66,7 @@
                                     <circle cx="25" cy="67" r="8" fill="black" />
                                     <circle cx="80" cy="67" r="8" fill="black" />
                                 </mask>
+
                             </defs>
 
                             <style>
@@ -187,44 +150,51 @@
                             <text x="240" y="85" class="text-it" filter="url(#glow)">It</text>
                         </svg>
                     </a>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <span class="admin-badge">ADMIN PORTAL</span>                        
-                        }
-                    </div>
-
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <span class="admin-badge">ADMIN PORTAL</span>
+                    }
+                </div>
 
                 <nav class="main-nav admin-nav">
-                    <a href="#" class="nav-link active"><i class="fas fa-chart-pie"></i> Dashboard</a>
-                    <a asp-action="Index" asp-controller="Cinemas" class="nav-link"><i class="fas fa-building"></i> Cinemas</a>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            
-                        <a href="#" class="nav-link"><i class="fas fa-film"></i> Manage Movies</a>
-                    <a href="#" class="nav-link"><i class="fas fa-users"></i> Users</a>
-                        }
+                    <a asp-action="Index" asp-controller="Home" class="nav-link @IsActive("Home", "Index")"><i class="fas fa-chart-pie"></i> Dashboard</a>
+                    <a asp-action="Index" asp-controller="Movies" class="nav-link @IsActive("Movies", "Index")"><i class="fas fa-film"></i> Manage Movies</a>
+                    <a asp-action="Index" asp-controller="Cinemas" class="nav-link @IsActive("Cinemas", "Index")"><i class="fas fa-building"></i> Cinemas</a>
+                    <a asp-action="Index" asp-controller="Users" class="nav-link @IsActive("Users", "Index")"><i class="fas fa-users"></i> Users</a>
+                    <!-- Mobile Only Actions -->
+                    <div class="mobile-nav-actions">
+                        <a asp-action="Logout" asp-controller="Account" class="btn btn-secondary"><i class="fas fa-bell"></i> Notifications</a>
+                        <a asp-action="Logout" asp-controller="Account" class="btn btn-outline-white"><i class="fas fa-cogs"></i> Settings</a>
+                        <a asp-action="Logout" asp-controller="Account" class="btn btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
                 </nav>
 
                 <div class="header-actions">
                     <a href="#" class="admin-icon-btn">
                         <i class="fas fa-bell"></i>
-                        @* <span class="notification-dot"></span> *@
+                        <span class="notification-dot"></span>
                     </a>
 
                     <!-- Admin Profile Dropdown -->
                     <div class="nav-dropdown">
                         <div class="nav-profile-trigger">
                             <img src="@ProfilePicture" alt="Admin Profile"
-                                 class="profile-avatar admin-avatar" style="width: 40px; height: 40px;">
+                                 class="profile-avatar admin-avatar">
                             <div class="profile-details">
                                 <span class="profile-name">@FirstName @LastName</span>
-                                <span class="profile-role">@(User.IsInRole("Admin")?"Admin":"CinemaAgent")</span>
-                            </div>
+                                @if(User.IsInRole("Admin")){
+                                    <span class="profile-role">Super Admin</span>
+                                }
+                                else
+                                {
+                                    <span class="profile-role">Cinema Agent</span>
+                                }   
+                                </div>
                             <i class="fas fa-chevron-down profile-chevron"></i>
                         </div>
                         <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item"><i class="fas fa-cogs"></i> System Settings</a>
-                            <a href="#" class="dropdown-item"><i class="fas fa-shield-alt"></i> Security Logs</a>
+                            <a asp-action="Logout" asp-controller="Account" class="dropdown-item @IsActive"><i class="fas fa-cogs"></i> System Settings</a>
+                            <a asp-action="Logout" asp-controller="Account" class="dropdown-item"><i class="fas fa-shield-alt"></i> Security Logs</a>
                             <div class="dropdown-divider"></div>
                             <a asp-action="Logout" asp-controller="Account" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
                         </div>
@@ -233,166 +203,299 @@
                 <i class="fas fa-bars mobile-menu-toggle"></i>
             </header>
             }
+            else
+            {
+            <header class="main-header">
+                <div class="logo">
+                    <a class="d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 140" width="65%" height="100%">
+                            <defs>
+                                <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FF3366" />
+                                    <stop offset="100%" stop-color="#E50914" />
+                                </linearGradient>
+
+                                <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFFFFF" />
+                                    <stop offset="100%" stop-color="#B0B0C5" />
+                                </linearGradient>
+
+                                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="5" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+
+                                <mask id="ticketHoles">
+                                    <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                                    <circle cx="25" cy="67" r="8" fill="black" />
+                                    <circle cx="80" cy="67" r="8" fill="black" />
+                                </mask>
+
+                            </defs>
+
+                            <style>
+                                /* تنسيق كلمة Flick */
+                                .text-flick {
+                                    font-family: 'Segoe UI', system-ui, sans-serif;
+                                    font-weight: 900;
+                                    font-size: 58px;
+                                    fill: url(#silverGrad);
+                                    font-style: italic;
+                                    letter-spacing: -1px;
+                                }
+
+                                /* تنسيق كلمة It */
+                                .text-it {
+                                    font-family: 'Segoe UI', system-ui, sans-serif;
+                                    font-weight: 900;
+                                    font-size: 58px;
+                                    fill: url(#redGrad);
+                                    font-style: italic;
+                                }
+
+                                /* الخط مخفي في الوضع الطبيعي */
+                                .swoosh {
+                                    stroke-dasharray: 400;
+                                    stroke-dashoffset: 400;
+                                    opacity: 0;
+                                }
+
+                                /* تفعيل حركة الخط فقط عند التمرير (Hover) */
+                                svg:hover .swoosh {
+                                    animation: flickAnim 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                                }
+
+                                /* أنيميشن الأيقونة الطافية مستمر بهدوء */
+                                .ticket-icon {
+                                    transform-origin: 50px 70px;
+                                    animation: floatAnim 4s ease-in-out infinite;
+                                }
+
+                                @@keyframes flickAnim {
+                                    0% {
+                                        stroke-dashoffset: 400;
+                                        opacity: 0;
+                                    }
+
+                                    15% {
+                                        opacity: 1;
+                                    }
+
+                                    70% {
+                                        stroke-dashoffset: 0;
+                                        opacity: 1;
+                                    }
+
+                                    100% {
+                                        stroke-dashoffset: 0;
+                                        opacity: 0;
+                                    }
+                                }
+
+                                @@keyframes floatAnim {
+                                    0%, 100% {
+                                        transform: translateY(0) rotate(-4deg);
+                                    }
+
+                                    50% {
+                                        transform: translateY(-6px) rotate(4deg);
+                                    }
+                                }
+                            </style>
+
+                            <g class="ticket-icon">
+                                <rect x="25" y="40" width="55" height="55" rx="8" fill="none" stroke="url(#redGrad)" stroke-width="5" mask="url(#ticketHoles)" />
+                                <path d="M 42 52 L 65 67 L 42 82 Z" fill="url(#silverGrad)" />
+                            </g>
+
+                            <path class="swoosh" d="M 95 105 Q 230 130 380 90" fill="none" stroke="url(#redGrad)" stroke-width="4" stroke-linecap="round" filter="url(#glow)" />
+
+                            <text x="100" y="85" class="text-flick">Flick</text>
+                            <text x="240" y="85" class="text-it" filter="url(#glow)">It</text>
+                        </svg>
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <span class="admin-badge">ADMIN PORTAL</span>
+                    }
+                </div>
+
+                <nav class="main-nav">
+                    <a asp-action="Index" asp-controller="Home" class="nav-link @IsActive("Home", "Index")">Home</a>
+                    <a asp-action="Index" asp-controller="Movies" class="nav-link @IsActive("Movies", "Index")">Movies</a>
+                    <a asp-action="Index" asp-controller="Cinemas" class="nav-link @IsActive("Cinemas", "Index")">Cinemas</a>
+                    <a asp-action="Index" asp-controller="Tickets" class="nav-link active @IsActive("Tickets", "Index")">My Tickets</a>
+                    <!-- Mobile Only Actions -->
+                    <div class="mobile-nav-actions">
+                        <a href="#" class="btn btn-outline-white"><i class="fas fa-search"></i> Search</a>
+                        <a href="#" class="btn btn-secondary"><i class="fas fa-user-circle"></i> Profile</a>
+                        <a asp-action="Logout" asp-controller="Account" class="btn btn-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </nav>
+
+                <div class="header-actions">
+                    <div class="header-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search movies, cinemas...">
+                    </div>
+
+                    <!-- Customer Profile Dropdown -->
+                    <div class="nav-dropdown">
+                        <div class="nav-profile-trigger">
+                            <img src="@ProfilePicture" alt="Profile" class="profile-avatar">
+                            <span class="profile-name">@FirstName @LastName</span>
+                            <i class="fas fa-chevron-down profile-chevron"></i>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item"><i class="fas fa-user-circle"></i> Account Settings</a>
+                            <a href="#" class="dropdown-item"><i class="fas fa-heart"></i> My Favorites</a>
+                            <a href="#" class="dropdown-item"><i class="fas fa-credit-card"></i> Payment Methods</a>
+                            <div class="dropdown-divider"></div>
+                            <a asp-action="Logout" asp-controller="Account" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+                <i class="fas fa-bars mobile-menu-toggle"></i>
+            </header>
+                
+            }
         }
         else
         {
             
         <header class="main-header">
-        <div class="logo">
-            <a class="d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 140" width="65%" height="100%">
-                    <defs>
-                        <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#FF3366" />
-                            <stop offset="100%" stop-color="#E50914" />
-                        </linearGradient>
+            <div class="logo">
+                <a class="d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 140" width="65%" height="100%">
+                        <defs>
+                            <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FF3366" />
+                                <stop offset="100%" stop-color="#E50914" />
+                            </linearGradient>
 
-                        <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#FFFFFF" />
-                            <stop offset="100%" stop-color="#B0B0C5" />
-                        </linearGradient>
+                            <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFFFFF" />
+                                <stop offset="100%" stop-color="#B0B0C5" />
+                            </linearGradient>
 
-                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feGaussianBlur stdDeviation="5" result="blur" />
-                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                        </filter>
+                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="5" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
 
-                        <mask id="ticketHoles">
-                            <rect x="0" y="0" width="100%" height="100%" fill="white" />
-                            <circle cx="25" cy="67" r="8" fill="black" />
-                            <circle cx="80" cy="67" r="8" fill="black" />
-                        </mask>
-                    </defs>
+                            <mask id="ticketHoles">
+                                <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                                <circle cx="25" cy="67" r="8" fill="black" />
+                                <circle cx="80" cy="67" r="8" fill="black" />
+                            </mask>
 
-                    <style>
-                        /* تنسيق كلمة Flick */
-                        .text-flick {
-                            font-family: 'Segoe UI', system-ui, sans-serif;
-                            font-weight: 900;
-                            font-size: 58px;
-                            fill: url(#silverGrad);
-                            font-style: italic;
-                            letter-spacing: -1px;
-                        }
+                        </defs>
 
-                        /* تنسيق كلمة It */
-                        .text-it {
-                            font-family: 'Segoe UI', system-ui, sans-serif;
-                            font-weight: 900;
-                            font-size: 58px;
-                            fill: url(#redGrad);
-                            font-style: italic;
-                        }
+                        <style>
+                            /* تنسيق كلمة Flick */
+                            .text-flick {
+                                font-family: 'Segoe UI', system-ui, sans-serif;
+                                font-weight: 900;
+                                font-size: 58px;
+                                fill: url(#silverGrad);
+                                font-style: italic;
+                                letter-spacing: -1px;
+                            }
 
-                        /* الخط مخفي في الوضع الطبيعي */
-                        .swoosh {
-                            stroke-dasharray: 400;
-                            stroke-dashoffset: 400;
-                            opacity: 0;
-                        }
+                            /* تنسيق كلمة It */
+                            .text-it {
+                                font-family: 'Segoe UI', system-ui, sans-serif;
+                                font-weight: 900;
+                                font-size: 58px;
+                                fill: url(#redGrad);
+                                font-style: italic;
+                            }
 
-                        /* تفعيل حركة الخط فقط عند التمرير (Hover) */
-                        svg:hover .swoosh {
-                            animation: flickAnim 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-                        }
-
-                        /* أنيميشن الأيقونة الطافية مستمر بهدوء */
-                        .ticket-icon {
-                            transform-origin: 50px 70px;
-                            animation: floatAnim 4s ease-in-out infinite;
-                        }
-
-                        @@keyframes flickAnim {
-                            0% {
+                            /* الخط مخفي في الوضع الطبيعي */
+                            .swoosh {
+                                stroke-dasharray: 400;
                                 stroke-dashoffset: 400;
                                 opacity: 0;
                             }
 
-                            15% {
-                                opacity: 1;
+                            /* تفعيل حركة الخط فقط عند التمرير (Hover) */
+                            svg:hover .swoosh {
+                                animation: flickAnim 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
                             }
 
-                            70% {
-                                stroke-dashoffset: 0;
-                                opacity: 1;
+                            /* أنيميشن الأيقونة الطافية مستمر بهدوء */
+                            .ticket-icon {
+                                transform-origin: 50px 70px;
+                                animation: floatAnim 4s ease-in-out infinite;
                             }
 
-                            100% {
-                                stroke-dashoffset: 0;
-                                opacity: 0;
+                            @@keyframes flickAnim {
+                                0% {
+                                    stroke-dashoffset: 400;
+                                    opacity: 0;
+                                }
+
+                                15% {
+                                    opacity: 1;
+                                }
+
+                                70% {
+                                    stroke-dashoffset: 0;
+                                    opacity: 1;
+                                }
+
+                                100% {
+                                    stroke-dashoffset: 0;
+                                    opacity: 0;
+                                }
                             }
-                        }
 
-                        @@keyframes floatAnim {
-                            0%, 100% {
-                                transform: translateY(0) rotate(-4deg);
+                            @@keyframes floatAnim {
+                                0%, 100% {
+                                    transform: translateY(0) rotate(-4deg);
+                                }
+
+                                50% {
+                                    transform: translateY(-6px) rotate(4deg);
+                                }
                             }
+                        </style>
 
-                            50% {
-                                transform: translateY(-6px) rotate(4deg);
-                            }
-                        }
-                    </style>
+                        <g class="ticket-icon">
+                            <rect x="25" y="40" width="55" height="55" rx="8" fill="none" stroke="url(#redGrad)" stroke-width="5" mask="url(#ticketHoles)" />
+                            <path d="M 42 52 L 65 67 L 42 82 Z" fill="url(#silverGrad)" />
+                        </g>
 
-                    <g class="ticket-icon">
-                        <rect x="25" y="40" width="55" height="55" rx="8" fill="none" stroke="url(#redGrad)" stroke-width="5" mask="url(#ticketHoles)" />
-                        <path d="M 42 52 L 65 67 L 42 82 Z" fill="url(#silverGrad)" />
-                    </g>
+                        <path class="swoosh" d="M 95 105 Q 230 130 380 90" fill="none" stroke="url(#redGrad)" stroke-width="4" stroke-linecap="round" filter="url(#glow)" />
 
-                    <path class="swoosh" d="M 95 105 Q 230 130 380 90" fill="none" stroke="url(#redGrad)" stroke-width="4" stroke-linecap="round" filter="url(#glow)" />
-
-                    <text x="100" y="85" class="text-flick">Flick</text>
-                    <text x="240" y="85" class="text-it" filter="url(#glow)">It</text>
-                </svg>
-            </a>
-        </div>
-            <div class="mobile-menu-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
-
-            <!-- Header Search Bar -->
-            <div class="header-search">
-                <i class="fas fa-search"></i>
-                <input type="text" name="SearchQuery" placeholder="Search movies, cinemas...">
+                        <text x="100" y="85" class="text-flick">Flick</text>
+                        <text x="240" y="85" class="text-it" filter="url(#glow)">It</text>
+                    </svg>
+                </a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <span class="admin-badge">ADMIN PORTAL</span>
+                }
             </div>
 
             <nav class="main-nav">
-            <a class="nav-link @IsActive("Home", "Index")"
-               asp-controller="Home" asp-action="Index">
-                Home
-            </a>
-
-            <a class="nav-link @IsActive("Movies", "Index")"
-               asp-controller="Movies" asp-action="Index">
-                Movies
-            </a>
-
-            <a class="nav-link @IsActive("Cinemas", "Index")"
-               asp-controller="Cinemas" asp-action="Index">
-                Cinemas
-            </a>
-
-            <a class="nav-link @IsActive("Actors", "Index")"
-               asp-controller="Actors" asp-action="Index">
-                Actors
-            </a>
-
-            <a class="nav-link @IsActive("Directors", "Index")"
-               asp-controller="Directors" asp-action="Index">
-                Directors
-            </a>
+                <a  asp-action="Index" asp-controller="Movies" class="nav-link @IsActive("Movies", "Index")">Movies</a>
+                <a asp-action="Index" asp-controller="Cinemas" class="nav-link @IsActive("Cinemas", "Index")">Cinemas</a>
+                <a asp-action="Index" asp-controller="Actors" class="nav-link @IsActive("Actors", "Index")">Actors</a>
+                <a asp-action="Index" asp-controller="Directors" class="nav-link @IsActive("Directors", "Index")">Directors</a>
                 <!-- Mobile Only Actions -->
                 <div class="mobile-nav-actions">
-                    <a asp-action="Login" asp-controller="Account" class="login-link">Login</a>
-                    <a asp-action="Register" asp-controller="Account" class="btn btn-primary">Sign Up</a>
+                    <a asp-action="Login" asp-controller="Account" class="sign-in">Sign In</a>
+                    <a asp-action="Register" asp-controller="Account" class="btn btn-primary">Join Club</a>
                 </div>
             </nav>
+
             <div class="header-actions">
-                <a asp-action="Login" asp-controller="Account" class="login-link">Login</a>
-                <a asp-action="Register" asp-controller="Account" class="btn btn-primary">Sign Up</a>
+                <a asp-action="Login" asp-controller="Account" class="sign-in">Sign In</a>
+                <a asp-action="Register" asp-controller="Account" class="btn btn-primary">Join Club</a>
             </div>
-        
-    </header>
+            <i class="fas fa-bars mobile-menu-toggle"></i>
+        </header>
         }
         <main role="main" class="pb-3">
             @RenderBody()
@@ -552,7 +655,7 @@
 
     <!-- Script Dependencies -->
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <!-- @await RenderSectionAsync("Scripts", required: false) -->
+    @await RenderSectionAsync("Scripts", required: false) 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

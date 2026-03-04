@@ -67,7 +67,9 @@ namespace Movies_web_app
                 Options.Password.RequireNonAlphanumeric = false;
                 Options.Password.RequiredLength = 8;
             })
-            .AddEntityFrameworkStores<MoviesDbContext>().AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<MoviesDbContext>()
+            .AddDefaultTokenProviders()
+            .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>();
 
             var app = builder.Build();
 
