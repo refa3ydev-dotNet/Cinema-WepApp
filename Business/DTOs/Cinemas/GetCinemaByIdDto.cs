@@ -14,6 +14,7 @@ namespace Business.DTOs.Cinemas
         public string? LogoPath { get; set; }
         public IFormFile Logo { get; set; }
         public List<GetAllMoviesDto> MovieDetails { get; set; }
+        public string AgentName { get; set; }
 
 
     }

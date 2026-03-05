@@ -1,4 +1,5 @@
 ﻿using Core;
+using Core.Enums;
 using Core.Helpers;
 using DataAccess.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace DataAccess.Repositories.CINEMA
             if (id > 0)
             {
                 return await _context.Cinemas
-                    //.Where(x=>x.ApprovalStatus.Equals("Approved"))
+                    .Where(x=>x.ApprovalStatus==ApprovalStatus.Approved)
                     .Include(x => x.CinemaMovies)
                     .ThenInclude(Task => Task.Movie)
                     .FirstOrDefaultAsync(x => x.Id == id);
@@ -28,9 +29,16 @@ namespace DataAccess.Repositories.CINEMA
                 return null;
             }
         }
+        //public async Task<List<Cinema>> GetApprovedCinemasAsync()
+        //{
+        //    return await _context.Cinemas
+        //        .Where(x=>x.ApprovalStatus==ApprovalStatus.Approved)
+        //        .ToListAsync();
+        //}
         public async Task<List<Cinema>> GetAllCinemasAsync()
         {
-            return await _context.Cinemas.ToListAsync();
+            return await _context.Cinemas.
+                ToListAsync();
         }
         public async Task AddCinemaAsync(Cinema cinema)
         {
@@ -126,7 +134,7 @@ namespace DataAccess.Repositories.CINEMA
             var totalCount = await _context.Cinemas.CountAsync();
             var TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
-            var cinemas = await _context.Cinemas
+            var cinemas = await _context.Cinemas.Where(x => x.ApprovalStatus == ApprovalStatus.Approved)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -141,7 +149,7 @@ namespace DataAccess.Repositories.CINEMA
         public async Task<List<Cinema>> GetPendingCinemasAsync()
         {
             return await _context.Cinemas
-                .Where(x => x.ApprovalStatus.Equals("Pending"))
+                .Where(x => x.ApprovalStatus==(ApprovalStatus.Pending))
                 .ToListAsync();
         }
 
@@ -150,7 +158,7 @@ namespace DataAccess.Repositories.CINEMA
             var cinema =await _context.Cinemas.FindAsync(id);
             if (cinema != null)
             {
-                cinema.ApprovalStatus.Equals("Approved");
+                cinema.ApprovalStatus=ApprovalStatus.Approved;
                 await _context.SaveChangesAsync();
             }
         }
@@ -160,7 +168,7 @@ namespace DataAccess.Repositories.CINEMA
             var cinema =await _context.Cinemas.FindAsync(id);
             if (cinema != null)
             {
-                cinema.ApprovalStatus.Equals("Declined");
+                cinema.ApprovalStatus=ApprovalStatus.Rejected;
                 await _context.SaveChangesAsync();
             }
             

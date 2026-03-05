@@ -2,7 +2,7 @@
 
 namespace Core.Entities
 {
-    public class Category
+    public class Category : BaseEntity
     {
         public int Id { get; set; }
         [Display(Name = "Category Name")]

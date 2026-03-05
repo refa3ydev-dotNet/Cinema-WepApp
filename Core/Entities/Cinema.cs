@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Core
 {
-    public class Cinema
+    public class Cinema : BaseEntity
     {
         [Key]
         public int Id { get; set; }

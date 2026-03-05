@@ -94,6 +94,7 @@ namespace Movies_web_app
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             await AppDbInitializer.TaskSeedRoleAsync(app);
+            await AppDbInitializer.TaskSeedAdminUserAsync(app);
             app.Run();
         }
     }

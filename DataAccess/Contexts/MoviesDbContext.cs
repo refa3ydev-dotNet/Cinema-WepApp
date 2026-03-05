@@ -24,6 +24,9 @@ namespace DataAccess.Contexts
         public DbSet<Director> Directors { get; set; }
         public DbSet<DirectorMovie> DirectorMovies { get; set; }
         public DbSet<ProducerMovie> ProducerMovies { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Seat> Seats { get; set; }
+        public DbSet<BookingSeat> BookingSeats { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,7 +46,6 @@ namespace DataAccess.Contexts
                 cm.CinemaId,
                 cm.MovieId
             });
-
             modelBuilder.Entity<CinemaMovie>().HasOne(m => m.Movie).WithMany(cm => cm.CinemaMovies).HasForeignKey(m => m.MovieId);
             modelBuilder.Entity<CinemaMovie>().HasOne(m => m.Cinema).WithMany(cm => cm.CinemaMovies).HasForeignKey(m => m.CinemaId);
 
@@ -65,6 +67,8 @@ namespace DataAccess.Contexts
                 .HasOne(m => m.Director)
                 .WithMany(dm => dm.DirectorMovie)
                 .HasForeignKey(m => m.DirectorId);
+
+            
             modelBuilder.Entity<ProducerMovie>().HasKey(dm=>new {
                 dm.ProducerId,
                 dm.MovieId
@@ -77,6 +81,49 @@ namespace DataAccess.Contexts
                 .HasOne(m => m.Producer)
                 .WithMany(dm => dm.ProducerMovies)
                 .HasForeignKey(m => m.ProducerId);
+
+            modelBuilder.Entity<BookingSeat>()
+                .HasKey(bs => new { bs.BookingId, bs.SeatId });
+            modelBuilder.Entity<BookingSeat>()
+                .HasOne(bs => bs.Booking)
+                .WithMany(b => b.BookingSeats)
+                .HasForeignKey(bs => bs.BookingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<BookingSeat>()
+                .HasOne(bs => bs.Seat)
+                .WithMany()
+                .HasForeignKey(bs => bs.SeatId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<Movie>().Property(m=>m.Price).HasPrecision(10,2);
+            modelBuilder.Entity<Booking>().Property(m=>m.TotalPrice).HasPrecision(10,2);
+            modelBuilder.Entity<BookingSeat>().Property(m=>m.PriceAtBooking).HasPrecision(10,2);
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries<BaseEntity>();
+            foreach (var entry in entries)
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.CreatedAt = DateTime.Now;
+
+                        break;
+                    case EntityState.Modified:
+                        entry.Entity.UpdatedAt = DateTime.Now;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified;
+                        entry.Entity.DeletedAt = DateTime.Now;
+                        entry.Entity.IsDeleted = true;
+                        break;
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
         }
 
     }

@@ -13,5 +13,6 @@ namespace Business.Managers.Cinemas
         Task <List<GetAllCinemasDto>> GetPendingCinemasAsync();
         Task ApproveCinemaAsync(int id);
         Task<PaginationResult<GetAllCinemasDto>> GetPagedCinemasAsync(int page, int pageSize);
+        //Task<List<GetAllCinemasDto>> GetApprovedCinemasAsync();
     }
 }

@@ -196,5 +196,6 @@ namespace Movies_web_app.Controllers
             await _cinemaManager.DeleteCinemaAsync(id);
             return RedirectToAction("Index");
         }
+
     }
 }

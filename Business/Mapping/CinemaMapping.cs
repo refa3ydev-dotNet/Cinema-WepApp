@@ -41,7 +41,8 @@ namespace Business.Mapping
                 LogoPath = cinema.Logo,
                 Description = cinema.Description,
                 Address = cinema.Address,
-                BackgroundPath = cinema.BackgroundPicture
+                BackgroundPath = cinema.BackgroundPicture,
+                AgentName= ""
             }).ToList();
         }
 
@@ -62,7 +63,8 @@ namespace Business.Mapping
                     Id = movie.Movie.Id,
                     Name = movie.Movie.Name,
                     PosterUrl = movie.Movie.PosterImg
-                }).ToList()
+                }).ToList(),
+                
             };
         }
 

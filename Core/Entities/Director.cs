@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Core.Entities
 {
-    public class Director
+    public class Director : BaseEntity
     {
         public int Id { get; set; }
         [Display(Name = "Director Name")]

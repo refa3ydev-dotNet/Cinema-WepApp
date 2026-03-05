@@ -18,8 +18,8 @@ namespace Movies_web_app.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> pendingRequests()
+        [HttpGet]
+        public async Task<IActionResult> PendingRequests()
         {
             var PendingCinemas = await cinemasManager.GetPendingCinemasAsync();
             return View(PendingCinemas);
@@ -28,13 +28,13 @@ namespace Movies_web_app.Controllers
         public async Task<IActionResult> ApproveCinema(int id)
         {
             await cinemasManager.ApproveCinemaAsync(id);
-            return RedirectToAction("pendingRequests");
+            return RedirectToAction("PendingRequests");
         }
             [HttpPost]
         public async Task<IActionResult> RejectCinema(int id)
         {
             await cinemasManager.DeleteCinemaAsync(id);
-            return RedirectToAction("pendingRequests");
+            return RedirectToAction("PendingRequests");
         }
     }
 }

@@ -11,6 +11,7 @@ namespace Business.DTOs.Cinemas
         public IFormFile BackgroundPicture { get; set; }
         public string? BackgroundPath { get; set; }
         public string? LogoPath { get; set; }
+        public string AgentName { get; set; }  
         public IFormFile Logo { get; set; }
 
     }

@@ -1,10 +1,11 @@
-﻿using Core.Entities.Relations;
+﻿using Core.Entities;
+using Core.Entities.Relations;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core
 {
-    public class Producer
+    public class Producer : BaseEntity
     {
         [Key]
         public int Id { get; set; }

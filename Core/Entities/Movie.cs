@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core
 {
-    public class Movie
+    public class Movie : BaseEntity
     {
         [Key]
         public int Id { get; set; }

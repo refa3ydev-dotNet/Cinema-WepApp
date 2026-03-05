@@ -1,22 +1,28 @@
 ﻿using Business.DTOs.Cinemas;
 using Business.Mapping;
+using Core.Entities;
+using Core.Enums;
 using Core.Helpers;
 using DataAccess.Repositories.CINEMA;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business.Managers.Cinemas
 {
     public class CinemasManager : ICinemasManager
     {
         private readonly ICinemaRepository _cinemaRepository;
-        public CinemasManager(ICinemaRepository cinemarepository)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public CinemasManager(ICinemaRepository cinemarepository, UserManager<ApplicationUser> userManager)
         {
             _cinemaRepository = cinemarepository;
+            _userManager = userManager;
         }
 
         public async Task<int> CreateCinemaAsync(CreateCinemaDto dto)
         {
             var cinema = dto.ToEntity();
-            cinema.ApprovalStatus.Equals("Pending");
+            cinema.ApprovalStatus=ApprovalStatus.Pending;
             
             await _cinemaRepository.AddCinemaAsync(cinema);
             return cinema.Id;
@@ -32,6 +38,11 @@ namespace Business.Managers.Cinemas
             var cinema = await _cinemaRepository.GetAllCinemasAsync();
             return cinema.ToDto();
         }
+//        public async Task<List<GetAllCinemasDto>> GetApprovedCinemasAsync()
+//        {
+//var cinema = await _cinemaRepository.GetApprovedCinemasAsync();
+//            return cinema.ToDto();
+//        }
         public async Task<GetCinemaByIdDto> GetCinemaByIdAsync(int id)
         {
             if (id<=0) return null;
@@ -62,7 +73,22 @@ namespace Business.Managers.Cinemas
         public async Task<List<GetAllCinemasDto>> GetPendingCinemasAsync()
         {
             var cinemas =await _cinemaRepository.GetPendingCinemasAsync();
-            return cinemas.ToDto();
+            if(!cinemas.Any()) return new List<GetAllCinemasDto>();
+            var cinemaIds=cinemas.Select(x => x.Id).ToList();
+            var agentDictionary=await _userManager.Users
+                .Where(u=>u.CinemaId.HasValue&&cinemaIds.Contains(u.CinemaId.Value))
+                .ToDictionaryAsync(
+                    u => u.CinemaId.Value,
+                    u => $"{u.FirstName} {u.LastName}"
+                );
+
+            var dtos = cinemas.ToDto();
+            foreach (var dto in dtos)
+            {
+                dto.AgentName = agentDictionary.ContainsKey(dto.Id) ? agentDictionary[dto.Id] : "Unknown Agent";
+
+            }
+            return dtos;
         }
 
         public async Task ApproveCinemaAsync(int id)

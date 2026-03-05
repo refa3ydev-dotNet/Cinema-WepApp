@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Business.DTOs.Cinemas.GetAllCinemasDto>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Cinema Registration Requests";
+}
+<link href="~/css/Cinemas/Pending_Cinema.css" rel="stylesheet" asp-append-version="true" />
+<div class="container mt-5 mb-5 pt-5 " style="margin-top: 50px;">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-file-signature"></i> Cinema Registration Requests
+            </h1>
+            <p class="subtitle">Review and manage new cinema onboarding applications</p>
+        </div>
+    </div>
+    <div class="glass-container">
+        @if (!Model.Any())
+        {
+        <div class="empty-state">
+            <i class="fas fa-glass-cheers"></i>
+            <h3>Great Job!</h3>
+            <p>No pending cinema registration requests at the moment. You're all caught up!</p>
+        </div>
+            
+        }
+        else
+        {
+            
+        <div class="requests-list">
+
+            <!-- Row 1 -->
+                @foreach(var cinema in Model){
+            <div class="request-card">
+
+                <div class="cinema-logo-wrapper">
+                    <!-- Placeholder Image -->
+                    <img src="@cinema.LogoPath"
+                         alt="@cinema.Name">
+                </div>
+
+                <div class="cinema-info">
+                    <div class="info-group">
+                        <h3 class="cinema-name">Vox Cinemas Platinum</h3>
+                        <div class="info-value"><i class="fas fa-user-tie"></i> @cinema.AgentName</div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Location</span>
+                        <div class="info-value"><i class="fas fa-map-marker-alt"></i> @cinema.Address</div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Request Date</span>
+                        <div class="info-value"><i class="far fa-calendar-alt"></i> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                </div>
+
+                <div class="actions-wrapper">
+                    <form asp-action="Approve" asp-controller="Admin" class="d-inline" method="post">
+                        <input type="hidden" name="id" value="@cinema.Id" />
+                    <button type="submit" class="btn-action btn-approve" data-tooltip="Approve Request">
+                        <i class="fas fa-check"></i>
+                    </button>
+                        </form>
+                        <form asp-action="Reject" asp-controller="Admin" class="d-inline" method="post">
+                        <input type="hidden" name="id" value="@cinema.Id" />
+                                <button type="submit" class="btn-action btn-reject" data-tooltip="Reject Request" onclick="return confirm('Are you sure you want to reject and delete this cinema?');">
+                        <i class="fas fa-times"></i>
+                    </button>
+                            </form>
+                </div>
+            </div>
+                }
+        </div>
+
+        }
+
+    </div>
+</div>

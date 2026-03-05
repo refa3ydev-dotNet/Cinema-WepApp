@@ -1,9 +1,10 @@
-﻿using Core.Entities.Relations;
+﻿using Core.Entities;
+using Core.Entities.Relations;
 using System.ComponentModel.DataAnnotations;
 
 namespace Core
 {
-    public class Actor
+    public class Actor:BaseEntity
     {
         [Key]
         public int Id { get; set; }

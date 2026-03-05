@@ -18,5 +18,6 @@ namespace DataAccess.Repositories.CINEMA
         Task ApproveCinemaAsync(int id);
         Task DeActivateCinemaAsync(int id);
         Task<PaginationResult<Cinema>> GetPagedCinemasAsync(int page, int pageSize);
+        //Task<List<Cinema>> GetApprovedCinemasAsync();
     }
 }

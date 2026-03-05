@@ -12,10 +12,14 @@ namespace Core.Entities
 
         public int?CinemaId { get; set; }
         public Cinema Cinema { get; set; }
-        // الخاصية دي هتكون true أوتوماتيك للعميل العادي، وهتكون false للوكيل لحد ما المدير يوافق
         public bool IsApproved { get; set; } = true;
         public string Gender { get; set; }
+        public DateOnly? BirthDate { get; set; }
+        public DateTime CreateAt { get; set; } = DateTime.Now; 
+        public DateTime? UpdateAt { get; set; }
+        public bool IsDeleted { get; set; } = false;
+        public DateTime? DeleteAt { get; set; }
 
-        //public ICollection<Bookings> Bookings { get; set; } = new List<Bookings>();
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }

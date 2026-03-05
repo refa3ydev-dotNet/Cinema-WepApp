@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Movies_web_app</RootNamespace>
+    <UserSecretsId>e3991693-e68a-462f-bcad-46bb5ea35bd0</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

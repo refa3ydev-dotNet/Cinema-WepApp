@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Core.Entities
 {
-    public class Room
+    public class Room : BaseEntity
     {
         [Key]
         public int Id { get; set; }
@@ -14,5 +14,6 @@ namespace Core.Entities
         public Cinema Cinema { get; set; }
         public int seatCount { get; set; }
         public ICollection<MovieSchedule> MovieSchedules { get; set; } = new List<MovieSchedule>(); // <MovieSchedule>
+        public ICollection<Seat>Seats { get; set; } = new List<Seat>();
     }
 }
