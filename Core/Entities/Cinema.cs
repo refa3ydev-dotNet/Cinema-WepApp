@@ -25,10 +25,12 @@ namespace Core
         [Required(ErrorMessage = "Cinema Background Picture is required")]
         public string? BackgroundPicture { get; set; }
         public ApprovalStatus ApprovalStatus { get; set; }= ApprovalStatus.Pending;
+        public string? RejectionReason { get; set; }
 
         //Relationships
         public ICollection<CinemaMovie> CinemaMovies { get; set; } = new List<CinemaMovie>();
         public ICollection<MovieSchedule> movieSchedules { get; set; } = new List<MovieSchedule>();
         public List<Room> Rooms { get; set; } = new List<Room>();
+        
     }
 }

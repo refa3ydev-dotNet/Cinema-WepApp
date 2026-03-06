@@ -29,6 +29,20 @@ namespace DataAccess.Repositories.CINEMA
                 return null;
             }
         }
+        public async Task<Cinema> GetCinemaByIdWithoutFilterAsync(int id)
+        {
+            if (id > 0)
+            {
+                return await _context.Cinemas
+                    .Include(x => x.CinemaMovies)
+                    .ThenInclude(Task => Task.Movie)
+                    .FirstOrDefaultAsync(x => x.Id == id);
+            }
+            else
+            {
+                return null;
+            }
+        }
         //public async Task<List<Cinema>> GetApprovedCinemasAsync()
         //{
         //    return await _context.Cinemas

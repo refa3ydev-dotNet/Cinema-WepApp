@@ -90,9 +90,26 @@ namespace Business.Managers.Cinemas
             }
             return dtos;
         }
-
+        public async Task RejectCinemaAsync(int id ,string reason)
+        {
+        var cinema = await _cinemaRepository.GetCinemaByIdWithoutFilterAsync(id);
+            if (cinema==null) return;
+            else
+            {
+                cinema.ApprovalStatus=ApprovalStatus.Rejected;
+                cinema.RejectionReason=reason;
+                 
+                await _cinemaRepository.UpdateCinemaAsync(cinema);
+            }
+        }
         public async Task ApproveCinemaAsync(int id)
         {
+            var cinema =await _cinemaRepository.GetCinemaByIdWithoutFilterAsync(id);
+            if (cinema!=null)
+            {
+                cinema.ApprovalStatus = ApprovalStatus.Approved;
+                
+            }
             await _cinemaRepository.ApproveCinemaAsync(id);
         }
     }

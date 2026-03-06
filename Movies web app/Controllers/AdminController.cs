@@ -31,9 +31,13 @@ namespace Movies_web_app.Controllers
             return RedirectToAction("PendingRequests");
         }
             [HttpPost]
-        public async Task<IActionResult> RejectCinema(int id)
+        public async Task<IActionResult> RejectCinema(int id, string reason)
         {
-            await cinemasManager.DeleteCinemaAsync(id);
+            if(string.IsNullOrWhiteSpace(reason))
+            {
+                reason = "Your request has been rejected. Please update your information.";
+            }
+            await cinemasManager.RejectCinemaAsync(id, reason);
             return RedirectToAction("PendingRequests");
         }
     }

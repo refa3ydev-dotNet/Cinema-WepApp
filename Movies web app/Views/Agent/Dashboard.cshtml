@@ -1,0 +1,171 @@
+﻿@model Business.DTOs.Agent.AgentDashboardDto
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Agent Dashboard";
+}
+<link href="~/css/AgentCinema/dashboard.css" rel="stylesheet" asp-append-version="true"/>
+<div class="container">
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="header-content">
+            <h1>@Model.CinemaName Dashboard</h1>
+            <p class="header-subtitle">
+                Welcome back, <strong>@Model.AgentName</strong>. Managing <strong>
+                    @Model.CinemaName
+                </strong>.
+            </p>
+        </div>
+        <div>
+            <button class="btn-neon-red">
+                <i class="fas fa-plus"></i> New Screening
+            </button>
+        </div>
+    </header>
+
+    <!-- Metrics Row -->
+    <div class="row g-4 mb-4">
+        <!-- Stat 1 -->
+        <div class="col-md-4">
+            <div class="glass-container stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-ticket"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value text-white">@Model.TicketSoldToday</span>
+                    <span class="stat-label">Tickets Sold Today</span>
+                </div>
+            </div>
+        </div>
+        <!-- Stat 2 -->
+        <div class="col-md-4">
+            <div class="glass-container stat-card">
+                <div class="stat-icon success">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value success-text">@Model.DailyRevenue.ToString("C")</span>
+                    <span class="stat-label">Daily Revenue</span>
+                </div>
+            </div>
+        </div>
+        <!-- Stat 3 -->
+        <div class="col-md-4">
+            <div class="glass-container stat-card">
+                <div class="stat-icon info">
+                    <i class="fas fa-film"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value info-text">@Model.ActiveMoviesCount</span>
+                    <span class="stat-label">Active Movies</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Bookings Table Col -->
+        <div class="col-lg-8">
+            <div class="glass-container">
+                <div class="container-header">
+                    <h2 class="container-title"><i class="fas fa-history"></i> Recent Bookings</h2>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th>Movie & Time</th>
+                                <th>Customer Name</th>
+                                <th>Seats</th>
+                                <th>Total Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Row 1 -->
+                            @if (Model.RecentBookings != null && Model.RecentBookings.Any())
+                            {
+                                
+                            @foreach (var booking in Model.RecentBookings)
+                            { 
+                            <tr>
+                                <td>
+                                    <div class="movie-cell">
+                                        <img src="@booking.MoviePoster"
+                                             alt="@booking.MovieName" class="movie-poster">
+                                        <div class="movie-details-text">
+                                            <span class="movie-name">@booking.MovieName</span>
+                                            <span class="screening-time">@booking.ScheduleTime</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="align-middle">@booking.CustomerName</td>
+                                <td class="align-middle"
+                                    style="font-weight: 600; font-family: monospace; font-size: 1rem;">
+                                    @booking.SeatInfo
+                                </td>
+                                <td class="align-middle" style="font-weight: 700;">@booking.TotalPrice</td>
+                                <td class="align-middle">
+                                    <span class="badge-status status-confirmed">@booking.Status</span>
+                                </td>
+                            </tr>
+                            }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">
+                                        <i class="fas fa-calendar-times fs-3 mb-2"></i>
+                                        <p>No bookings found for today yet.</p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="glass-container">
+                <div class="container-header">
+                    <h2 class="container-title"><i class="fas fa-bolt"></i> Quick Actions</h2>
+                </div>
+
+                <div class="actions-grid">
+                    <a href="#" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-couch"></i>
+                        </div>
+                        <div class="action-text">
+                            <span class="action-title">Hall Setup</span>
+                            <span class="action-desc">Manage Rooms & Seats</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <div class="action-text">
+                            <span class="action-title">Manage Movies</span>
+                            <span class="action-desc">Assign movies to your cinema</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="action-text">
+                            <span class="action-title">Screenings</span>
+                            <span class="action-desc">Set movie play times</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

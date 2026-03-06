@@ -1,6 +1,8 @@
+using Business.Managers.Agent;
 using Business.Managers.Directors;
 using Core.Entities;
 using DataAccess.Contexts;
+using DataAccess.Repositories.Dashboard;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -53,6 +55,9 @@ namespace Movies_web_app
             builder.Services.AddScoped<DataAccess.Repositories.DIRECTOR.IDirectorRepository,
                 DataAccess.Repositories.DIRECTOR.DirectorRepository>();
             builder.Services.AddScoped<Business.Managers.Accounts.IAccountManager, Business.Managers.Accounts.AccountManager>();
+
+            builder.Services.AddScoped<IAgentDashboardRepository, AgentDashboardRepository>();
+            builder.Services.AddScoped<IAgentDashboardManager, AgentDashboardManager>();
 
             // ? DbContext configuration using the connection string from appsettings.json
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
