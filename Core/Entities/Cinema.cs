@@ -26,6 +26,7 @@ namespace Core
         public string? BackgroundPicture { get; set; }
         public ApprovalStatus ApprovalStatus { get; set; }= ApprovalStatus.Pending;
         public string? RejectionReason { get; set; }
+        //public string? CommercialRegisterDocumentPath { get; set; }
 
         //Relationships
         public ICollection<CinemaMovie> CinemaMovies { get; set; } = new List<CinemaMovie>();

@@ -1,4 +1,5 @@
 ﻿using Business.DTOs.Movies;
+using Core.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace Business.DTOs.Cinemas
@@ -12,7 +13,9 @@ namespace Business.DTOs.Cinemas
         public IFormFile BackgroundPicture { get; set; }
         public string? BackgroundPath { get; set; }
         public string? LogoPath { get; set; }
+        public string? RejectionReason { get; set; }
         public IFormFile Logo { get; set; }
+        public ApprovalStatus ApprovalStatus { get; set; }
         public List<GetAllMoviesDto> MovieDetails { get; set; }
         public string AgentName { get; set; }
 

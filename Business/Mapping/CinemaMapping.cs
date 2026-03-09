@@ -30,6 +30,21 @@ namespace Business.Mapping
                 BackgroundPicture = dto.BackgroundPath
             };
         }
+        public static Cinema ToEntity(this FixCinemaApplicationDto dto)
+        {
+            return new Cinema()
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Logo = dto.LogoPath,
+                Description = dto.Description,
+                Address = dto.Address,
+                BackgroundPicture = dto.BackgroundPicturePath,
+                UpdatedAt = DateTime.Now,
+                
+                
+            };
+        }
 
         public static List<GetAllCinemasDto> ToDto(this List<Cinema> cinemas)
         {

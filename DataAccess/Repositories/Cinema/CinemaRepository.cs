@@ -19,7 +19,6 @@ namespace DataAccess.Repositories.CINEMA
             if (id > 0)
             {
                 return await _context.Cinemas
-                    .Where(x=>x.ApprovalStatus==ApprovalStatus.Approved)
                     .Include(x => x.CinemaMovies)
                     .ThenInclude(Task => Task.Movie)
                     .FirstOrDefaultAsync(x => x.Id == id);
@@ -29,11 +28,12 @@ namespace DataAccess.Repositories.CINEMA
                 return null;
             }
         }
-        public async Task<Cinema> GetCinemaByIdWithoutFilterAsync(int id)
+        public async Task<Cinema> GetApprovedCinemabyIdAsync(int id)
         {
             if (id > 0)
             {
                 return await _context.Cinemas
+                    .Where(x=>x.ApprovalStatus==ApprovalStatus.Approved)
                     .Include(x => x.CinemaMovies)
                     .ThenInclude(Task => Task.Movie)
                     .FirstOrDefaultAsync(x => x.Id == id);

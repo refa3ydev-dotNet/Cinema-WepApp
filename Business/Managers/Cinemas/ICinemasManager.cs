@@ -10,10 +10,11 @@ namespace Business.Managers.Cinemas
         Task<List<GetAllCinemasDto>> GetAllCinemasAsync();
         Task<GetCinemaByIdDto> GetCinemaByIdAsync(int id);
         Task UpdateCinemaAsync(UpdateCinemaDto dto);
+        Task UpdateCinemaAsync(FixCinemaApplicationDto dto);
         Task <List<GetAllCinemasDto>> GetPendingCinemasAsync();
         Task ApproveCinemaAsync(int id);
         Task<PaginationResult<GetAllCinemasDto>> GetPagedCinemasAsync(int page, int pageSize);
         Task RejectCinemaAsync(int id, string reason);
-        //Task<List<GetAllCinemasDto>> GetApprovedCinemasAsync();
+        Task<GetCinemaByIdDto> GetApprovedCinemaByIdAsync(int id);
     }
 }

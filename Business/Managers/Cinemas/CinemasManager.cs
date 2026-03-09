@@ -38,11 +38,11 @@ namespace Business.Managers.Cinemas
             var cinema = await _cinemaRepository.GetAllCinemasAsync();
             return cinema.ToDto();
         }
-//        public async Task<List<GetAllCinemasDto>> GetApprovedCinemasAsync()
-//        {
-//var cinema = await _cinemaRepository.GetApprovedCinemasAsync();
-//            return cinema.ToDto();
-//        }
+        public async Task<GetCinemaByIdDto> GetApprovedCinemaByIdAsync(int id)
+        {
+            var cinema = await _cinemaRepository.GetApprovedCinemabyIdAsync(id);
+            return cinema.ToDto();
+        }
         public async Task<GetCinemaByIdDto> GetCinemaByIdAsync(int id)
         {
             if (id<=0) return null;
@@ -51,6 +51,14 @@ namespace Business.Managers.Cinemas
             return cinema.ToDto();
         }
         public async Task UpdateCinemaAsync(UpdateCinemaDto dto)
+        {
+            var existing = await _cinemaRepository.GetCinemaByIdAsync(dto.Id);
+            if (existing == null) throw new Exception("Cinema not found");
+
+            var cinema = dto.ToEntity();
+            await _cinemaRepository.UpdateCinemaAsync(cinema);
+        }
+        public async Task UpdateCinemaAsync(FixCinemaApplicationDto dto)
         {
             var existing = await _cinemaRepository.GetCinemaByIdAsync(dto.Id);
             if (existing == null) throw new Exception("Cinema not found");
@@ -92,7 +100,7 @@ namespace Business.Managers.Cinemas
         }
         public async Task RejectCinemaAsync(int id ,string reason)
         {
-        var cinema = await _cinemaRepository.GetCinemaByIdWithoutFilterAsync(id);
+        var cinema = await _cinemaRepository.GetCinemaByIdAsync(id);
             if (cinema==null) return;
             else
             {
@@ -104,7 +112,7 @@ namespace Business.Managers.Cinemas
         }
         public async Task ApproveCinemaAsync(int id)
         {
-            var cinema =await _cinemaRepository.GetCinemaByIdWithoutFilterAsync(id);
+            var cinema =await _cinemaRepository.GetCinemaByIdAsync(id);
             if (cinema!=null)
             {
                 cinema.ApprovalStatus = ApprovalStatus.Approved;
