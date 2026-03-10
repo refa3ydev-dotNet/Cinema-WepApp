@@ -1,0 +1,164 @@
+﻿@model Business.DTOs.Cinemas.FixCinemaApplicationDto
+@{
+    ViewData["Title"] = "Fix Cinema Application";
+    Layout="~/Views/Shared/_Layout.cshtml";
+
+}
+<link href="~/css/Cinemas/FixCinemaApplication.css" rel="stylesheet" asp-append-version="true"/>
+<div class="form-container">
+    <!-- Danger Alert -->
+    <div class="premium-alert">
+        <i class="fas fa-exclamation-circle"></i>
+        <div class="premium-alert-content">
+            <h4>Reason for Rejection</h4>
+            <p>@Model.RejectionReason</p>
+        </div>
+    </div>
+
+    <div class="form-header">
+        <h2>Resubmit Application</h2>
+        <p>Review the feedback above and tweak your cinema details.</p>
+    </div>
+
+    <form asp-action="FixApplication" asp-controller="Agent" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="LogoPath" />
+        <input type="hidden" asp-for="BackgroundPicturePath" />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group-custom">
+                    <label asp-for="Name">Cinema Name</label>
+                    <input type="text" asp-for="Name" class="form-control" id="cinemaName" value="@Model.Name" required>
+                    <span asp-validation-for="Name" class="text-danger d-block mt-1" style="font-size: 0.85rem;"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group-custom">
+                    <label asp-for="Address">Location / Address</label>
+                    <input type="text" asp-for="Address" class="form-control" id="cinemaLocation" value="123 Movie Lane, Film City" required>
+                    <span asp-validation-for="Address" class="text-danger d-block mt-1" style="font-size: 0.85rem;"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group-custom">
+            <label asp-for="Address">Cinema Description</label>
+            <textarea asp-for="Description" class="form-control" id="cinemaDescription" required>@Model.Description</textarea>
+            <span asp-validation-for="Description" class="text-danger d-block mt-1" style="font-size: 0.85rem;"></span>
+        </div>
+
+        <!-- Unified Media Section -->
+        <div class="media-section">
+
+            <!-- Logo Setup -->
+            <div class="media-card">
+                <div class="media-card-header">
+                    <h5>Cinema Logo</h5>
+                    <span class="badge-optional">Logo</span>
+                </div>
+
+                <div class="media-dropzone has-image" id="logoDropzone">
+                    <img id="logoPreviewImg" class="media-preview-img" src="@Model.LogoPath" alt="Logo Preview">
+                    <div class="media-overlay-content">
+                        <i class="fas fa-camera-rotate"></i>
+                        <span>Change Logo</span>
+                    </div>
+                    <input type="file" asp-for="NewLogo" id="logoFileInput" accept="image/*">
+                </div>
+                <span asp-validation-for="NewLogo" class="text-danger d-block mt-1" style="font-size: 0.85rem; text-align: center;"></span>
+
+                <div class="url-toggle-bar">
+                    <button type="button" class="btn-link-subtle" onclick="toggleUrlInput('logo')">Or provide image link</button>
+                </div>
+
+                <div class="url-input-wrap" id="logoUrlWrap">
+                    <input type="url" asp-for="LogoPath" class="form-control" id="logoUrlInput" placeholder="Paste image URL here...">
+                    <span asp-validation-for="LogoPath" class="text-danger d-block mt-1" style="font-size: 0.85rem;"></span>
+                </div>
+            </div>
+
+            <!-- Background Setup -->
+            <div class="media-card">
+                <div class="media-card-header">
+                    <h5>Cover Background</h5>
+                    <span class="badge-optional">Cover</span>
+                </div>
+
+                <div class="media-dropzone has-image" id="bgDropzone">
+                    <img id="bgPreviewImg" class="media-preview-img" src="@Model.BackgroundPicturePath" alt="Background Preview">
+                    <div class="media-overlay-content">
+                        <i class="fas fa-camera-rotate"></i>
+                        <span>Change Cover</span>
+                    </div>
+                    <input type="file" asp-for="NewBackground" id="bgFileInput" accept="image/*">
+                </div>
+                <span asp-validation-for="NewBackground" class="text-danger d-block mt-1" style="font-size: 0.85rem; text-align: center;"></span>
+
+                <div class="url-toggle-bar">
+                    <button type="button" class="btn-link-subtle" onclick="toggleUrlInput('bg')">Or provide image link</button>
+                </div>
+
+                <div class="url-input-wrap" id="bgUrlWrap">
+                    <input type="url" asp-for="BackgroundPicturePath" class="form-control" id="bgUrlInput" placeholder="Paste image URL here...">
+                    <span asp-validation-for="BackgroundPicturePath" class="text-danger d-block mt-1" style="font-size: 0.85rem;"></span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Submit Action -->
+        <button type="submit" class="btn btn-submit">
+            Resubmit Application <i class="fas fa-arrow-right" style="font-size: 0.9rem; margin-top:2px;"></i>
+        </button>
+    </form>
+</div>
+
+<!-- Bootstrap JS (Optional) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Toggle URL Input Visibilty
+    function toggleUrlInput(type) {
+        const wrap = document.getElementById(type + 'UrlWrap');
+        if(wrap.style.display === 'block') {
+            wrap.style.display = 'none';
+        } else {
+            wrap.style.display = 'block';
+            // Focus the input
+            setTimeout(() => document.getElementById(type + 'UrlInput').focus(), 50);
+        }
+    }
+
+    // Handle Image Previews
+    function handleMediaPreview(inputId, imgId, dropzoneId, isFile) {
+        const input = document.getElementById(inputId);
+        const img = document.getElementById(imgId);
+        const dropzone = document.getElementById(dropzoneId);
+        const overlaySpan = dropzone.querySelector('.media-overlay-content span');
+
+        input.addEventListener(isFile ? 'change' : 'input', function(e) {
+            if (isFile && this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    dropzone.classList.add('has-image');
+                    overlaySpan.textContent = 'Change Photo';
+                }
+                reader.readAsDataURL(this.files[0]);
+            } else if (!isFile && this.value) {
+                img.src = this.value;
+                dropzone.classList.add('has-image');
+                overlaySpan.textContent = 'Change Photo';
+            }
+        });
+    }
+
+    // Initialize Upload Listeners
+    handleMediaPreview('logoFileInput', 'logoPreviewImg', 'logoDropzone', true);
+    handleMediaPreview('bgFileInput', 'bgPreviewImg', 'bgDropzone', true);
+
+    handleMediaPreview('logoUrlInput', 'logoPreviewImg', 'logoDropzone', false);
+    handleMediaPreview('bgUrlInput', 'bgPreviewImg', 'bgDropzone', false);
+</script>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

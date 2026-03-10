@@ -19,6 +19,6 @@ namespace Business.DTOs.Cinemas
         public List<GetAllMoviesDto> MovieDetails { get; set; }
         public string AgentName { get; set; }
 
-
+        
     }
 }

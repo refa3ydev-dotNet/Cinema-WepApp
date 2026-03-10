@@ -14,7 +14,9 @@ namespace Business.Mapping
                 Logo = dto.LogoPath,
                 Description = dto.Description,
                 Address = dto.Address,
-                BackgroundPicture = dto.BackgroundPath
+                BackgroundPicture = dto.BackgroundPath,
+                ApprovalStatus = dto.ApprovalStatus,
+                
             };
         }
 
@@ -27,7 +29,9 @@ namespace Business.Mapping
                 Logo = dto.LogoPath,
                 Description = dto.Description,
                 Address = dto.Address,
-                BackgroundPicture = dto.BackgroundPath
+                BackgroundPicture = dto.BackgroundPath,
+                ApprovalStatus = dto.ApprovalStatus,
+                
             };
         }
         public static Cinema ToEntity(this FixCinemaApplicationDto dto)
@@ -41,7 +45,8 @@ namespace Business.Mapping
                 Address = dto.Address,
                 BackgroundPicture = dto.BackgroundPicturePath,
                 UpdatedAt = DateTime.Now,
-                
+                 ApprovalStatus = dto.ApprovalStatus,
+                  RejectionReason = dto.RejectionReason
                 
             };
         }
@@ -57,7 +62,10 @@ namespace Business.Mapping
                 Description = cinema.Description,
                 Address = cinema.Address,
                 BackgroundPath = cinema.BackgroundPicture,
-                AgentName= ""
+                AgentName= "",
+
+                ApprovalStatus = cinema.ApprovalStatus,
+                RejectionReason = cinema.RejectionReason
             }).ToList();
         }
 
@@ -79,7 +87,9 @@ namespace Business.Mapping
                     Name = movie.Movie.Name,
                     PosterUrl = movie.Movie.PosterImg
                 }).ToList(),
-                
+                ApprovalStatus = cinema.ApprovalStatus,
+                RejectionReason = cinema.RejectionReason
+
             };
         }
 

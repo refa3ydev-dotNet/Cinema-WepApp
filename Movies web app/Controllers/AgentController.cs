@@ -41,7 +41,7 @@ namespace Movies_web_app.Controllers
             }
             if (cinema.ApprovalStatus== ApprovalStatus.Pending)
             {
-                return RedirectToAction("PendingRequests");
+                return RedirectToAction("PendingApproval");
             }
             if (cinema.ApprovalStatus == ApprovalStatus.Rejected)
             {
@@ -53,7 +53,7 @@ namespace Movies_web_app.Controllers
         }
 
         [HttpGet]
-        public IActionResult PendingRequests()
+        public IActionResult PendingApproval()
         {
             return View();
         }
@@ -74,7 +74,9 @@ namespace Movies_web_app.Controllers
                 Description = cinema.Description,
                 LogoPath = cinema.LogoPath,
                 BackgroundPicturePath = cinema.BackgroundPath,
-                RejectionReason = cinema.RejectionReason
+                RejectionReason = cinema.RejectionReason,
+                ApprovalStatus = cinema.ApprovalStatus
+                
             };
             return View(Dto);
         }

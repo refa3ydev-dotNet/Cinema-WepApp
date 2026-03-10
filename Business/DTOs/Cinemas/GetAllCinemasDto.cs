@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Core.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace Business.DTOs.Cinemas
 {
@@ -13,6 +14,8 @@ namespace Business.DTOs.Cinemas
         public string? LogoPath { get; set; }
         public string AgentName { get; set; }  
         public IFormFile Logo { get; set; }
+        public ApprovalStatus ApprovalStatus { get; set; }
+        public string? RejectionReason { get; set; }
 
     }
 }

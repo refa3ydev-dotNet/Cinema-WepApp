@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Pending Approval";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/Cinemas/Agent_Pending.css" rel="stylesheet" asp-append-version="true"/>
+<div class="empty-state-container">
+
+    <div class="icon-wrapper">
+        <i class="fas fa-hourglass-half"></i>
+    </div>
+
+    <h1 class="title">Application Under Review</h1>
+
+    <p class="subtitle">
+        Hang tight! Your cinema registration is currently being reviewed by our admin team. We will get back to you shortly.
+    </p>
+
+    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-stylish shadow-none">
+        <i class="fas fa-arrow-left"></i> Return to Home
+    </a>
+
+</div>

@@ -20,7 +20,7 @@ namespace Business.Managers.Agent
 
         public async Task<AgentDashboardDto> GetAgentDashboardDataAsync(int cinemaId,string agentName)
         {
-            var cinema = await _cinemaRepository.GetCinemaByIdWithoutFilterAsync(cinemaId);
+            var cinema = await _cinemaRepository.GetCinemaByIdAsync(cinemaId);
             var todayBookings = await _dashboardRepository.GetTodayBookingsAsync(cinemaId);
             var activeBookings =await  _dashboardRepository.GetActiveMoviesCountAsync(cinemaId);
             var recentBookings =await  _dashboardRepository.GetRecentBookingAsync(cinemaId,5);
