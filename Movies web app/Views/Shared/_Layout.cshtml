@@ -35,7 +35,7 @@
     
 
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <!-- Navbar -->
     @if (User.Identity.IsAuthenticated)
         {
@@ -499,7 +499,7 @@
             <i class="fas fa-bars mobile-menu-toggle"></i>
         </header>
         }
-        <main role="main" class="pb-3">
+    <main role="main" class="pb-3 flex-grow-1">
             @RenderBody()
         </main>
 

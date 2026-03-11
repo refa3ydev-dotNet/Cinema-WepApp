@@ -4,7 +4,7 @@ namespace DataAccess.Repositories.ROOM
 {
     public interface IRoomRepository
     {
-        Task<List<Room>> GetAllRoomsAsync();
+        Task<List<Room>> GetAllRoomsAsync(int cinemaId);
         Task<Room> GetRoomByIdAsync(int id);
         Task AddRoomAsync(Room room);
         Task UpdateRoomAsync(Room room);

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Business.DTOs.Rooms
 {
-    public class GetAllRoomsDto
+    public class GetRoomByIdDto
     {
         public int Id { get; set; }
         public string RoomName { get; set; }

@@ -1,0 +1,59 @@
+﻿@model Business.DTOs.Rooms.UpdateRoomDto
+@{
+    ViewData["Title"] = "Edit " + Model.RoomName ;
+    Layout = "_Layout";
+
+    
+}
+<link rel="stylesheet" href="~/css/AgentCinema/Room.css" asp-append-version="true"/>
+<div class="form-wrapper">
+    <div class="glass-container">
+        <div class="form-header">
+            <i class="fa-solid fa-circle-plus"></i>
+            <h2>Edit @Model.RoomName</h2>
+        </div>
+
+        <form asp-action="UpdateRoom" asp-controller="Agent" asp-route-id="@Model.Id" method="POST">
+            <input type="hidden"  asp-for="Id" />
+            <!-- Room Name Field -->
+            <div class="mb-3">
+                <div class="form-floating">
+                    <!-- We use actual placeholder to allow floating label behavior -->
+                    <input asp-for = "RoomName" type="text" class="form-control" id="roomName" placeholder="e.g., VIP Screen 3" required>
+                    <label asp-for="RoomName">Room Name (e.g., VIP Screen 3)</label>
+                </div>
+                <!-- Empty span for MVC validation error -->
+                <span asp-validation-for="RoomName" class="validation-message" data-valmsg-for="RoomName" data-valmsg-replace="true"></span>
+            </div>
+
+            <!-- Seat Capacity Field -->
+            <div class="mb-3">
+                <div class="form-floating">
+                    <input asp-for="SeatCount" type="number" class="form-control" id="seatCapacity" placeholder="e.g., 120" min="1" readonly>
+                    <label asp-for="SeatCount">Seat Capacity (e.g., 120)</label>
+                </div>
+                <!-- Empty span for MVC validation error -->
+                <span asp-validation-for="SeatCount" class="validation-message" data-valmsg-for="SeatCapacity" data-valmsg-replace="true"></span>
+            </div>
+            <div class="mb-3">
+                <div class="form-floating">
+                    <input asp-for="SeatsPerRow" type="number" class="form-control" id="seatsPerRow" placeholder="e.g., 15"  min="5" max="50" readonly>
+                    <label asp-for="SeatsPerRow">Seats per Row (e.g., 15)</label>
+                </div>
+                <span asp-validation-for="SeatsPerRow" class="validation-message text-danger" data-valmsg-for="SeatsPerRow" data-valmsg-replace="true"></span>
+            </div>
+
+            <!-- Actions -->
+            <button type="submit" class="btn-neon-red-large">
+                Save Room
+            </button>
+            <a asp-action="Rooms" asp-controller="Agent" class="btn-outline-secondary-dark">
+                Back to List
+            </a>
+
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

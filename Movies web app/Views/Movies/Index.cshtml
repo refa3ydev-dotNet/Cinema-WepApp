@@ -8,9 +8,9 @@
     ViewData["Title"] = "Cinemas";
 
 }
-@section Styles {
-    <link rel="stylesheet" href="~/css/Movie/Movies.css" />
-}
+
+    <link rel="stylesheet" href="~/css/Movie/Movies.css" asp-append-version="true"/>
+
 <div class="container">
     <div class="row align-content-center d-flex justify-content-center gap-4">
         @if (Model.Items.Count > 0)

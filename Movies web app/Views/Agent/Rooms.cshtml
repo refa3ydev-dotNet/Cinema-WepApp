@@ -1,0 +1,167 @@
+﻿@model IEnumerable<Business.DTOs.Rooms.GetAllRoomsDto>
+@{
+    ViewData["Title"] = "Rooms";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/AgentCinema/Room.css" rel="stylesheet" asp-append-version="true"/>
+<div class="container">
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="header-content">
+            <h1><i class="fa-solid fa-vr-cardboard"></i> Manage Cinema Halls</h1>
+        </div>
+        <div>
+            <a asp-action="CreateRoom" class="btn-neon-red">
+                <i class="fas fa-plus"></i> Add New Room
+            </a>
+        </div>
+    </header>
+
+    <!-- Empty State (Hidden) -->
+    @if(Model.Count() == 0)
+    {
+        
+    <div class="empty-state" id="emptyStateContainer">
+        <i class="fa-solid fa-chair empty-icon"></i>
+        <h3>No rooms added yet</h3>
+        <p>Start by creating your first hall to begin organizing movies and scheduling screenings!</p>
+        <a asp-action="CreateRoom" class="btn-neon-red">
+            <i class="fas fa-plus"></i> Create First Room
+        </a>
+    </div>
+    }
+    else
+    {
+        
+
+    <!-- Rooms Grid -->
+    <div class="rooms-grid">
+        @foreach (var room in Model)
+        {
+                @if (!room.IsDeleted)
+                {
+                    
+                <div class="glass-card">
+            <h3 class="room-title">
+                <i class="fa-solid fa-film"></i> 
+                @room.RoomName
+            </h3>
+            <div class="room-details">
+                <div class="detail-item">
+                    <i class="fa-solid fa-chair"></i>
+                    <span>Capacity: <strong>@room.SeatCount</strong></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fa-regular fa-calendar-days"></i>
+                    <span>Added Date: <strong>@room.CreatedAt.ToString("yyyy-MM-dd")</strong></span>
+                </div>
+            </div>
+                @if(User.IsInRole("CinemaAgent"))
+                {
+                    
+                <div class="card-footer-actions">
+                <form asp-action="UpdateRoom" asp-route-id="@room.Id" method="get">
+                <button class="action-btn edit" title="Edit Room">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                </form>
+                                <button type="button" class="action-btn delete" title="Delete Room"
+                                        data-bs-toggle="modal" data-bs-target="#deleteRoomModal"
+                                        data-roomid="@room.Id" data-roomname="@room.RoomName">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+
+            </div>
+                }
+        </div>
+
+                }
+                else{
+                            <!-- Disabled Room Card -->
+                            <div class="glass-card disabled">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h3 class="room-title" style="color: var(--text-grey);">
+                                        <i class="fa-solid fa-film" style="color: var(--text-grey);"></i> @room.RoomName (Out of Order)
+                                    </h3>
+                                    <span class="badge-disabled">Disabled</span>
+                                </div>
+                                <div class="room-details">
+                                    <div class="detail-item">
+                                        <i class="fa-solid fa-chair"></i>
+                                        <span>Capacity: <strong>@room.SeatCount</strong></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fa-regular fa-calendar-days"></i>
+                                        <span>Added Date: <strong>@room.CreatedAt.ToString("yyyy-MM-dd")</strong></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fa-regular fa-calendar-days"></i>
+                                        <span>Disabled Date: <strong>@room.DeletedAt?.ToString("yyyy-MM-dd")</strong></span>
+                                    </div>
+                                </div>
+                                <div class="card-footer-actions">
+                                    <button class="action-btn edit" title="Edit Room" disabled style="cursor: not-allowed; opacity: 0.5;">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="action-btn delete" title="Delete Room" disabled style="cursor: not-allowed; opacity: 0.5;">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+        }
+    </div>
+    
+    }
+    <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: #1a1a1a; border: 1px solid rgba(255, 0, 0, 0.3); border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h5 class="modal-title text-white" id="deleteRoomModalLabel">
+                        <i class="fa-solid fa-triangle-exclamation text-warning"></i> Confirm Deletion
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-secondary">
+                    Are you sure you want to delete <strong id="modalRoomName" class="text-white"></strong>?
+                    <br>
+                    <small class="text-danger mt-2 d-block">
+                        <i class="fa-solid fa-circle-info"></i> Note: You cannot delete a room if it has active future schedules.
+                    </small>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                    <form id="deleteForm" asp-action="DeleteRoom" asp-controller="Agent" method="post">
+                        <input type="hidden" name="id" id="modalRoomId" value="" />
+                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        // أول ما الـ Modal ييجي يفتح
+        var deleteRoomModal = document.getElementById('deleteRoomModal');
+        deleteRoomModal.addEventListener('show.bs.modal', function (event) {
+
+            // 1. هات الزرار اللي اليوزر داس عليه
+            var button = event.relatedTarget;
+
+            // 2. هات الـ ID والاسم من الزرار
+            var roomId = button.getAttribute('data-roomid');
+            var roomName = button.getAttribute('data-roomname');
+
+            // 3. حط الاسم في رسالة التأكيد
+            var modalTitleName = deleteRoomModal.querySelector('#modalRoomName');
+            modalTitleName.textContent = roomName;
+
+            // 4. حط الـ ID في الفورم المخفية عشان يتبعت للكنترولر
+            var hiddenInputId = deleteRoomModal.querySelector('#modalRoomId');
+            hiddenInputId.value = roomId;
+        });
+    </script>
+}

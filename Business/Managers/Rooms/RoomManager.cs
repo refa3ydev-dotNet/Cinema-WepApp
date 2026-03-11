@@ -1,43 +1,99 @@
-﻿using Core.Entities;
+﻿using Business.DTOs.Rooms;
+using Business.Mapping;
+using Core.Entities;
+using DataAccess.Repositories.ROOM;
 
 namespace Business.Managers.Rooms
 {
+
     public class RoomManager : IRoomManager
     {
-        public Task AddRoom()
+        private readonly IRoomRepository _roomRepository;
+        public RoomManager(IRoomRepository roomRepository)
         {
-            throw new NotImplementedException();
+            _roomRepository = roomRepository;
+        }
+
+        public async Task AddRoomAsync(CreateRoomDto dto,int cinemaId)
+        {
+            var roomEntity = dto.ToEntity(cinemaId);
+            roomEntity.Seats = GenerateSeats(dto.SeatCount, dto.SeatsPerRow);
+            await _roomRepository.AddRoomAsync(dto.ToEntity(cinemaId));
+        }
+
+        public async Task<bool> DeleteRoomAsync(int id)
+
+        {
+            var existingRoom = await _roomRepository.GetRoomByIdAsync(id);
+            if (existingRoom == null)
+            {
+                return false;
+            }
+            bool hasFutureSchedules=existingRoom.MovieSchedules.Any(s=>s.StartDate>=DateTime.Now);
+            if(hasFutureSchedules)
+            {
+                return false;
+            }
+                existingRoom.IsDeleted = true;
+                existingRoom.DeletedAt = DateTime.Now;
+                await _roomRepository.UpdateRoomAsync(existingRoom);
+            return true;
+            
+        }
+
+        public async Task<List<GetAllRoomsDto>> GetCinemaRoomsAsync(int id)
+        {
+            var rooms = await _roomRepository.GetAllRoomsAsync(id);
+            // Explicitly specify the type argument so the compiler can resolve AsyncEnumerable.ToListAsync<T>
+            return rooms.ToDto().ToList();
+        }
+
+        public async Task<GetRoomByIdDto> GetRoomByIdAsync(int id)
+        {
+            var room = await _roomRepository.GetRoomByIdAsync(id);
+            return room?.ToDto();
 
         }
 
-        public Task DeleteRoom()
+        public async Task UpdateRoomAsync(UpdateRoomDto dto)
         {
-            throw new NotImplementedException();
+            var existingRoom=await _roomRepository.GetRoomByIdAsync(dto.Id);
+            if (existingRoom != null)
+            { 
+            existingRoom.RoomName = dto.RoomName;
+                existingRoom.UpdatedAt=DateTime.Now;
+            }
+            await _roomRepository.UpdateRoomAsync(existingRoom);
         }
-
-        public Task DeleteRoom(Room room)
+        private List<Seat> GenerateSeats(int seatCount, int seatsPerRow)
         {
-            throw new NotImplementedException();
+            var seats =new List<Seat>();
+            for (int i = 1; i <= seatCount; i++)
+            {
+                int rowIndex = i / seatsPerRow;
+                int columnNumber = (i % seatsPerRow) + 1;
+                string rowLetter = GetRowLetter(rowIndex);
+
+                seats.Add(new Seat
+                {
+                    Row = rowLetter,
+                    Column = columnNumber,
+                    SeatsType = "Standard",
+                    CreatedAt = DateTime.Now,
+                    IsDeleted = false
+                });
+            }
+            return seats;
         }
-
-        public Task<Room> GetRoomById(int id)
+        private string GetRowLetter(int rowIndex)
         {
-            throw new NotImplementedException();
-        }
+            const string rowLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            if(rowIndex > 26)
+            {
+                return rowLetters[rowIndex].ToString();
 
-        public Task<List<Room>> GetRooms()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateRoom()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateRoom(Room room)
-        {
-            throw new NotImplementedException();
+            }
+            return rowLetters[(rowIndex/26) - 1].ToString() + rowLetters[rowIndex%26].ToString();
         }
     }
 }

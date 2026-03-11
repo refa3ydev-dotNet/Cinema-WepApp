@@ -15,48 +15,37 @@ namespace DataAccess.Repositories.ROOM
         {
             if (room == null)
             {
-                throw new ArgumentNullException(nameof(room));
+                return;
             }
-            _context.Rooms.Add(room);
+            await _context.Rooms.AddAsync(room);
             await _context.SaveChangesAsync();
 
         }
 
         public async Task DeleteRoomAsync(int id)
         {
-            var exRoom = _context.Rooms.Find(id);
-            if (exRoom == null)
+            var exRoom = await _context.Rooms.FindAsync(id);
+            if (exRoom != null)
             {
-                throw new ArgumentNullException(nameof(exRoom));
-            }
+                
             _context.Rooms.Remove(exRoom);
             await _context.SaveChangesAsync();
+            }
         }
 
-        public async Task<List<Room>> GetAllRoomsAsync()
+        public async Task<List<Room>> GetAllRoomsAsync(int cinemaId)
         {
-            if (RoomsCount() == Task.FromResult(0))
-            {
-                throw new ArgumentNullException(nameof(GetAllRoomsAsync));
-            }
-            return await _context.Rooms.ToListAsync();
+            return await _context.Rooms.Where(x => x.CinemaId == cinemaId).OrderBy(x => x.IsDeleted).ToListAsync();
         }
         public async Task<Room> GetRoomByIdAsync(int id)
         {
             var exRoom = _context.Rooms.FirstOrDefault(x => x.Id == id);
-            if (exRoom == null)
-            {
-                throw new ArgumentNullException(nameof(exRoom));
-            }
             return exRoom;
         }
 
         public async Task UpdateRoomAsync(Room room)
         {
-            if (room == null)
-            {
-                throw new ArgumentNullException(nameof(room));
-            }
+            
 
             _context.Rooms.Update(room);
             await _context.SaveChangesAsync();

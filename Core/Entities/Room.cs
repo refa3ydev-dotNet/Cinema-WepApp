@@ -13,6 +13,7 @@ namespace Core.Entities
         public int CinemaId { get; set; }
         public Cinema Cinema { get; set; }
         public int seatCount { get; set; }
+        public int SeatsPerRow { get; set; }
         public ICollection<MovieSchedule> MovieSchedules { get; set; } = new List<MovieSchedule>(); // <MovieSchedule>
         public ICollection<Seat>Seats { get; set; } = new List<Seat>();
     }

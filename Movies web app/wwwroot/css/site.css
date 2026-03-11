@@ -24,7 +24,7 @@ body {
     color: var(--text-white);
     font-family: var(--font-heading);
     line-height: 1.6;
-    overflow-x: hidden;
+    
 }
 
     body.no-scroll {
