@@ -97,7 +97,7 @@ namespace DataAccess.Contexts
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            modelBuilder.Entity<Movie>().Property(m=>m.Price).HasPrecision(10,2);
+
             modelBuilder.Entity<Booking>().Property(m=>m.TotalPrice).HasPrecision(10,2);
             modelBuilder.Entity<BookingSeat>().Property(m=>m.PriceAtBooking).HasPrecision(10,2);
         }

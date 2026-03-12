@@ -1,4 +1,6 @@
 ﻿using Business.DTOs.Actors;
+using Business.DTOs.Cinemas;
+using Business.DTOs.Directors;
 using Business.DTOs.Movies;
 using Business.DTOs.Producers;
 using Core;
@@ -14,27 +16,30 @@ namespace Business.Mapping
         {
             return new Movie()
             {
-                BackgroundImg = dto.BackgroundUrl,
                 Name = dto.Name,
                 Description = dto.Description,
                 Price = dto.Price,
                 PosterImg = dto.PosterUrl,
-                Categories = categories.Where(c => dto.CategoryIds.Contains(c.Id)).ToList(),
+                BackgroundImg = dto.BackgroundUrl,
                 Language = dto.Language,
                 Translation = dto.Translation,
-                ProducerMovies = dto.ProducerIds.Select(ProducerId=>new ProducerMovie
+
+                Categories = dto.CategoryIds!=null
+                ?categories.Where(c => dto.CategoryIds.Contains(c.Id)).ToList()
+                :new List<Category>(),
+                ProducerMovies = dto.ProducerIds.Select(Id=>new ProducerMovie
                 {
-                    ProducerId=ProducerId
+                    ProducerId=Id
                 }).ToList()??new List<ProducerMovie>(),
-                ActorMovies = dto.ActorsIds?.Select(actorId => new ActorMovie
+                ActorMovies = dto.ActorsIds?.Select(Id => new ActorMovie
                 {
-                    ActorId = actorId
+                    ActorId = Id
                 }).ToList() ?? new List<ActorMovie>(),
-                CinemaMovies = dto.CinemasIds?.Select(cinemaId => new CinemaMovie
+                DirectorMovies=dto.DirectorIds?.Select(Id => new DirectorMovie
                 {
-                    CinemaId = cinemaId
-                }).ToList() ?? new List<CinemaMovie>(),
-                CreatedDate = DateTime.Now
+                    DirectorId = Id
+                }).ToList() ?? new List<DirectorMovie>(),
+                
             };
         }
 
@@ -47,9 +52,25 @@ namespace Business.Mapping
                 Description = dto.Description,
                 Price = dto.Price,
                 PosterImg = dto.PosterUrl,
-                Categories = categories.Where(c => dto.CategoryIds.Contains(c.Id)).ToList(),
+                BackgroundImg = dto.BackgroundUrl,
                 Language = dto.Language,
-                Translation = dto.Translation
+                Translation = dto.Translation,
+                UpdatedAt = DateTime.Now,
+                Categories = dto.CategoryIds != null
+                ? categories.Where(c => dto.CategoryIds.Contains(c.Id)).ToList()
+                : new List<Category>(),
+                ProducerMovies = dto.ProducerIds.Select(Id => new ProducerMovie
+                {
+                    ProducerId = Id
+                }).ToList() ?? new List<ProducerMovie>(),
+                ActorMovies = dto.ActorsIds?.Select(Id => new ActorMovie
+                {
+                    ActorId = Id
+                }).ToList() ?? new List<ActorMovie>(),
+                DirectorMovies = dto.DirectorIds?.Select(Id => new DirectorMovie
+                {
+                    DirectorId = Id
+                }).ToList() ?? new List<DirectorMovie>(),
             };
         }
 
@@ -64,11 +85,13 @@ namespace Business.Mapping
                 Price = x.Price,
                 PosterUrl = x.PosterImg,
                 BackgroundUrl = x.BackgroundImg,
-                CategoryNames = x.Categories.Select(c => c.CategoryName).ToList(),
                 Language = x.Language,
                 Translation = x.Translation,
-                Cinemas = x.CinemaMovies.Select(y => y.Cinema.Name).ToList(),
-                Actors = x.ActorMovies.Select(y => y.Actor.FullName).ToList()
+                CategoryNames = x.Categories.Select(c => c.CategoryName).ToList(),
+                Cinemas = x.CinemaMovies?.Select(y => y.Cinema.Name).ToList()?? new List<string>(),
+                Actors = x.ActorMovies?.Select(y => y.Actor.FullName).ToList()?? new List<string>(),
+                Directors = x.DirectorMovies?.Select(y => y.Director.Name).ToList()?? new List<string>(),
+                Producers = x.ProducerMovies?.Select(y => y.Producer.FullName).ToList()??new List<string>(),
             }).ToList();
         }
 
@@ -83,22 +106,39 @@ namespace Business.Mapping
                 Price = movie.Price,
                 PosterUrl = movie.PosterImg,
                 BackgroundUrl = movie.BackgroundImg,
-                ActorsIds = movie.ActorMovies.Select(x => x.ActorId).ToList(),
-                CinemasIds = movie.CinemaMovies.Select(x => x.CinemaId).ToList(),
-                CategoryIds = movie.Categories.Where(x => x.CategoryName != null).Select(x => x.Id).ToList(),
-                CategoryName = movie.Categories.Where(X => X.CategoryName != null).Select(mv => mv.CategoryName).ToList(),
                 Language = movie.Language,
                 Translation = movie.Translation,
-                producer = movie.ProducerMovies.Select(P => new ProducerInMovieDto
+                CategoryIds = movie.Categories.Select(x => x.Id).ToList(),
+                ActorsIds = movie.ActorMovies?.Select(x => x.ActorId).ToList()??new List<int>(),
+                CinemasIds = movie.CinemaMovies?.Select(x => x.CinemaId).ToList()??new List<int>(),
+                DirectorsIds = movie.DirectorMovies?.Select(x => x.DirectorId).ToList()??new List<int>(),
+                ProducersIds = movie.ProducerMovies?.Select(x => x.ProducerId).ToList()??new List<int>(),
+
+                CategoryName = movie.Categories?.Select(mv => mv.CategoryName).ToList()??new List<string>(),
+                Producers = movie.ProducerMovies?.Select(P => new ProducerInMovieDto
                 {
                     ID = P.ProducerId,
-                    Name = P.Producer.FullName
-                }).ToList(),
-                actors = movie.ActorMovies.Select(x => new ActorsInMovieDto
+                    Name = P.Producer.FullName,
+                    Image = P.Producer.ProfilePicture
+                }).ToList()??new List<ProducerInMovieDto>(),
+                Actors = movie.ActorMovies?.Select(x => new ActorsInMovieDto
                 {
                     ID = x.ActorId,
-                    Name = x.Actor.FullName
-                }).ToList(),
+                    Name = x.Actor.FullName,
+                    Image = x.Actor.ProfilePicture
+                }).ToList()??new List<ActorsInMovieDto>(),
+                Cinemas = movie.CinemaMovies?.Select(x => new CinemaMoviesDto
+                {
+                    ID = x.CinemaId,
+                    Name = x.Cinema.Name,
+                     Image = x.Cinema.Logo
+                }).ToList()??new List<CinemaMoviesDto>(),
+                Directors = movie.DirectorMovies?.Select(x => new DirectorMoviesDto
+                {
+                    ID = x.DirectorId,
+                    Name = x.Director.Name,
+                    Image = x.Director.ProfilePicture
+                }).ToList()??new List<DirectorMoviesDto>(),
 
             };
         }

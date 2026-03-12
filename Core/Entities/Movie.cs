@@ -37,7 +37,7 @@ namespace Core
         [Display(Name = "Movie Translation")]
         public TranslationType Translation { get; set; }
 
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        //public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         //relations
         public ICollection<DirectorMovie> DirectorMovies { get; set; }= new List<DirectorMovie>();

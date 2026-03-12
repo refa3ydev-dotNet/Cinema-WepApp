@@ -9,20 +9,18 @@ namespace Business.DTOs.Movies
         public string Description { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
-        public IFormFile PosterImg { get; set; }
-        public string PosterUrl { get; set; }
-        public List<int> CategoryIds { get; set; }
         public Language Language { get; set; }
         public TranslationType Translation { get; set; }
-        public IFormFile BackgroundImg { get; set; } //BackgroundImg
+        public IFormFile? PosterImg { get; set; }
+        public string PosterUrl { get; set; }
+        public IFormFile? BackgroundImg { get; set; } //BackgroundImg
         public string BackgroundUrl { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public List<string> CategoryName { get; set; }
 
         //public string? cinemaName { get; set; }
-        public List<int>? CinemasIds { get; set; }
-        public List<int> ActorsIds { get; set; }
-        public List<int> ProducerIds { get; set; }
+        public List<int> CategoryIds { get; set; } = new List<int>(); 
+        public List<int> ActorsIds { get; set; }=new List<int>();
+        public List<int> ProducerIds { get; set; }= new List<int>();
+        public List<int> DirectorIds { get; set; }= new List<int>();
 
     }
 }
