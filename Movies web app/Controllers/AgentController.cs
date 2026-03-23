@@ -2,12 +2,14 @@
 using Business.DTOs.Rooms;
 using Business.Managers.Agent;
 using Business.Managers.Cinemas;
+using Business.Managers.Movies;
 using Business.Managers.Rooms;
 using Core.Entities;
 using Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Movies_web_app.Services;
 
 namespace Movies_web_app.Controllers
@@ -20,14 +22,24 @@ namespace Movies_web_app.Controllers
         private readonly ICinemasManager _cinemaManager;
         private readonly IImageService _imageService;
         private readonly IRoomManager _roomManager;
+        private readonly IMovieManager _movieManager;
 
-        public AgentController(UserManager<ApplicationUser> userManager, IAgentDashboardManager dashboardManager, ICinemasManager cinemaManager, IImageService imageService, IRoomManager roomManager)
+
+        public AgentController(UserManager<ApplicationUser> userManager,
+            IAgentDashboardManager dashboardManager,
+            ICinemasManager cinemaManager,
+            IImageService imageService,
+            IRoomManager roomManager,
+            IMovieManager movieManager
+)           
         {
             _userManager = userManager;
             _dashboardManager = dashboardManager;
             _cinemaManager = cinemaManager;
             _imageService = imageService;
             _roomManager = roomManager;
+            _movieManager = movieManager;
+
         }
 
         [HttpGet]
@@ -231,6 +243,68 @@ namespace Movies_web_app.Controllers
             TempData["SuccessMessage"] = "Room deleted successfully";
 
             return RedirectToAction("Rooms");
+        }
+        [HttpGet]
+        public async Task<IActionResult> SelectMoviesForCinema()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.CinemaId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var allMovies = await _movieManager.GetAllMoviesAsync();
+            ViewBag.AvailableMovies = new SelectList(allMovies, "Id", "Name");
+            return View();
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> SelectMoviesForCinema(int movieId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.CinemaId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            if (movieId <= 0)
+            {
+                TempData["ErrorMessage"] = "Invalid movie selected";
+                return RedirectToAction("SelectMoviesForCinema");
+            }
+            await _movieManager.AssignMovieToCinemaAsync(movieId, user.CinemaId.Value);
+            TempData["SuccessMessage"] = "Movie added to your cinema successfully!";
+            return RedirectToAction("Dashboard");
+        }
+        [HttpGet]
+        public async Task<IActionResult> AgentMovies()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.CinemaId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var movies = await _movieManager.GetMoviesByCinemaIdAsync(user.CinemaId.Value);
+            return View(movies);
+        }
+        [HttpPost]
+        public async Task<IActionResult> RemoveMovieFromCinema(int movieId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.CinemaId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            bool isDeleted = await _movieManager.RemoveMovieFromCinemaAsync(movieId, user.CinemaId.Value);
+            if (isDeleted)
+            {
+                TempData["SuccessMessage"] = "Movie removed from your cinema successfully!";
+                
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Cannot remove this movie! There are active future schedules and bookings linked to it. Cancel the schedules first.";
+                
+            }
+            return RedirectToAction("AgentMovies");
         }
     }
 }

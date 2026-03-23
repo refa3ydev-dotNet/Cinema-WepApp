@@ -14,5 +14,6 @@ namespace DataAccess.Repositories.MOVIE
         Task<int> GetMoviesCountAsync();
         Task<PaginationResult<Movie>> GetPagedMoviesAsync(int page, int pageSize);
         Task<List<Movie>> GetMovieByActorAsync(string name);
+        Task<bool> HasActiveSchedulesForCinemaAsync(int movieId, int cinemaId);
     }
 }

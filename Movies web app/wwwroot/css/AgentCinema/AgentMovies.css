@@ -1,0 +1,199 @@
+﻿body {
+    background-color: #020202 !important;
+    color: #ffffff !important;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+:root {
+    --cinema-red: #e50914;
+    --card-bg: #0a0a0a;
+    --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+/* ELITE MOVIE CARD */
+.movie-obsidian-card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* THE POSTER SECTION */
+.poster-container {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    margin: 12px;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+    .poster-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 1.2s ease;
+    }
+
+/* HOVER EFFECTS */
+.movie-obsidian-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    border-color: var(--cinema-red);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 20px rgba(229, 9, 20, 0.2);
+}
+
+    .movie-obsidian-card:hover .poster-container img {
+        transform: scale(1.15);
+    }
+
+/* ACTION DRAWER (GLIDES UP) */
+.action-drawer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(20px);
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    transform: translateY(101%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 1px solid var(--glass-border);
+    z-index: 10;
+}
+
+.movie-obsidian-card:hover .action-drawer {
+    transform: translateY(0);
+}
+
+/* MODERN BUTTONS */
+.btn-cinema {
+    flex: 1;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: 0.3s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-main {
+    background: #fff;
+    color: #000;
+    border: none;
+}
+
+    .btn-main:hover {
+        background: var(--cinema-red);
+        color: #fff;
+    }
+
+.btn-danger-outline {
+    background: rgba(229, 9, 20, 0.1);
+    color: var(--cinema-red);
+    border: 1px solid rgba(229, 9, 20, 0.2);
+}
+
+    .btn-danger-outline:hover {
+        background: var(--cinema-red);
+        color: #fff;
+    }
+
+/* CARD INFO AREA */
+.card-info-pane {
+    padding: 5px 24px 24px 24px;
+}
+
+.movie-title-modern {
+    font-weight: 800;
+    font-size: 1.3rem;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-metadata {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tag-premium {
+    color: var(--cinema-red);
+    background: rgba(229, 9, 20, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+/* HEADER */
+.page-title {
+    font-weight: 800;
+    font-size: 3rem;
+    letter-spacing: -3px;
+    margin-bottom: 2rem;
+}
+
+.btn-add-hero {
+    background: var(--cinema-red);
+    color: #fff;
+    padding: 15px 35px;
+    border-radius: 20px;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(229, 9, 20, 0.3);
+    transition: 0.3s;
+}
+
+    .btn-add-hero:hover {
+        transform: scale(1.05);
+        color: #fff;
+    }
+
+/* SEARCH BAR OBSIDIAN */
+.search-obsidian-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    min-width: 300px;
+    transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+    .search-obsidian-box:focus-within {
+        border-color: var(--cinema-red);
+        background: rgba(255,255,255,0.08);
+        box-shadow: 0 0 20px rgba(229, 9, 20, 0.1);
+        min-width: 380px;
+    }
+
+    .search-obsidian-box input {
+        background: transparent;
+        border: none;
+        color: #fff;
+        width: 100%;
+        padding: 8px;
+        outline: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }

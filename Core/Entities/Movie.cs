@@ -12,19 +12,19 @@ namespace Core
         public int Id { get; set; }
         [Display(Name = "Movie Name")]
         [Required(ErrorMessage = "Name is required")]
-        public string Name { get; set; }
+        public string Name { get; set; }=string.Empty;
         [Display(Name = "Movie Description")]
         [Required(ErrorMessage = "Description is required")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         [Display(Name = "Movie Price")]
         [Required(ErrorMessage = "Price is required")]
         public decimal Price { get; set; }
         [Display(Name = "Movie Poster")]
         [Required(ErrorMessage = "Poster is required")]
-        public string PosterImg { get; set; }
+        public string PosterImg { get; set; } = string.Empty;
         [Display(Name = "Background Picture")]
         [Required(ErrorMessage = "Background Picture is required")]
-        public string BackgroundImg { get; set; }
+        public string BackgroundImg { get; set; } = string.Empty;
         [NotMapped]
         public List<int> CategoriesId { get; set; } = new List<int>(); //many to many>
         [Required(ErrorMessage = "Movie Category is required")]
@@ -42,7 +42,7 @@ namespace Core
         //relations
         public ICollection<DirectorMovie> DirectorMovies { get; set; }= new List<DirectorMovie>();
         public ICollection<ActorMovie> ActorMovies { get; set; } = new List<ActorMovie>(); //one to many>
-        public ICollection<CinemaMovie>? CinemaMovies { get; set; } = new List<CinemaMovie>(); //many to many>
+        public ICollection<CinemaMovie> CinemaMovies { get; set; } = new List<CinemaMovie>(); //many to many>
         public ICollection<MovieSchedule> MovieSchedules { get; set; } = new List<MovieSchedule>();
         public ICollection<ProducerMovie> ProducerMovies { get; set; }=new List<ProducerMovie>();
 

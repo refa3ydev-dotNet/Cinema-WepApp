@@ -11,5 +11,8 @@ namespace Business.Managers.Movies
         Task<GetMovieByIdDto> GetMovieByIdAsync(int id);
         Task UpdateMovieAsync(UpdateMovieDto dto);
         Task<PaginationResult<GetAllMoviesDto>> GetPagedMoviesAsync(int page, int pageSize);
+        Task AssignMovieToCinemaAsync(int movieId, int cinemaId);
+        Task<List<GetAllMoviesDto>> GetMoviesByCinemaIdAsync(int cinemaId);
+        Task<bool> RemoveMovieFromCinemaAsync(int movieId, int cinemaId); // عشان زرار الحذف
     }
 }

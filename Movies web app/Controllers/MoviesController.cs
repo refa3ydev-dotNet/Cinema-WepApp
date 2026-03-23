@@ -88,7 +88,7 @@ namespace Movies_web_app.Controllers
 
             if (!ModelState.IsValid)
             {
-                await populatesDropDowns(movie.ActorsIds, movie.CinemasIds, movie.ProducerIds, movie.CategoryIds);
+                await populatesDropDowns(movie.ActorsIds, movie.ProducerIds, movie.CategoryIds);
                 var errors = ModelState
                     .Where(m => m.Value.Errors.Any())
                     .Select(m => new
@@ -110,7 +110,7 @@ namespace Movies_web_app.Controllers
                 Translation = movie.Translation,
 
                 ActorsIds = movie.ActorsIds ?? new List<int>(),
-                CinemasIds = movie.CinemasIds ?? new List<int>(),
+                 //= movie.CinemasIds ?? new List<int>(),
                 ProducerIds = movie.ProducerIds ?? new List<int>()
 
             };
@@ -153,7 +153,7 @@ namespace Movies_web_app.Controllers
             {
                 return View("NotFound");
             }
-            await populatesDropDowns(movie.ActorsIds, movie.CinemasIds, movie.ProducerIds, movie.CategoryIds);
+            await populatesDropDowns(movie.ActorsIds, movie.CinemasIds, movie.ProducersIds, movie.CategoryIds);
             var Dto = new UpdateMovieDto
             {
                 Name = movie.Name,
@@ -165,8 +165,7 @@ namespace Movies_web_app.Controllers
                 PosterUrl = movie.PosterUrl,
                 BackgroundUrl = movie.BackgroundUrl,
                 ActorsIds = movie.ActorsIds,
-                CinemasIds = movie.CinemasIds,
-                ProducerIds = movie.ProducerIds
+                ProducerIds = movie.ProducersIds
             };
             return View(Dto);
 
@@ -176,7 +175,7 @@ namespace Movies_web_app.Controllers
         {
             if (!ModelState.IsValid)
             {
-                await populatesDropDowns(dto.ActorsIds, dto.CinemasIds, dto.ProducerIds, dto.CategoryIds);
+                await populatesDropDowns(dto.ActorsIds, dto.ProducerIds, dto.CategoryIds);
                 var errors = ModelState
                     .Where(m => m.Value.Errors.Any())
                     .Select(m => new

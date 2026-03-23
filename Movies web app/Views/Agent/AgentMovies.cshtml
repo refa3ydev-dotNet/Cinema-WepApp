@@ -1,0 +1,64 @@
+﻿@model IEnumerable<Business.DTOs.Movies.GetAllMoviesDto>
+@{
+    ViewData["Title"] = "My Screenings";
+    Layout = "_Layout";
+}
+<link rel="stylesheet" href="/css/AgentCinema/AgentMovies.css"asp-append-version="true">
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <h1 class="page-title m-0">My <span class="text-danger">Screenings</span></h1>
+        <div class="d-flex gap-3 align-items-center">
+            <!-- MODERN SEARCH BAR -->
+            <div class="search-obsidian-box">
+                <i class="bi bi-search text-muted"></i>
+                <input type="text" id="screeningSearch" placeholder="Filter screenings...">
+            </div>
+            <a href="select-movie.html" class="btn-add-hero"><i class="bi bi-plus-lg me-2"></i> Add Movie</a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <h3 class="text-secondary">No movies playing at your cinema yet.</h3>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-5">
+        
+                 @foreach (var movie in Model)
+                 {
+
+                    <div class="col">
+                        <div class="movie-obsidian-card">
+                            <div class="poster-container">
+                                <img src="@movie.PosterUrl" alt="@movie.Name" />
+                            </div>
+
+                            <div class="card-info-pane">
+                                <h5 class="movie-title-modern">]@movie.Name</h5>
+                                <div class="movie-metadata">
+                                    <span class="tag-premium">>@movie.Translation</span>
+                                    <span>@(movie.CategoryNames.FirstOrDefault() ?? "General")</span>
+                                    <span>•</span>
+                                    <span>@movie.Language</span>
+                                    <span>1h 49m</span>
+                                </div>
+                            </div>
+
+                            <!-- GLIDING DRAWER -->
+                            <div class="action-drawer">
+                                <a href="#" class="btn-cinema btn-main"><i class="bi bi-calendar3"></i> Schedules</a>
+                                <form asp-action="RemoveMovieFromCinema" asp-route-movieId="@movie.Id" method="post" onsubmit="return confirm('Are you sure you want to remove @movie.Name from your cinema?');" style="display:flex;">
+                                    <button type="submit" class="btn-cinema btn-danger-outline" style="width: 50px;" title="Remove">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                 }
+        </div>
+    }
+</div>

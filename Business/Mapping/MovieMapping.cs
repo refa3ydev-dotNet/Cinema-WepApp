@@ -108,6 +108,7 @@ namespace Business.Mapping
                 BackgroundUrl = movie.BackgroundImg,
                 Language = movie.Language,
                 Translation = movie.Translation,
+                ReleaseDate = movie.CreatedAt,
                 CategoryIds = movie.Categories.Select(x => x.Id).ToList(),
                 ActorsIds = movie.ActorMovies?.Select(x => x.ActorId).ToList()??new List<int>(),
                 CinemasIds = movie.CinemaMovies?.Select(x => x.CinemaId).ToList()??new List<int>(),

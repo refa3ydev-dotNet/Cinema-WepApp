@@ -16,36 +16,28 @@ namespace DataAccess.Repositories.MOVIE
         }
 
         public async Task<Movie> GetMovieByIdAsync(int id)
-        {
-            if (id > 0)
-            {
+        {   
                 var mov = await _context.Movies
                     .Include(x => x.ActorMovies)
                     .ThenInclude(y => y.Actor)
                     .Include(x => x.CinemaMovies)
                     .ThenInclude(y => y.Cinema)
+                    .Include(p=>p.ProducerMovies)
+                    .ThenInclude(y=>y.Producer)
+                    .Include(d=>d.DirectorMovies)
+                    .ThenInclude(y=>y.Director)
                     .Include(x => x.Categories)
                     .FirstOrDefaultAsync(x => x.Id == id);
-                if (mov != null)
-                {
 
-                    return mov;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
+                return mov ?? new Movie();
         }
         public async Task<List<Movie>> GetAllMoviesAsync()
         {
             var movs = await _context.Movies
                 .Include(x => x.ActorMovies).ThenInclude(y => y.Actor)
                 .Include(x => x.CinemaMovies).ThenInclude(y => y.Cinema)
+                .Include(p => p.ProducerMovies).ThenInclude(y => y.Producer)
+                .Include(d => d.DirectorMovies).ThenInclude(y => y.Director)
                 .Include(x => x.Categories)
                 .ToListAsync();
                 return movs ?? new List<Movie>();
@@ -89,15 +81,15 @@ namespace DataAccess.Repositories.MOVIE
 
                 await _context.SaveChangesAsync();
             }
-            else
-            {
-                var dbmov = await _context.Movies.AsNoTracking().FirstOrDefaultAsync(x => x.Id == movie.Id);
-                if (dbmov != null && string.IsNullOrEmpty(movie.PosterImg))
-                {
-                    movie.PosterImg = dbmov.PosterImg;
-                }
+            //else
+            //{
+            //    var dbmov = await _context.Movies.AsNoTracking().FirstOrDefaultAsync(x => x.Id == movie.Id);
+            //    if (dbmov != null && string.IsNullOrEmpty(movie.PosterImg))
+            //    {
+            //        movie.PosterImg = dbmov.PosterImg;
+            //    }
 
-            }
+            //}
         }
         public async Task DeleteMovieAsync(int id)
         {
@@ -140,6 +132,8 @@ namespace DataAccess.Repositories.MOVIE
             var Query = _context.Movies
                 .Include(m => m.CinemaMovies).ThenInclude(c => c.Cinema)
                 .Include(x => x.ActorMovies).ThenInclude(y => y.Actor)
+                .Include(p=>p.ProducerMovies).ThenInclude(y=>y.Producer)
+                .Include(d=>d.DirectorMovies).ThenInclude(y => y.Director)
                 .Include(x => x.Categories);
             var totalCount = await _context.Movies.CountAsync();
             var TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
@@ -163,6 +157,13 @@ namespace DataAccess.Repositories.MOVIE
                 .Where(c => c.ActorMovies
                 .Any(z => z.Actor.FullName.Contains(name)))
                 .ToListAsync();
+        }
+
+        public async Task<bool> HasActiveSchedulesForCinemaAsync(int movieId, int cinemaId)
+        {
+            return await _context.MovieSchedules
+                .Include(x => x.Cinema)
+                .AnyAsync(s=>s.MovieId==movieId && s.CinemaId==cinemaId && s.StartDate>DateTime.Now);
         }
     }
 }

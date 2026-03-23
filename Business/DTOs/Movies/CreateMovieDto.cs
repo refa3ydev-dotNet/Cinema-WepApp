@@ -8,9 +8,9 @@ namespace Business.DTOs.Movies
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Movie Name is required")]
-        public string Name { get; set; }
+        public string Name { get; set; }=string.Empty;
         [Required(ErrorMessage = "Description is required")]
-        public string Description { get; set; }
+        public string Description { get; set; }=string.Empty;
         [Required(ErrorMessage = "Price is required")]
         public decimal Price { get; set; }
         public IFormFile? PosterImg { get; set; }

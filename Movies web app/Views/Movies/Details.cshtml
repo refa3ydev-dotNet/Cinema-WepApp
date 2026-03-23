@@ -32,7 +32,7 @@
 
     <div class="text-white">
         <p><strong>Movie :</strong> @Model.Name</p> 
-        <p><strong>Release Date:</strong> @Model.CreatedDate.ToString("ddd MMM yy")</p> 
+        <p><strong>Release Date:</strong> @Model.ReleaseDate.ToString("ddd MMM yy")</p> 
         <p class=""><strong>Genre:</strong>
             @if (Model.CategoryName != null && Model.CategoryName.Any())
             {

@@ -2,8 +2,11 @@
 using Business.Managers.Categories;
 using Business.Mapping;
 using Core.Entities;
+using Core.Entities.Relations;
 using Core.Helpers;
+using DataAccess.Repositories.CINEMA;
 using DataAccess.Repositories.MOVIE;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Business.Managers.Movies
 {
@@ -11,11 +14,13 @@ namespace Business.Managers.Movies
     {
         private readonly IMovieRepository _movieRepository;
         private readonly ICategoryManager _categoryManager;
+        private readonly ICinemaRepository _cinemaRepository;
 
-        public MovieManager(IMovieRepository movieRepository, ICategoryManager categoryManager)
+        public MovieManager(IMovieRepository movieRepository, ICategoryManager categoryManager, ICinemaRepository cinemaRepository)
         {
             _movieRepository = movieRepository;
             _categoryManager = categoryManager;
+            _cinemaRepository = cinemaRepository;
         }
 
         public async Task CreateMovieAsync(CreateMovieDto dto)
@@ -60,26 +65,52 @@ namespace Business.Managers.Movies
         {
             var result = await _movieRepository.GetPagedMoviesAsync(page, pageSize);
             var categories = await _categoryManager.GetAllCategoriesAsync();
-            var MappedItems = result.Items.Select(c => new GetAllMoviesDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Description = c.Description,
-                Price = c.Price,
-                PosterUrl = c.PosterImg,
-                CategoryNames = c.Categories.Select(cm => cm.CategoryName).Where(name => name != null).ToList() ?? new List<string>(),
-                Language = c.Language,
-                Translation = c.Translation,
-                Cinemas = c.CinemaMovies.Select(cm => cm.Cinema.Name).Where(name => name != null).ToList() ?? new List<string>(),
-                Actors = c.ActorMovies.Select(am => am.Actor.FullName).Where(name => name != null).ToList() ?? new List<string>()
-
-            }).ToList();
+            var MappedItems = result.Items.ToDto();
             return new PaginationResult<GetAllMoviesDto>
             {
                 Items = MappedItems,
                 CurrentPage = result.CurrentPage,
                 TotalPages = result.TotalPages
             };
+        }
+
+        public async Task AssignMovieToCinemaAsync(int movieId, int cinemaId)
+        {
+            var movie=await  _movieRepository.GetMovieByIdAsync(movieId);
+            if (movie == null) throw new Exception("Movie not found");
+            if (!movie.CinemaMovies.Any(cm => cm.CinemaId == cinemaId))
+            {
+                movie.CinemaMovies.Add(new CinemaMovie { CinemaId = cinemaId, MovieId = movieId });
+                await _movieRepository.UpdateMovieAsync(movie);
+
+            }
+        }
+
+        public async Task<List<GetAllMoviesDto>> GetMoviesByCinemaIdAsync(int cinemaId)
+        {
+            var movies = await _movieRepository.GetAllMoviesAsync();
+            var cinemaMovies=movies.Where(m=>m.CinemaMovies.Any(cm=>cm.CinemaId==cinemaId)).ToList();
+            
+
+            return cinemaMovies.ToDto();
+        }
+
+        public async Task<bool> RemoveMovieFromCinemaAsync(int movieId, int cinemaId)
+        {
+            bool hasAcyiveSchedules=await _movieRepository.HasActiveSchedulesForCinemaAsync(movieId,cinemaId);
+            if (hasAcyiveSchedules) return false;
+            var movie =await  _movieRepository.GetMovieByIdAsync(movieId);
+            if (movie != null)
+            {
+                var link= movie.CinemaMovies.FirstOrDefault(cm=>cm.CinemaId==cinemaId);
+                if (link != null)
+                {
+                    movie.CinemaMovies.Remove(link);
+                    await _movieRepository.UpdateMovieAsync(movie);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
