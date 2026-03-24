@@ -1,0 +1,196 @@
+﻿@model Business.DTOs.Integration.TmdbSearchResponse
+@{
+    ViewData["Title"] = "Discover Movies";
+    Layout = "_Layout";
+}
+
+<style>
+    /* --- المتغيرات والتصميم الأساسي --- */
+    :root {
+        --brand-red: #ff0f39;
+        --brand-glow: rgba(255, 15, 57, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-muted: #9ba1a6;
+    }
+
+    .movies-page-wrapper {
+        color: #ffffff;
+        padding-bottom: 100px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* --- ANIMATIONS --- */
+    @@keyframes fadeUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+    .anim-up { opacity: 0; animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .d-1 { animation-delay: 0.1s; } 
+    .d-2 { animation-delay: 0.2s; }
+    .d-3 { animation-delay: 0.3s; }
+
+    /* --- HEADER HERO --- */
+    .hero-header {
+        text-align: center; padding: 80px 20px;
+        background: url('https://image.tmdb.org/t/p/original/tMefBSflR6PGQLvLuH51p21QkIE.jpg') center 20%/cover no-repeat;
+        position: relative; border-radius: 30px; margin: 0 auto 50px auto; max-width: 1400px;
+        overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); border: 1px solid var(--glass-border);
+    }
+    .hero-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,1,2,0.4) 0%, rgba(5,1,2,0.95) 100%); }
+    .hero-content { position: relative; z-index: 2; }
+    .page-title { font-size: 4rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 10px; text-shadow: 0 10px 40px rgba(0,0,0,0.9); color: #fff; }
+    .page-subtitle { color: var(--brand-red); font-size: 1.4rem; font-weight: 500; margin-bottom: 50px; text-shadow: 0 0 20px var(--brand-glow);}
+
+    /* --- SEARCH BAR --- */
+    .search-container { max-width: 750px; margin: 0 auto; position: relative; }
+    .modern-search {
+        width: 100%; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.15); border-radius: 50px;
+        padding: 22px 30px 22px 70px; color: #fff; font-size: 1.25rem; backdrop-filter: blur(20px); transition: all 0.4s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .modern-search::placeholder { color: rgba(255,255,255,0.6); font-weight: 500;}
+    .modern-search:focus { outline: none; background: rgba(255,255,255,0.12); border-color: var(--brand-red); box-shadow: 0 0 50px var(--brand-glow); }
+    .search-icon { position: absolute; left: 30px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.7); font-size: 1.6rem; pointer-events: none; }
+    
+    .btn-filter { 
+        position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
+        background: var(--brand-red); border: none; color: #fff; width: 50px; height: 50px; 
+        border-radius: 50%; font-size: 1.2rem; transition: 0.3s; box-shadow: 0 5px 15px var(--brand-glow); 
+    }
+    .btn-filter:hover { background: #ff4d6d; transform: translateY(-50%) scale(1.1); }
+
+    /* --- MOVIES GRID --- */
+    .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 50px 35px; max-width: 1400px; margin: 0 auto; padding: 0 4%; }
+    .movie-card { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 2/3; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border: 2px solid var(--glass-border); transition: 0.5s; background-color: #0a0a0c; }
+    .movie-poster { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
+    
+    .movie-card:hover { transform: translateY(-15px); box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 0 2px rgba(255, 15, 57, 0.5); border-color: transparent; }
+    .movie-card:hover .movie-poster { transform: scale(1.1); filter: brightness(0.5); }
+
+    .quality-badge { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 0.8rem; z-index: 2; transition: 0.3s; }
+    .movie-card:hover .quality-badge { background: var(--brand-red); border-color: transparent; box-shadow: 0 0 15px var(--brand-glow);}
+
+    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(3,1,2,1) 0%, rgba(3,1,2,0.8) 45%, transparent 100%); padding: 30px 25px; display: flex; flex-direction: column; justify-content: flex-end; transform: translateY(30px); opacity: 0; transition: 0.5s; z-index: 3; pointer-events: none; }
+    .movie-card:hover .card-overlay { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+    .card-title { font-weight: 800; font-size: 1.4rem; margin: 0 0 8px 0; color: #fff; line-height: 1.1;}
+    .card-meta { display: flex; align-items: center; justify-content: space-between; font-size: 1rem; font-weight: 600; margin-bottom: 20px;}
+    .card-rating { color: #f5c518; }
+    
+    /* BUTTONS */
+    .btn-action { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 14px; font-weight: 700; text-decoration: none; border: none; transition: 0.3s; width: 100%; cursor: pointer; }
+    .customer-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(10px); }
+    .customer-btn:hover { background: #fff; color: #000; }
+    .agent-btn { background: linear-gradient(135deg, var(--brand-red), #ff4d6d); color: #fff; box-shadow: 0 8px 20px var(--brand-glow); }
+    .agent-btn:hover { transform: scale(1.02); color: #fff; }
+
+    @@media (max-width: 991px) {
+        .hero-header { border-radius: 0; margin-bottom: 30px; }
+        .page-title { font-size: 2.8rem; }
+    }
+</style>
+
+<div class="movies-page-wrapper mt-4">
+
+    <div class="hero-header anim-up d-1">
+        <div class="hero-scrim"></div>
+        <div class="hero-content">
+            <h1 class="page-title">Discover Movies</h1>
+            <p class="page-subtitle">Find your next favorite blockbuster.</p>
+            
+            <form asp-action="SearchTmdb" method="get" class="search-container">
+                <input type="text" name="query" value="@ViewBag.SearchQuery" class="modern-search" placeholder="Search by title, genre, or keyword..." autocomplete="off">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <button type="submit" class="btn-filter"><i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+        </div>
+    </div>
+
+    @if (ViewBag.IsTrending != null && ViewBag.IsTrending)
+    {
+        <h4 class="container text-white mb-4"><i class="fa-solid fa-fire text-danger me-2"></i> Trending Now</h4>
+    }
+
+else if (Model != null && Model.Results != null && Model.Results.Any())
+    {
+        <h4 class="container text-white mb-4">Search Results for "<span class="text-danger">@ViewBag.SearchQuery</span>"</h4>
+    }
+
+    <div class="movies-grid anim-up d-3">
+
+
+        @if (Model != null && Model.Results != null && Model.Results.Any())
+        {
+            @foreach (var movie in Model.Results)
+            {
+                <div class="movie-card">
+                    <div class="quality-badge"><i class="fa-solid fa-star text-warning"></i> @movie.Vote_Average.ToString("0.0")</div>
+                    
+                    @if (!string.IsNullOrEmpty(movie.Poster_Path))
+                    {
+                        <img src="https://image.tmdb.org/t/p/w500@(movie.Poster_Path)" alt="@movie.Title" class="movie-poster">
+                    }
+                    else
+                    {
+                        <img src="/Images/NotFound/404.jpg" alt="No Poster" class="movie-poster">
+                    }
+
+                    <div class="card-overlay">
+                        <h3 class="card-title text-truncate" title="@movie.Title">@movie.Title</h3>
+                        <div class="card-meta">
+                            <span class="card-year">@(string.IsNullOrEmpty(movie.Release_Date) ? "N/A" : movie.Release_Date.Split('-')[0])</span>
+                            <span class="card-year"><i class="fa-solid fa-language me-1"></i> @movie.Original_Language.ToUpper()</span>
+                        </div>
+                        
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Agent"))
+                        {
+                            <form asp-action="AddMovieFromTmdb" asp-controller="Agent" method="post">
+                                <input type="hidden" name="tmdbId" value="@movie.Id" />
+                                <button type="submit" class="btn-action agent-btn">
+                                    <i class="fa-solid fa-plus"></i> Add to my screening
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-action="Details" asp-controller="Movies" asp-route-id="@movie.Id" class="btn-action customer-btn">
+                                <i class="fa-regular fa-eye"></i> View Details
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5 w-100">
+                <i class="fa-solid fa-ghost text-secondary mb-3" style="font-size: 4rem;"></i>
+                <h3 class="text-white">No movies found!</h3>
+            </div>
+        }
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="d-flex justify-content-center mt-5 pb-5">
+            <nav aria-label="Movie Search Pagination">
+                <ul class="pagination pagination-lg" style="gap: 5px;">
+                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;" 
+                           href="@Url.Action("SearchTmdb", new { query = ViewBag.SearchQuery, page = ViewBag.CurrentPage - 1 })">
+                            <i class="fa-solid fa-chevron-left"></i> Prev
+                        </a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link fw-bold" style="background: rgba(229, 9, 20, 0.2); color: #e50914; border: 1px solid rgba(229, 9, 20, 0.4); border-radius: 10px;">
+                            Page @ViewBag.CurrentPage of @ViewBag.TotalPages
+                        </span>
+                    </li>
+                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                        <a class="page-link" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;" 
+                           href="@Url.Action("SearchTmdb", new { query = ViewBag.SearchQuery, page = ViewBag.CurrentPage + 1 })">
+                            Next <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+
+</div>

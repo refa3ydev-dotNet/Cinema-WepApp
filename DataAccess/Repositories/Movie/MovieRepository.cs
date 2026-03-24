@@ -1,4 +1,6 @@
 ﻿using Core;
+using Core.Entities;
+using Core.Entities.Relations;
 using Core.Helpers;
 using DataAccess.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -165,5 +167,80 @@ namespace DataAccess.Repositories.MOVIE
                 .Include(x => x.Cinema)
                 .AnyAsync(s=>s.MovieId==movieId && s.CinemaId==cinemaId && s.StartDate>DateTime.Now);
         }
+
+        public async Task<Movie> UpsertMovieFromTmdbAsync(Movie movie)
+        {
+            var existingMovie = await _context.Movies.Include(m=>m.CinemaMovies)
+                .FirstOrDefaultAsync(m => m.TmdbId == movie.TmdbId);
+            if(existingMovie != null)
+            {
+                return existingMovie;
+            }
+            var newCategories = new List<Category>();
+            foreach (var category in movie.Categories)
+            {
+                var existingCategory = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == category.CategoryName);
+                if (existingCategory != null)
+                {
+                    newCategories.Add(existingCategory);
+                }
+                else
+                {
+                    newCategories.Add(category);
+                }
+            }
+            movie.Categories = newCategories;
+
+            var newActorMovies = new List<ActorMovie>();
+            foreach (var actor in movie.ActorMovies)
+            {
+                var existingActor = await _context.Actors.FirstOrDefaultAsync(a => a.FullName == actor.Actor.FullName);
+                if (existingActor != null)
+                {
+                    newActorMovies.Add(new ActorMovie { ActorId = existingActor.Id });
+                }
+                else
+                {
+                    newActorMovies.Add(actor);
+                }
+            }
+            movie.ActorMovies = newActorMovies;
+            
+            var newDirectorMovies = new List<DirectorMovie>();
+            foreach (var director in movie.DirectorMovies)
+            {
+
+                var existingDirector = await _context.Directors.FirstOrDefaultAsync(d => d.Name == director.Director.Name);
+                if (existingDirector != null)
+                {
+                    newDirectorMovies.Add(new DirectorMovie { DirectorId = existingDirector.Id });
+                }
+                else
+                {
+                    newDirectorMovies.Add(director);
+                }
+            }
+            movie.DirectorMovies = newDirectorMovies;
+
+            var newProducerMovies = new List<ProducerMovie>();
+            foreach (var producer in movie.ProducerMovies)
+            {
+                var existingProducer = await _context.Producers.FirstOrDefaultAsync(p => p.FullName == producer.Producer.FullName);
+                if (existingProducer != null)
+                {
+                    newProducerMovies.Add(new ProducerMovie { ProducerId = existingProducer.Id });
+                }
+                else
+                {
+                    newProducerMovies.Add(producer);
+                }
+            }
+            movie.ProducerMovies = newProducerMovies;
+
+            await _context.Movies.AddAsync(movie);
+            await _context.SaveChangesAsync();
+            return movie;
+            }
+        }
     }
-}
+

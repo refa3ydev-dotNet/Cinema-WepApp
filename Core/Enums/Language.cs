@@ -47,7 +47,9 @@ namespace Core.Enums
         Urdu,
 
         [Display(Name = "Persian")]
-        Persian
+        Persian,
+        [Display(Name = "Other")]
+        Other
     }
 
 }

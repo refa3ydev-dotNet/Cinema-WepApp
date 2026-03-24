@@ -1,9 +1,11 @@
-﻿using Business.DTOs.Movies;
+﻿using Business.DTOs.Integration;
+using Business.DTOs.Movies;
 using Business.Managers.Actors;
 using Business.Managers.Categories;
 using Business.Managers.Cinemas;
 using Business.Managers.Movies;
 using Business.Managers.Producers;
+using Business.TMDB;
 using Core.Entities.Helpers;
 using Core.Enums;
 using DataAccess.Contexts;
@@ -22,7 +24,11 @@ namespace Movies_web_app.Controllers
         private readonly IProducersManager _producerManager;
         private readonly ICategoryManager _categoryManager;
         private readonly IImageService _imageServises;
-        public MoviesController(MoviesDbContext context, IMovieManager movieManager, IImageService imageService, IActorsManager actorManager, ICinemasManager cinemaManager, IProducersManager producerManager, ICategoryManager categoryManager)
+        private readonly ITmdbService _tmdbService;
+        public MoviesController(MoviesDbContext context, IMovieManager movieManager,
+            IImageService imageService, IActorsManager actorManager,
+            ICinemasManager cinemaManager, IProducersManager producerManager,
+            ICategoryManager categoryManager, ITmdbService tmdbService)
         {
             _context = context;
             _movieManager = movieManager;
@@ -31,6 +37,7 @@ namespace Movies_web_app.Controllers
             _cinemaManager = cinemaManager;
             _producerManager = producerManager;
             _categoryManager = categoryManager;
+            _tmdbService = tmdbService;
         }
         public async Task<IActionResult> Index(int page = 1)
         {
@@ -137,12 +144,21 @@ namespace Movies_web_app.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var movie = await _movieManager.GetMovieByIdAsync(id);
-            if (movie == null)
+            try
             {
-                return View("NotFound");
+                var movieDetails = await _tmdbService.GetMovieDetailsAsync(id);
+                if (movieDetails == null)
+                {
+                    return View("NotFound");
+                }
+                return View(movieDetails);
             }
-            return View(movie);
+            catch(Exception ex)
+            {
+                TempData["ErrorMessage"] = "Could not retrieve movie details at this time";
+                return View("SearchTmdb");
+            }
+            
         }
 
         [HttpGet]
@@ -242,5 +258,33 @@ namespace Movies_web_app.Controllers
 
 
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchTmdb(string query, int page = 1)
+        {
+            TmdbSearchResponse response;
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                response = await _tmdbService.GetPopularMoviesAsync(page);
+                ViewBag.IsTrending = true;
+            }
+            else
+            {
+                response = await _tmdbService.SearchMoviesAsync(query,page);
+                ViewBag.IsTrending = false;
+            }
+            ViewBag.SrechQuery = query;
+            ViewBag.CurrentPage = page;
+            if (response == null)
+            {
+                response = new TmdbSearchResponse
+                {
+                    Results = new List<TmdbMovieBasic>(),
+                    Total_Pages = 0
+                };
+            }
+            ViewBag.TotalPages = response.Total_Pages > 500 ? 500 : response.Total_Pages;
+            return View(response);
+        }
+
     }
 }

@@ -36,6 +36,8 @@ namespace Core
         [Required(ErrorMessage = "Movie Translation is required")]
         [Display(Name = "Movie Translation")]
         public TranslationType Translation { get; set; }
+        public int TmdbId { get; set; }
+        public string TrailerUrl { get; set; }=string.Empty;
 
         //public DateTime CreatedDate { get; set; } = DateTime.Now;
 

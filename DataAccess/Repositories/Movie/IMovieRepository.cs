@@ -15,5 +15,6 @@ namespace DataAccess.Repositories.MOVIE
         Task<PaginationResult<Movie>> GetPagedMoviesAsync(int page, int pageSize);
         Task<List<Movie>> GetMovieByActorAsync(string name);
         Task<bool> HasActiveSchedulesForCinemaAsync(int movieId, int cinemaId);
+        Task<Movie> UpsertMovieFromTmdbAsync(Movie movie);
     }
 }

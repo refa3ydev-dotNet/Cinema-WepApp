@@ -1,5 +1,6 @@
 using Business.Managers.Agent;
 using Business.Managers.Directors;
+using Business.TMDB;
 using Core.Entities;
 using DataAccess.Contexts;
 using DataAccess.Repositories.Dashboard;
@@ -58,7 +59,7 @@ namespace Movies_web_app
 
             builder.Services.AddScoped<IAgentDashboardRepository, AgentDashboardRepository>();
             builder.Services.AddScoped<IAgentDashboardManager, AgentDashboardManager>();
-
+            builder.Services.AddHttpClient<ITmdbService, TmdbService>();
             // ? DbContext configuration using the connection string from appsettings.json
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MoviesDbContext>(options =>

@@ -1,8 +1,11 @@
 ﻿using Business.DTOs.Movies;
 using Business.Managers.Categories;
 using Business.Mapping;
+using Business.TMDB;
+using Core;
 using Core.Entities;
 using Core.Entities.Relations;
+using Core.Enums;
 using Core.Helpers;
 using DataAccess.Repositories.CINEMA;
 using DataAccess.Repositories.MOVIE;
@@ -15,12 +18,14 @@ namespace Business.Managers.Movies
         private readonly IMovieRepository _movieRepository;
         private readonly ICategoryManager _categoryManager;
         private readonly ICinemaRepository _cinemaRepository;
+        public readonly ITmdbService _tmdbService;
 
-        public MovieManager(IMovieRepository movieRepository, ICategoryManager categoryManager, ICinemaRepository cinemaRepository)
+        public MovieManager(IMovieRepository movieRepository, ICategoryManager categoryManager, ICinemaRepository cinemaRepository, ITmdbService tmdbService)
         {
             _movieRepository = movieRepository;
             _categoryManager = categoryManager;
             _cinemaRepository = cinemaRepository;
+            _tmdbService = tmdbService;
         }
 
         public async Task CreateMovieAsync(CreateMovieDto dto)
@@ -112,5 +117,101 @@ namespace Business.Managers.Movies
             }
             return false;
         }
+        public async Task SyncMovieFromTmdbAsync(int tmdbMovieId, int cinemaId)
+        {
+            var tmdbDetails= await _tmdbService.GetMovieDetailsAsync(tmdbMovieId);
+            if (tmdbDetails == null)
+            {
+                throw new Exception("Movie not found in TMDB");
+            }
+            var trailerKey = tmdbDetails.Videos?.Results?.FirstOrDefault(v => v.Type == "Trailer"&&v.Site=="YouTube")?.Key;
+            var movieToSave = new Movie
+            {
+                TmdbId = tmdbDetails.Id,
+                Name = tmdbDetails.Title,
+                Description = tmdbDetails.Overview,
+                Language = MapTmdbLanguage(tmdbDetails.Original_Language) ,
+                Price = 100,
+                Translation = DetermineTranslation(tmdbDetails.Original_Language),
+                PosterImg = !string.IsNullOrEmpty(tmdbDetails.Poster_Path) ? $"https://image.tmdb.org/t/p/w500{tmdbDetails.Poster_Path}" : string.Empty,
+                BackgroundImg = !string.IsNullOrEmpty(tmdbDetails.Backdrop_Path) ? $"https://image.tmdb.org/t/p/original{tmdbDetails.Backdrop_Path}" : string.Empty,
+                TrailerUrl = trailerKey != null ? $"https://www.youtube.com/embed/{trailerKey}" : string.Empty,
+
+                // التصنيفات
+                Categories = tmdbDetails.Genres?.Select(g => new Category { CategoryName = g.Name }).ToList() ?? new List<Category>(),
+
+                // الممثلين (هناخد أول 6 أبطال بس عشان الداتا بيز متتخنقش)
+                ActorMovies = tmdbDetails.Credits?.Cast?.Take(6).Select(c => new ActorMovie
+                {
+                    Actor = new Actor
+                    {
+                        FullName = c.Name,
+                        ProfilePicture = !string.IsNullOrEmpty(c.Profile_Path) ? $"https://image.tmdb.org/t/p/w500{c.Profile_Path}" : string.Empty
+                    }
+                }).ToList() ?? new List<ActorMovie>(),
+
+                // المخرجين
+                DirectorMovies = tmdbDetails.Credits?.Crew?.Where(c => c.Job == "Director").Select(d => new DirectorMovie
+                {
+                    Director = new Director
+                    {
+                        Name = d.Name,
+                        ProfilePicture = !string.IsNullOrEmpty(d.Profile_Path) ? $"https://image.tmdb.org/t/p/w500{d.Profile_Path}" : string.Empty
+                    }
+                }).ToList() ?? new List<DirectorMovie>(),
+                ProducerMovies = tmdbDetails.Credits?.Crew?.Where(c => c.Job == "Producer").Select(d => new ProducerMovie
+                {
+                    Producer = new Producer
+                    {
+                        FullName = d.Name,
+                        ProfilePicture = !string.IsNullOrEmpty(d.Profile_Path) ? $"https://image.tmdb.org/t/p/w500{d.Profile_Path}" : string.Empty
+                    }
+                }).ToList() ?? new List<ProducerMovie>(),
+            };
+            var SavedMovie=await _movieRepository.UpsertMovieFromTmdbAsync(movieToSave);
+
+            if (SavedMovie.CinemaMovies == null)
+            {
+                SavedMovie.CinemaMovies=new List<CinemaMovie>();
+            }
+            if (!SavedMovie.CinemaMovies.Any(cm => cm.CinemaId == cinemaId))
+            {
+                SavedMovie.CinemaMovies.Add(new CinemaMovie { CinemaId = cinemaId, MovieId = SavedMovie.Id });
+                await _movieRepository.UpdateMovieAsync(SavedMovie);
+            }
+
+        }
+private Language MapTmdbLanguage(string tmdbLangCode)
+    {
+        if (string.IsNullOrEmpty(tmdbLangCode)) return Language.English; // قيمة افتراضية
+
+        return tmdbLangCode.ToLower() switch
+        {
+            "en" => Language.English,
+            "ar" => Language.Arabic,
+            "es" => Language.Spanish,
+            "fr" => Language.French,
+            "de" => Language.German,
+            "it" => Language.Italian,
+            "ja" => Language.Japanese,
+            "zh" => Language.Chinese, 
+            "ru" => Language.Russian,
+            "pt" => Language.Portuguese,
+            "tr" => Language.Turkish,
+            "hi" => Language.Hindi,
+            "ko" => Language.Korean,
+            "ur" => Language.Urdu,
+            "fa" => Language.Persian, 
+            _ => Language.English 
+        };
     }
+
+
+    private TranslationType DetermineTranslation(string tmdbLangCode)
+    {
+        if (string.IsNullOrEmpty(tmdbLangCode)) return TranslationType.Subtitled;
+
+        return tmdbLangCode.ToLower() == "ar" ? TranslationType.None : TranslationType.Subtitled;
+    }
+}
 }

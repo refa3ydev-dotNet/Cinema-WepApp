@@ -14,5 +14,6 @@ namespace Business.Managers.Movies
         Task AssignMovieToCinemaAsync(int movieId, int cinemaId);
         Task<List<GetAllMoviesDto>> GetMoviesByCinemaIdAsync(int cinemaId);
         Task<bool> RemoveMovieFromCinemaAsync(int movieId, int cinemaId); // عشان زرار الحذف
+        Task SyncMovieFromTmdbAsync(int tmdbMovieId, int cinemaId);
     }
 }

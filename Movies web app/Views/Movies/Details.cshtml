@@ -1,57 +1,241 @@
-﻿@using Business.DTOs.Movies
-@model GetMovieByIdDto
+﻿@model Business.DTOs.Integration.TmdbMovieDetails
 @{
-    var movieName = Model.Name;
-    ViewData["Title"] = movieName;
-    var backgroundPath = Model.BackgroundUrl;
+    ViewData["Title"] = Model.Title;
+    Layout = "_Layout";
+
+    var trailer = Model.Videos?.Results?.FirstOrDefault(v => v.Type == "Trailer" && v.Site == "YouTube");
+    var backdropUrl = !string.IsNullOrEmpty(Model.Backdrop_Path) ? $"https://image.tmdb.org/t/p/original{Model.Backdrop_Path}" : "/Images/DefaultBackdrop.jpg";
+    var posterUrl = !string.IsNullOrEmpty(Model.Poster_Path) ? $"https://image.tmdb.org/t/p/w500{Model.Poster_Path}" : "/Images/NotFound/404.jpg";
 }
-<link href="~/css/Movie/datails.css" rel="stylesheet" />
-@if(!string.IsNullOrEmpty(Model.BackgroundUrl)){
-    <style>
-        body{
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url( '@backgroundPath' ) no-repeat center / cover;
-            background-attachment:fixed;
-            width:100vw;
-            min-height:100vh;
-            margin:0;
-        }
-        strong{
-            font-size: 20px;
-        }
 
-    </style>
-}
-<section class="container px-5 text-white">
-    <h1 class="text-white">Movie Details</h1>
-    <section class="movie-info-top d-lg-flex d-sm-block gap-5">
+<style>
+    :root {
+        --brand-red: #e50914;
+        --brand-glow: rgba(229, 9, 20, 0.4);
+        --bg-deep: #0a0a0c;
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-muted: #9ba1a6;
+    }
 
-    <aside class="align-items-center d-flex flex-column">
-        <img src="@Model.PosterUrl" alt="@Model.Name Poster" style="max-width: 200px; height: auto;" />
-        <h2 class="text-white">@Model.Name</h2>
-    </aside>
+    body { background-color: var(--bg-deep); color: white; }
 
-    <div class="text-white">
-        <p><strong>Movie :</strong> @Model.Name</p> 
-        <p><strong>Release Date:</strong> @Model.ReleaseDate.ToString("ddd MMM yy")</p> 
-        <p class=""><strong>Genre:</strong>
-            @if (Model.CategoryName != null && Model.CategoryName.Any())
+    /* --- HERO SECTION --- */
+    .hero-banner {
+        width: 100%; height: 65vh; min-height: 450px;
+        background: url('@backdropUrl') center 20%/cover no-repeat;
+        position: relative;
+    }
+    .hero-gradient {
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, var(--bg-deep) 0%, rgba(10,10,12,0.7) 50%, rgba(10,10,12,0.2) 100%);
+    }
+
+    /* --- MAIN CONTENT --- */
+    .movie-content-container {
+        position: relative; z-index: 10;
+        margin-top: -200px; /* رفع المحتوى فوق الخلفية */
+        padding-bottom: 80px;
+    }
+
+    .movie-title {
+        font-size: 4rem; font-weight: 900; line-height: 1.1;
+        text-shadow: 0 5px 15px rgba(0,0,0,0.8);
+    }
+    .movie-tagline { color: var(--brand-red); font-size: 1.3rem; font-style: italic; }
+
+    .badge-custom {
+        background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+        padding: 8px 18px; border-radius: 12px; font-weight: 600; backdrop-filter: blur(5px);
+    }
+
+    .overview-text { font-size: 1.15rem; line-height: 1.8; color: #d1d6da; }
+
+    /* --- SIDEBAR --- */
+    .glass-sidebar {
+        background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+        border-radius: 24px; padding: 30px; backdrop-filter: blur(20px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        position: sticky; top: 100px;
+    }
+
+    .poster-img {
+        width: 100%; border-radius: 16px; margin-bottom: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.05);
+    }
+
+    /* --- BUTTONS --- */
+    .btn-action {
+        display: flex; justify-content: center; align-items: center; gap: 10px;
+        width: 100%; padding: 16px; border-radius: 50px; font-weight: 700; font-size: 1.1rem;
+        text-decoration: none; border: none; transition: 0.3s; margin-bottom: 15px;
+    }
+    .btn-agent { background: linear-gradient(135deg, #28a745, #20c997); color: white; box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3); }
+    .btn-agent:hover { transform: translateY(-3px); color: white; box-shadow: 0 15px 30px rgba(40, 167, 69, 0.5); }
+    
+    .btn-customer { background: linear-gradient(135deg, var(--brand-red), #ff4d6d); color: white; box-shadow: 0 10px 20px var(--brand-glow); }
+    .btn-customer:hover { transform: translateY(-3px); color: white; box-shadow: 0 15px 30px rgba(229, 9, 20, 0.6); }
+
+    .btn-glass { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; }
+    .btn-glass:hover { background: rgba(255,255,255,0.1); color: white; transform: translateY(-3px); }
+
+    /* --- FACT SHEET & STUDIOS --- */
+    .fact-item { margin-bottom: 15px; }
+    .fact-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; margin-bottom: 5px;}
+    .fact-value { font-size: 1.1rem; font-weight: 700; color: white; }
+    
+    .studio-logo {
+        height: 35px; object-fit: contain;
+        filter: brightness(0) invert(1); /* بتحول اللوجوهات السودة لبيضا عشان تبان على الدارك مود */
+        opacity: 0.85; margin-right: 15px; margin-bottom: 10px; transition: 0.3s;
+    }
+    .studio-logo:hover { opacity: 1; transform: scale(1.05); }
+
+    /* --- CAST & TRAILER --- */
+    .cast-scroller { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
+    .cast-card { flex: 0 0 110px; text-align: center; }
+    .cast-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid transparent; transition: 0.3s; }
+    .cast-card:hover .cast-img { border-color: var(--brand-red); transform: scale(1.05); }
+    .trailer-box { position: relative; padding-top: 56.25%; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .trailer-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+</style>
+
+<div class="hero-banner">
+    <div class="hero-gradient"></div>
+</div>
+
+<div class="container movie-content-container">
+    <div class="row">
+        
+        <div class="col-lg-8 col-md-7 pe-lg-5 mb-5">
+            <h1 class="movie-title text-white">@Model.Title</h1>
+            
+            @if (!string.IsNullOrEmpty(Model.Tagline))
             {
-                foreach (var name in Model.CategoryName)
-                {
-                        <span class="badge badge-dark">@name</span>
-                }
+                <p class="movie-tagline mb-4">"@Model.Tagline"</p>
             }
-        </p>
-        <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
-        <p><strong>Actors:</strong> 
-                @foreach (var actor in Model.ActorsIds)
-                {
 
+            <div class="d-flex flex-wrap gap-2 mb-5">
+                <span class="badge-custom text-warning">@(Model.Adult ? "+18" : "PG-13")</span>
+                <span class="badge-custom"><i class="fa-regular fa-clock me-1"></i> @Model.Runtime mins</span>
+                <span class="badge-custom"><i class="fa-regular fa-calendar me-1"></i> @(string.IsNullOrEmpty(Model.Release_Date) ? "TBA" : Model.Release_Date.Split('-')[0])</span>
+                @if (Model.Genres != null)
+                {
+                    foreach (var genre in Model.Genres.Take(3))
+                    {
+                        <span class="badge-custom text-white">@genre.Name</span>
+                    }
                 }
-        </p> 
+            </div>
+
+            <h3 class="fw-bold mb-3 border-bottom border-secondary pb-2">The Story</h3>
+            <p class="overview-text mb-5">
+                @(string.IsNullOrEmpty(Model.Overview) ? "No overview available for this movie yet." : Model.Overview)
+            </p>
+
+            <h3 class="fw-bold mb-3 border-bottom border-secondary pb-2">Top Cast</h3>
+            @if (Model.Credits?.Cast != null && Model.Credits.Cast.Any())
+            {
+                <div class="cast-scroller mb-5">
+                    @foreach (var actor in Model.Credits.Cast.Take(10))
+                    {
+                        <div class="cast-card">
+                            <img src="@(!string.IsNullOrEmpty(actor.Profile_Path) ? $"https://image.tmdb.org/t/p/w185{actor.Profile_Path}" : "/Images/DefaultAvatar.png")" alt="@actor.Name" class="cast-img">
+                            <h6 class="fw-bold mb-0 text-truncate" style="font-size: 0.85rem;" title="@actor.Name">@actor.Name</h6>
+                            <small class="text-secondary text-truncate d-block" style="font-size: 0.75rem;" title="@actor.Character">@actor.Character</small>
+                        </div>
+                    }
+                </div>
+            }
+
+            <h3 class="fw-bold mb-3 border-bottom border-secondary pb-2">Official Trailer</h3>
+            @if (trailer != null)
+            {
+                <div class="trailer-box mb-5">
+                    <iframe src="https://www.youtube.com/embed/@trailer.Key" allowfullscreen></iframe>
+                </div>
+            }
+            else
+            {
+                <div class="text-center p-5 border border-secondary rounded-4 mb-5" style="background: rgba(255,255,255,0.05);">
+                    <i class="fa-regular fa-circle-play fs-1 text-secondary mb-3"></i>
+                    <h5 class="text-secondary">No trailer available</h5>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4 col-md-5">
+            <div class="glass-sidebar">
+                
+                <img src="@posterUrl" alt="@Model.Title" class="poster-img" />
+                
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Agent"))
+                {
+                    <form asp-action="AddMovieFromTmdb" asp-controller="Agent" method="post">
+                        <input type="hidden" name="tmdbId" value="@Model.Id" />
+                        <button type="submit" class="btn-action btn-agent">
+                            <i class="fa-solid fa-plus"></i> Add to My Cinema
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <a href="#" class="btn-action btn-customer">
+                        <i class="fa-solid fa-ticket-simple"></i> Book Tickets
+                    </a>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Imdb_Id))
+                {
+                    <a href="https://www.imdb.com/title/@Model.Imdb_Id" target="_blank" class="btn-action btn-glass">
+                        <i class="fa-brands fa-imdb text-warning fs-4"></i> View on IMDb
+                    </a>
+                }
+
+                <hr class="border-secondary my-4">
+
+                <h5 class="fw-bold mb-4">Fact Sheet</h5>
+                
+                <div class="row">
+                    <div class="col-6 fact-item">
+                        <span class="fact-label">Rating</span>
+                        <span class="fact-value"><i class="fa-solid fa-star text-warning me-1"></i> @Model.Vote_Average.ToString("0.1")</span>
+                    </div>
+                    <div class="col-6 fact-item">
+                        <span class="fact-label">Status</span>
+                        <span class="fact-value @(Model.Status == "Released" ? "text-success" : "text-warning")">@Model.Status</span>
+                    </div>
+                    <div class="col-6 fact-item">
+                        <span class="fact-label">Language</span>
+                        <span class="fact-value text-uppercase">@Model.Original_Language</span>
+                    </div>
+                    <div class="col-6 fact-item">
+                        <span class="fact-label">Budget</span>
+                        <span class="fact-value">@(Model.Budget > 0 ? $"${(Model.Budget / 1000000.0).ToString("0.##")}M" : "N/A")</span>
+                    </div>
+                </div>
+
+                @if (Model.Production_Companies != null && Model.Production_Companies.Any())
+                {
+                    <div class="fact-item mt-3">
+                        <span class="fact-label mb-3">Studios</span>
+                        <div class="d-flex flex-wrap align-items-center">
+                            @foreach (var studio in Model.Production_Companies.Take(3))
+                            {
+                                if (!string.IsNullOrEmpty(studio.Logo_Path))
+                                {
+                                    <img src="https://image.tmdb.org/t/p/w200@(studio.Logo_Path)" alt="@studio.Name" class="studio-logo" title="@studio.Name">
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary me-2 mb-2">@studio.Name</span>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+
     </div>
-    </section>
-        <p class="d-flex flex-clomn"><strong>Description:</strong> <br/> @Model.Description</p>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</section>
+</div>
