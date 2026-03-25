@@ -96,7 +96,11 @@ namespace DataAccess.Contexts
                 .HasForeignKey(bs => bs.SeatId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
+            modelBuilder.Entity<MovieSchedule>()
+                .HasOne(m => m.Room)
+                .WithMany(m => m.MovieSchedules)
+                .HasForeignKey(m => m.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Booking>().Property(m=>m.TotalPrice).HasPrecision(10,2);
             modelBuilder.Entity<BookingSeat>().Property(m=>m.PriceAtBooking).HasPrecision(10,2);

@@ -6,7 +6,7 @@ namespace Business.DTOs.Accounts
 {
     public class StaySignedInDto
     {
-        public string Email { get; set; }
+        public string Email { get; set; }=string.Empty;
         public bool Rememberme { get; set; }
         public bool Dontshowagain { get; set; }
     }

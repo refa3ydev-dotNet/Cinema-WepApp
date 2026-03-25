@@ -7,18 +7,18 @@ namespace Business.DTOs.Cinemas
     public class GetCinemaByIdDto
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Address { get; set; }
-        public IFormFile BackgroundPicture { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public IFormFile? BackgroundPicture { get; set; }
         public string? BackgroundPath { get; set; }
         public string? LogoPath { get; set; }
         public string? RejectionReason { get; set; }
-        public IFormFile Logo { get; set; }
+        public IFormFile? Logo { get; set; }
         public ApprovalStatus ApprovalStatus { get; set; }
-        public List<GetAllMoviesDto> MovieDetails { get; set; }
-        public string AgentName { get; set; }
+        public List<GetAllMoviesDto> MovieDetails { get; set; }=new List<GetAllMoviesDto>();
+        public string AgentName { get; set; } = string.Empty;
 
-        
+
     }
 }

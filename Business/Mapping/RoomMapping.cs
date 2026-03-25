@@ -12,7 +12,7 @@ namespace Business.Mapping
                 Id = dto.Id,
                 RoomName = dto.RoomName,
                 UpdatedAt = DateTime.Now,
-                seatCount = dto.SeatCount,
+                SeatCount = dto.SeatCount,
                 CreatedAt = dto.CreatedAt,
             };
         }
@@ -23,7 +23,7 @@ namespace Business.Mapping
                 Id = dto.Id,
                 RoomName = dto.RoomName,
                 CreatedAt = DateTime.Now,
-                seatCount = dto.SeatCount,
+                SeatCount = dto.SeatCount,
                 CinemaId = cinemaId,
                 SeatsPerRow = dto.SeatsPerRow,
                 IsDeleted = false
@@ -39,7 +39,7 @@ namespace Business.Mapping
                 Id = room.Id,
                 RoomName = room.RoomName,
                 UpdatedAt = room.UpdatedAt,
-                SeatCount = room.seatCount,
+                SeatCount = room.SeatCount,
                 
                 CreatedAt = room.CreatedAt,
                 IsDeleted = room.IsDeleted,
@@ -53,7 +53,7 @@ namespace Business.Mapping
                 Id = room.Id,
                 RoomName = room.RoomName,
                 UpdatedAt = room.UpdatedAt,
-                SeatCount = room.seatCount,
+                SeatCount = room.SeatCount,
                 CreatedAt = room.CreatedAt,
                 IsDeleted = room.IsDeleted,
                 DeletedAt = room.DeletedAt,

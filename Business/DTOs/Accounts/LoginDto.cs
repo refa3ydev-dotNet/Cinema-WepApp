@@ -10,10 +10,10 @@ namespace Business.DTOs.Accounts
         [Required(ErrorMessage = "Please enter your email")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address")]
 
-        public string Email { get; set; }
+        public string Email { get; set; }=string.Empty;
         [Required(ErrorMessage = "Please enter your password")]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string Password { get; set; }=string.Empty;
         [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
     }

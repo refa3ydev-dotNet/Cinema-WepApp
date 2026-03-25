@@ -6,13 +6,13 @@ namespace Business.DTOs.Agent
 {
     public class RecentBookingDto
     {
-        public string MovieName { get; set; }
-        public string MoviePoster { get; set; }
+        public string MovieName { get; set; } = string.Empty;
+        public string MoviePoster { get; set; } = string.Empty;
         public DateTime ScheduleTime { get; set; }
-        public string RoomName { get; set; }
-        public string CustomerName { get; set; }
-        public string SeatInfo { get; set; }
+        public string RoomName { get; set; } = string.Empty;
+        public string CustomerName { get; set; } = string.Empty;
+        public string SeatInfo { get; set; } = string.Empty;
         public decimal TotalPrice { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 }

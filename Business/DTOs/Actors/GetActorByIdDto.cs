@@ -8,18 +8,18 @@ namespace Business.DTOs.Actors
     {
         public int Id { get; set; }
         [Required]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
         [Required]
-        public string Bio { get; set; }
+        public string Bio { get; set; } = string.Empty;
 
         public IFormFile? ProfilePicture { get; set; }
         public string? ProfilePath { get; set; } // دي هتحط فيها مسار الصورة بعد الرفع
-        public string IMDBLink { get; set; }
+        public string IMDBLink { get; set; } = string.Empty;
         public List<GetAllMoviesDto> MovieDetails { get; set; } = new List<GetAllMoviesDto>();
         public DateOnly BirthDate {  get; set; }
         public DateOnly? DeathDate { get; set; }
-        public string Nationality { get; set; }
+        public string Nationality { get; set; } = string.Empty;
         public int? Age
         {
             get
