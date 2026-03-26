@@ -138,10 +138,13 @@ else if (Model != null && Model.Results != null && Model.Results.Any())
                             <span class="card-year"><i class="fa-solid fa-language me-1"></i> @movie.Original_Language.ToUpper()</span>
                         </div>
                         
-                        @if (User.Identity.IsAuthenticated && User.IsInRole("Agent"))
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("CinemaAgent"))
                         {
-                            <form asp-action="AddMovieFromTmdb" asp-controller="Agent" method="post">
-                                <input type="hidden" name="tmdbId" value="@movie.Id" />
+                            <a asp-action="Details" asp-controller="Movies" asp-route-id="@movie.Id" class="btn-action customer-btn mb-2">
+                                <i class="fa-regular fa-eye"></i> View Details
+                            </a>
+                            <form asp-action="CreateSchedule" asp-controller="Agent" method="get" asp-route-id="@movie.Id">
+                                <input type="hidden" name="movieId" value="@movie.Id" />
                                 <button type="submit" class="btn-action agent-btn">
                                     <i class="fa-solid fa-plus"></i> Add to my screening
                                 </button>

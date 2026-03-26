@@ -1,9 +1,11 @@
 ﻿using Business.DTOs.Cinemas;
 using Business.DTOs.Rooms;
+using Business.DTOs.Schedule;
 using Business.Managers.Agent;
 using Business.Managers.Cinemas;
 using Business.Managers.Movies;
 using Business.Managers.Rooms;
+using Business.Managers.Schedule;
 using Core.Entities;
 using Core.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +25,7 @@ namespace Movies_web_app.Controllers
         private readonly IImageService _imageService;
         private readonly IRoomManager _roomManager;
         private readonly IMovieManager _movieManager;
+        private readonly IMovieScheduleManager _movieScheduleManager;
 
 
         public AgentController(UserManager<ApplicationUser> userManager,
@@ -30,7 +33,8 @@ namespace Movies_web_app.Controllers
             ICinemasManager cinemaManager,
             IImageService imageService,
             IRoomManager roomManager,
-            IMovieManager movieManager
+            IMovieManager movieManager,
+            IMovieScheduleManager scheduleManager
 )           
         {
             _userManager = userManager;
@@ -39,6 +43,7 @@ namespace Movies_web_app.Controllers
             _imageService = imageService;
             _roomManager = roomManager;
             _movieManager = movieManager;
+            _movieScheduleManager = scheduleManager;
 
         }
 
@@ -305,6 +310,65 @@ namespace Movies_web_app.Controllers
                 
             }
             return RedirectToAction("AgentMovies");
+        }
+        [HttpGet]
+        public async Task<IActionResult> CreateSchedule(int movieId)
+        {
+            if (movieId <= 0)
+            {
+                TempData["ErrorMessage"] = "Please select a valid movie first!";
+                return RedirectToAction("AgentMovies");
+            }
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.CinemaId == null) return RedirectToAction("Login", "Account");
+
+            var rooms = await _roomManager.GetCinemaRoomsAsync(user.CinemaId.Value);
+            ViewBag.Rooms = new SelectList(rooms, "Id", "RoomName"); 
+
+
+            var movie = await _movieManager.GetMovieByIdAsync(movieId);
+            ViewBag.MovieName = movie?.Name ?? "Unknown Movie";
+
+            var dto = new CreateScheduleDto
+            {
+                MovieId = movieId,
+                CinemaId = user.CinemaId.Value,
+                StartTime = DateTime.Now.AddDays(1).Date.AddHours(18), // Default to tomorrow at 6 PM
+                Price = 15
+            };
+            return View(dto);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateSchedule(CreateScheduleDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var rooms = await _roomManager.GetCinemaRoomsAsync(dto.CinemaId);
+                ViewBag.Rooms = new SelectList(rooms, "Id", "RoomName"); // رجعناها SelectList نظيفة
+
+                var movie = await _movieManager.GetMovieByIdAsync(dto.MovieId);
+                ViewBag.MovieName = movie?.Name ?? "Unknown Movie";
+                var errors = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                throw new Exception($"STOP! ModelState is INVALID. The errors are: {errors}");
+                return View(dto);
+            }
+
+            try
+            {
+
+                await _movieScheduleManager.CreateScheduleAsync(dto);
+                TempData["SuccessMessage"] = "Schedule created successfully!";
+                return RedirectToAction("AgentMovies");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while creating the schedule.";
+                var rooms = await _roomManager.GetCinemaRoomsAsync(dto.CinemaId);
+                ViewBag.Rooms = new SelectList(rooms, "Id", "RoomName");
+                var movie = await _movieManager.GetMovieByIdAsync(dto.MovieId);
+                ViewBag.MovieName = movie?.Name ?? "Unknown Movie";
+                return View(dto);
+            }
         }
     }
 }

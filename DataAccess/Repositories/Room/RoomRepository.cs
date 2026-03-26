@@ -17,6 +17,7 @@ namespace DataAccess.Repositories.ROOM
             {
                 return;
             }
+            _context.ChangeTracker.Clear();
             await _context.Rooms.AddAsync(room);
             await _context.SaveChangesAsync();
 

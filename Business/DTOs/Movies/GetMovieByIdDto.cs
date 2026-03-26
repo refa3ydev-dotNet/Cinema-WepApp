@@ -19,6 +19,8 @@ namespace Business.DTOs.Movies
         public Language Language { get; set; }
         public TranslationType Translation { get; set; }
         public DateTime ReleaseDate { get; set; }
+        public int Runtime { get; set; }
+
         //public string? cinemaName { get; set; }
         //public DateTime CreatedDate { get; set; }
         public List<int>? CinemasIds { get; set; }=new List<int>();

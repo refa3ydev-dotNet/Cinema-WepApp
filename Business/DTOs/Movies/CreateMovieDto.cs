@@ -18,6 +18,8 @@ namespace Business.DTOs.Movies
         public IFormFile? BackgroundImg { get; set; } //BackgroundImg
         public string? BackgroundUrl { get; set; }
         public Language Language { get; set; }
+        public int Runtime { get; set; }
+
         public TranslationType Translation { get; set; }
         [Required(ErrorMessage = "Please select at least one Actor")]
         public List<int> ActorsIds { get; set; }=new List<int>();

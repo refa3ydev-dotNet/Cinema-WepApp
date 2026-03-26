@@ -20,7 +20,8 @@ namespace Business.Managers.Movies
         private readonly ICinemaRepository _cinemaRepository;
         public readonly ITmdbService _tmdbService;
 
-        public MovieManager(IMovieRepository movieRepository, ICategoryManager categoryManager, ICinemaRepository cinemaRepository, ITmdbService tmdbService)
+        public MovieManager(IMovieRepository movieRepository, ICategoryManager categoryManager,
+            ICinemaRepository cinemaRepository, ITmdbService tmdbService)
         {
             _movieRepository = movieRepository;
             _categoryManager = categoryManager;
@@ -181,8 +182,8 @@ namespace Business.Managers.Movies
             }
 
         }
-private Language MapTmdbLanguage(string tmdbLangCode)
-    {
+        private Language MapTmdbLanguage(string tmdbLangCode)
+        {
         if (string.IsNullOrEmpty(tmdbLangCode)) return Language.English; // قيمة افتراضية
 
         return tmdbLangCode.ToLower() switch

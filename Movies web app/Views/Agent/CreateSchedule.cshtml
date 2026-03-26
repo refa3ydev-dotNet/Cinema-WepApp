@@ -1,0 +1,100 @@
+﻿@model Business.DTOs.Schedule.CreateScheduleDto
+@{
+    ViewData["Title"] = "Schedule Showtime";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/css/CreateSchedule.css" />
+
+<main class="schedule-page mt-5">
+    <section class="schedule-shell" aria-labelledby="schedule-title">
+        
+        <header class="schedule-header text-center mb-4">
+            <span class="agent-badge badge bg-danger mb-2 px-3 py-2">
+                <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+                Agent Mode
+            </span>
+            <div class="header-copy">
+                <p class="eyebrow text-muted text-uppercase letter-spacing-1">FlickIt Ultimate Control Panel</p>
+                <h1 id="schedule-title" class="fw-bolder text-white">Schedule Showtime</h1>
+                <p class="header-subtitle text-secondary">Set timings and pricing for: <span class="movie-placeholder text-danger fw-bold">@ViewBag.MovieName</span></p>
+            </div>
+        </header>
+
+        <section class="glass-card mx-auto mb-5 mt-5" aria-label="Schedule showtime form" style="max-width: 800px; ">
+            <div class="card-glow" aria-hidden="true"></div>
+
+            <div class="card-heading mb-4 border-bottom border-secondary pb-3">
+                <h3 class="text-white">Add New Showtime</h3>
+                <p class="text-muted">Assign a hall, define the screening start, and lock in the final ticket rate.</p>
+            </div>
+
+            <form class="schedule-form" asp-action="CreateSchedule" asp-controller="Agent" method="post" id="schedule-form">
+                
+                <input type="hidden" asp-for="MovieId" />
+                <input type="hidden" asp-for="CinemaId" />
+
+                <div class="form-grid row g-4">
+                    
+                    <div class="form-field col-md-12">
+                        <label asp-for="RoomId" class="text-secondary fw-bold mb-2 d-block">
+                            <span class="label-icon"><i class="fa-solid fa-door-open" aria-hidden="true"></i></span>
+                            Select Room / Hall
+                        </label>
+                        <div class="input-shell select-shell d-flex align-items-center" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px;">
+                            <div class="select-content w-100 ">
+                                <select asp-for="RoomId" asp-items="@ViewBag.Rooms" class="form-select form-control text-secondary bg-transparent border-0"  required>
+                                    <option value="" selected disabled class="text-white">-- Choose a screening hall --</option>
+                                </select>
+                                
+                            </div>
+                            <span class="input-icon select-toggle ms-auto text-secondary"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span>
+                        </div>
+                        <span asp-validation-for="RoomId" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="form-field col-md-6">
+                        <label asp-for="StartTime" class="text-secondary fw-bold mb-2 d-block">
+                            <span class="label-icon"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i></span>
+                            Start Time
+                        </label>
+                        <div class="input-shell d-flex align-items-center" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px;">
+                            <input asp-for="StartTime" type="datetime-local" required class="w-100 bg-transparent text-white border-0" style="outline:none; color-scheme: dark;">
+                                <span class="input-icon ms-auto text-secondary"><i class="fa-regular fa-clock" aria-hidden="true"></i></span>
+                            </div>
+                            <span asp-validation-for="StartTime" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="form-field col-md-6">
+                            <label asp-for="Price" class="text-secondary fw-bold mb-2 d-block">
+                                <span class="label-icon"><i class="fa-solid fa-ticket" aria-hidden="true"></i></span>
+                                Ticket Price
+                            </label>
+                            <div class="input-shell price-shell d-flex align-items-center" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px;">
+                                <span class="price-prefix text-secondary me-2 fw-bold">EGP</span>
+                                <input asp-for="Price" type="number" min="0" step="5" placeholder="150" required class="w-100 bg-transparent text-white fw-bold border-0" style="outline:none;">
+                                    <span class="input-icon ms-auto text-warning"><i class="fa-solid fa-coins" aria-hidden="true"></i></span>
+                                </div>
+                                <span asp-validation-for="Price" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-footer mt-5 pt-3 border-top border-secondary">
+                            <p class="helper-text text-muted small mb-3">
+                                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                                Double-check time and pricing before saving this showtime. End time will be calculated automatically.
+                            </p>
+                            <button class="submit-button btn w-100 py-3 fw-bold text-white fs-5" type="submit" style="background: linear-gradient(135deg, #e50914, #ff4d6d); border-radius: 12px; box-shadow: 0 10px 20px rgba(229,9,20,0.3); transition: 0.3s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <i class="fa-solid fa-circle-check me-2" aria-hidden="true"></i>
+                                Save Showtime
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </section>
+        </main>
+
+        @section Scripts {
+            <partial name="_ValidationScriptsPartial" />
+        }

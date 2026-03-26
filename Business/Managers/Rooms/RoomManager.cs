@@ -30,13 +30,14 @@ namespace Business.Managers.Rooms
                 return false;
             }
             bool hasFutureSchedules=existingRoom.MovieSchedules.Any(s=>s.StartDate>=DateTime.Now);
+
             if(hasFutureSchedules)
             {
                 return false;
             }
-                existingRoom.IsDeleted = true;
-                existingRoom.DeletedAt = DateTime.Now;
-                await _roomRepository.UpdateRoomAsync(existingRoom);
+            existingRoom.IsDeleted = true;
+            existingRoom.DeletedAt = DateTime.Now;
+            await _roomRepository.UpdateRoomAsync(existingRoom);
             return true;
             
         }
@@ -60,15 +61,15 @@ namespace Business.Managers.Rooms
             var existingRoom=await _roomRepository.GetRoomByIdAsync(dto.Id);
             if (existingRoom != null)
             { 
-            existingRoom.RoomName = dto.RoomName;
+                existingRoom.RoomName = dto.RoomName;
                 existingRoom.UpdatedAt=DateTime.Now;
+                await _roomRepository.UpdateRoomAsync(existingRoom);
             }
-            await _roomRepository.UpdateRoomAsync(existingRoom);
         }
         private List<Seat> GenerateSeats(int seatCount, int seatsPerRow)
         {
             var seats =new List<Seat>();
-            for (int i = 1; i <= seatCount; i++)
+            for (int i = 0; i < seatCount; i++)
             {
                 int rowIndex = i / seatsPerRow;
                 int columnNumber = (i % seatsPerRow) + 1;
@@ -88,7 +89,7 @@ namespace Business.Managers.Rooms
         private string GetRowLetter(int rowIndex)
         {
             const string rowLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            if(rowIndex > 26)
+            if(rowIndex < 26)
             {
                 return rowLetters[rowIndex].ToString();
 

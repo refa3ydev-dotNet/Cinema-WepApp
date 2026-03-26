@@ -14,6 +14,7 @@
         </div>
 
         <form asp-action="CreateRoom" asp-controller="Agent" method="POST">
+            <input type="hidden" name="CinemaId" asp-for="CinemaId" />
             <!-- Room Name Field -->
             <div class="mb-3">
                 <div class="form-floating">

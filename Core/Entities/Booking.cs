@@ -8,7 +8,7 @@ namespace Core.Entities
 {
     public class Booking : BaseEntity
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         public DateTime BookingDate { get; set; }=DateTime.Now;
         [Required]
         public decimal TotalPrice { get; set; }

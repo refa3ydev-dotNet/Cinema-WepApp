@@ -23,7 +23,7 @@ namespace Business.Mapping
                 BackgroundImg = dto.BackgroundUrl,
                 Language = dto.Language,
                 Translation = dto.Translation,
-
+                Runtime = dto.Runtime,
                 Categories = dto.CategoryIds!=null
                 ?categories.Where(c => dto.CategoryIds.Contains(c.Id)).ToList()
                 :new List<Category>(),

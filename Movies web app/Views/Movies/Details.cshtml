@@ -168,9 +168,9 @@
                 
                 <img src="@posterUrl" alt="@Model.Title" class="poster-img" />
                 
-                @if (User.Identity.IsAuthenticated && User.IsInRole("Agent"))
+                @if (User.Identity.IsAuthenticated && User.IsInRole("CinemaAgent"))
                 {
-                    <form asp-action="AddMovieFromTmdb" asp-controller="Agent" method="post">
+                    <form asp-action="CreateSchedule" asp-controller="Agent" method="get" asp-route-id="@Model.Id">
                         <input type="hidden" name="tmdbId" value="@Model.Id" />
                         <button type="submit" class="btn-action btn-agent">
                             <i class="fa-solid fa-plus"></i> Add to My Cinema
