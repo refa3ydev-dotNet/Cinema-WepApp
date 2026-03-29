@@ -34,7 +34,8 @@ namespace Movies_web_app.Controllers
             IImageService imageService,
             IRoomManager roomManager,
             IMovieManager movieManager,
-            IMovieScheduleManager scheduleManager
+            IMovieScheduleManager scheduleManager,
+                IMovieScheduleManager scheduleManager2
 )           
         {
             _userManager = userManager;
@@ -44,6 +45,7 @@ namespace Movies_web_app.Controllers
             _roomManager = roomManager;
             _movieManager = movieManager;
             _movieScheduleManager = scheduleManager;
+
 
         }
 
@@ -288,6 +290,15 @@ namespace Movies_web_app.Controllers
                 return RedirectToAction("Login", "Account");
             }
             var movies = await _movieManager.GetMoviesByCinemaIdAsync(user.CinemaId.Value);
+            var rooms = await _roomManager.GetCinemaRoomsAsync(user.CinemaId.Value);
+            ViewBag.Rooms = new SelectList(rooms, "Id", "RoomName");
+            var newMoviesThisMonth=movies.Count(m=>m.CreatedAt.Month==DateTime.Now.Month&&m.CreatedAt.Year==DateTime.Now.Year);
+            //var activeSchedulesCount = await _movieScheduleManager.GetActiveSchedulesCountByCinemaIdAsync(user.CinemaId.Value);
+            // var ticketsSold = await _ticketManager.GetTicketsSoldCountByCinemaIdAsync(user.CinemaId.Value);
+            ViewBag.NewMoviesThisMonth = newMoviesThisMonth;
+            ViewBag.ActiveSchedules=0;
+            ViewBag.TicketsSold=0;
+            ViewBag.TotalMovies = movies.Count();
             return View(movies);
         }
         [HttpPost]
@@ -339,36 +350,55 @@ namespace Movies_web_app.Controllers
             return View(dto);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateSchedule(CreateScheduleDto dto)
+        public async Task<IActionResult> CreateSchedule([FromBody] CreateScheduleDto dto)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || !user.CinemaId.HasValue)
+            {
+                return Unauthorized(new { message = "You must be logged in and assigned to a cinema." });
+            }
+
+            ModelState.Remove("CinemaId");
+
             if (!ModelState.IsValid)
             {
-                var rooms = await _roomManager.GetCinemaRoomsAsync(dto.CinemaId);
-                ViewBag.Rooms = new SelectList(rooms, "Id", "RoomName"); // رجعناها SelectList نظيفة
-
-                var movie = await _movieManager.GetMovieByIdAsync(dto.MovieId);
-                ViewBag.MovieName = movie?.Name ?? "Unknown Movie";
                 var errors = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                throw new Exception($"STOP! ModelState is INVALID. The errors are: {errors}");
-                return View(dto);
+                return BadRequest(new { message = $"Validation Error: {errors}" });
             }
 
             try
             {
+                dto.CinemaId = user.CinemaId.Value;
 
-                await _movieScheduleManager.CreateScheduleAsync(dto);
-                TempData["SuccessMessage"] = "Schedule created successfully!";
-                return RedirectToAction("AgentMovies");
+                await _movieScheduleManager.CreateScheduleAsync(dto); 
+
+                return Ok(new { success = true, message = "Schedule created successfully!" });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "An error occurred while creating the schedule.";
-                var rooms = await _roomManager.GetCinemaRoomsAsync(dto.CinemaId);
-                ViewBag.Rooms = new SelectList(rooms, "Id", "RoomName");
-                var movie = await _movieManager.GetMovieByIdAsync(dto.MovieId);
-                ViewBag.MovieName = movie?.Name ?? "Unknown Movie";
-                return View(dto);
+                return StatusCode(500, new { success = false, message = "Server Error: " + ex.Message });
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> AddMovieToCinemaCatalog([FromForm] int tmdbId)
+        {
+            try
+            {
+                var user= await _userManager.GetUserAsync(User);
+                if (user == null || user.CinemaId == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                await _movieManager.SyncMovieFromTmdbAsync(tmdbId, user.CinemaId.Value);
+                return Json(new { success = true , message = $"Movie added to your cinema successfully!" });
+            }catch(Exception ex)
+            {
+                string exactError = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+
+                // بنبعتها للـ JS عشان تظهرلك في الشاشة
+                return StatusCode(500, new { success = false, message = "DB Error: " + exactError });
+            }
+        }
+
     }
 }

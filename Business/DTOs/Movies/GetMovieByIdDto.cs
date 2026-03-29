@@ -20,6 +20,9 @@ namespace Business.DTOs.Movies
         public TranslationType Translation { get; set; }
         public DateTime ReleaseDate { get; set; }
         public int Runtime { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+
 
         //public string? cinemaName { get; set; }
         //public DateTime CreatedDate { get; set; }

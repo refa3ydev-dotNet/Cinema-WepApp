@@ -1,7 +1,7 @@
 ﻿using Business.DTOs.Integration;
 using System.Net.Http.Json;
 
-namespace Business.TMDB
+namespace Business.Services.TmdbService
 {
     public class TmdbService : ITmdbService
     {
@@ -17,6 +17,21 @@ namespace Business.TMDB
             var response = await _httpClient.GetFromJsonAsync<TmdbMovieDetails>(
                 $"{_baseUrl}/movie/{tmdbMovieId}?api_key={_apiKey}&append_to_response=credits,videos");
             return response;
+        }
+
+        public async Task<TmdbPersonDetails> GetPersonDetailsAsync(int personId)
+        {
+            try
+            {
+
+            var response= await _httpClient.GetFromJsonAsync<TmdbPersonDetails>(
+                $"{_baseUrl}/person/{personId}?api_key={_apiKey}");
+                return response;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task<TmdbSearchResponse> GetPopularMoviesAsync(int page = 1)

@@ -182,6 +182,7 @@ namespace DataAccess.Repositories.MOVIE
                 var existingCategory = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == category.CategoryName);
                 if (existingCategory != null)
                 {
+                    _context.Attach(existingCategory);
                     newCategories.Add(existingCategory);
                 }
                 else

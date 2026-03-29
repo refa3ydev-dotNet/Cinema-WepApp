@@ -15,6 +15,10 @@ namespace Business.DTOs.Movies
         public string BackgroundUrl { get; set; }
         public Language Language { get; set; }
         public TranslationType Translation { get; set; }
+        public decimal Rating { get; set; } = 0;
+        public string Release_Date { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public int Runtime { get; set; }
         public List<string> CategoryNames { get; set; } = new List<string>();
         public List<string> Cinemas { get; set; } = new List<string>();

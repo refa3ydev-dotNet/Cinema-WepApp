@@ -1,7 +1,7 @@
 ﻿using Business.Managers.Agent;
 using Business.Managers.Directors;
 using Business.Managers.Schedule;
-using Business.TMDB;
+using Business.Services.TmdbService;
 using Core.Entities;
 using DataAccess.Contexts;
 using DataAccess.Repositories.Dashboard;

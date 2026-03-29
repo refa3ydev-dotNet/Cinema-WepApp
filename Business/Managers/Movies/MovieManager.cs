@@ -1,7 +1,8 @@
-﻿using Business.DTOs.Movies;
+﻿using Business.DTOs.Integration;
+using Business.DTOs.Movies;
 using Business.Managers.Categories;
 using Business.Mapping;
-using Business.TMDB;
+using Business.Services.TmdbService;
 using Core;
 using Core.Entities;
 using Core.Entities.Relations;
@@ -126,6 +127,27 @@ namespace Business.Managers.Movies
                 throw new Exception("Movie not found in TMDB");
             }
             var trailerKey = tmdbDetails.Videos?.Results?.FirstOrDefault(v => v.Type == "Trailer"&&v.Site=="YouTube")?.Key;
+            var actorMoves = new List<ActorMovie>();
+            var topCast= tmdbDetails.Credits?.Cast?.Take(6)??Enumerable.Empty<TmdbCast>();
+            foreach (var cast in topCast)
+            {
+                var persomInfo=await _tmdbService.GetPersonDetailsAsync(cast.Id);
+                actorMoves.Add(cast.ToActorMovie(persomInfo));
+            }
+            var directorMovies=new List<DirectorMovie>();
+            var directors=tmdbDetails.Credits?.Crew?.Where(c=>c.Job=="Director")??Enumerable.Empty<TmdbCrew>();
+            foreach (var director in directors)
+            {
+                var persomInfo=await _tmdbService.GetPersonDetailsAsync(director.Id);
+                directorMovies.Add(director.ToDirectorMovie(persomInfo));
+            }
+            var producerMovies=new List<ProducerMovie>();
+            var producers=tmdbDetails.Credits?.Crew?.Where(c=>c.Job=="Producer")??Enumerable.Empty<TmdbCrew>();
+            foreach (var producer in producers)
+            {
+                var persomInfo=await _tmdbService.GetPersonDetailsAsync(producer.Id);
+                producerMovies.Add(producer.ToProducerMovie(persomInfo));
+            }
             var movieToSave = new Movie
             {
                 TmdbId = tmdbDetails.Id,
@@ -137,40 +159,27 @@ namespace Business.Managers.Movies
                 PosterImg = !string.IsNullOrEmpty(tmdbDetails.Poster_Path) ? $"https://image.tmdb.org/t/p/w500{tmdbDetails.Poster_Path}" : string.Empty,
                 BackgroundImg = !string.IsNullOrEmpty(tmdbDetails.Backdrop_Path) ? $"https://image.tmdb.org/t/p/original{tmdbDetails.Backdrop_Path}" : string.Empty,
                 TrailerUrl = trailerKey != null ? $"https://www.youtube.com/embed/{trailerKey}" : string.Empty,
+                Rating = (decimal)tmdbDetails.Vote_Average,
+                ReleaseDate = tmdbDetails.Release_Date,
+                Runtime = tmdbDetails.Runtime,
+                
 
                 // التصنيفات
-                Categories = tmdbDetails.Genres?.Select(g => new Category { CategoryName = g.Name }).ToList() ?? new List<Category>(),
-
-                // الممثلين (هناخد أول 6 أبطال بس عشان الداتا بيز متتخنقش)
-                ActorMovies = tmdbDetails.Credits?.Cast?.Take(6).Select(c => new ActorMovie
-                {
-                    Actor = new Actor
-                    {
-                        FullName = c.Name,
-                        ProfilePicture = !string.IsNullOrEmpty(c.Profile_Path) ? $"https://image.tmdb.org/t/p/w500{c.Profile_Path}" : string.Empty
-                    }
-                }).ToList() ?? new List<ActorMovie>(),
-
-                // المخرجين
-                DirectorMovies = tmdbDetails.Credits?.Crew?.Where(c => c.Job == "Director").Select(d => new DirectorMovie
-                {
-                    Director = new Director
-                    {
-                        Name = d.Name,
-                        ProfilePicture = !string.IsNullOrEmpty(d.Profile_Path) ? $"https://image.tmdb.org/t/p/w500{d.Profile_Path}" : string.Empty
-                    }
-                }).ToList() ?? new List<DirectorMovie>(),
-                ProducerMovies = tmdbDetails.Credits?.Crew?.Where(c => c.Job == "Producer").Select(d => new ProducerMovie
-                {
-                    Producer = new Producer
-                    {
-                        FullName = d.Name,
-                        ProfilePicture = !string.IsNullOrEmpty(d.Profile_Path) ? $"https://image.tmdb.org/t/p/w500{d.Profile_Path}" : string.Empty
-                    }
-                }).ToList() ?? new List<ProducerMovie>(),
+                Categories = tmdbDetails.Genres?.Select(g => new Category {
+                    CategoryName = g.Name,
+                    Description=$"Movies belonging to the {g.Name} genre.",
+                    ImageUrl = "/Images/NotFound/logo.jpg"
+                }).ToList() ?? new List<Category>(),
+                CinemaMovies = new List<CinemaMovie>
+        {
+            new CinemaMovie { CinemaId = cinemaId } // الـ MovieId هياخده أوتوماتيك لما الـ Movie يتحفظ
+        }
             };
+            movieToSave.ActorMovies = actorMoves;
+            movieToSave.DirectorMovies = directorMovies;
+            movieToSave.ProducerMovies = producerMovies;
             var SavedMovie=await _movieRepository.UpsertMovieFromTmdbAsync(movieToSave);
-
+            
             if (SavedMovie.CinemaMovies == null)
             {
                 SavedMovie.CinemaMovies=new List<CinemaMovie>();

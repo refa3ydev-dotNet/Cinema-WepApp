@@ -1,6 +1,7 @@
 ﻿using Business.DTOs.Actors;
 using Business.DTOs.Cinemas;
 using Business.DTOs.Directors;
+using Business.DTOs.Integration;
 using Business.DTOs.Movies;
 using Business.DTOs.Producers;
 using Core;
@@ -87,6 +88,12 @@ namespace Business.Mapping
                 BackgroundUrl = x.BackgroundImg,
                 Language = x.Language,
                 Translation = x.Translation,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                Runtime = x.Runtime,
+                Rating = x.Rating,
+                
+                Release_Date = x.ReleaseDate,
                 CategoryNames = x.Categories.Select(c => c.CategoryName).ToList(),
                 Cinemas = x.CinemaMovies?.Select(y => y.Cinema.Name).ToList()?? new List<string>(),
                 Actors = x.ActorMovies?.Select(y => y.Actor.FullName).ToList()?? new List<string>(),
@@ -109,6 +116,9 @@ namespace Business.Mapping
                 Language = movie.Language,
                 Translation = movie.Translation,
                 ReleaseDate = movie.CreatedAt,
+                CreatedAt = movie.CreatedAt,
+                UpdatedAt = movie.UpdatedAt,
+                Runtime = movie.Runtime,
                 CategoryIds = movie.Categories.Select(x => x.Id).ToList(),
                 ActorsIds = movie.ActorMovies?.Select(x => x.ActorId).ToList()??new List<int>(),
                 CinemasIds = movie.CinemaMovies?.Select(x => x.CinemaId).ToList()??new List<int>(),
@@ -144,6 +154,62 @@ namespace Business.Mapping
             };
         }
 
+        public static ActorMovie ToActorMovie(this TmdbCast dto,TmdbPersonDetails personInfo)
+        {
+            return new ActorMovie
+            {
+                Actor = new Actor
+                {
+                    FullName = dto.Name,
+                    ProfilePicture = !string.IsNullOrEmpty(dto.Profile_Path) ? $"https://image.tmdb.org/t/p/w500{dto.Profile_Path}" : string.Empty,
+                    Bio = !string.IsNullOrWhiteSpace(personInfo?.Biography) ? personInfo.Biography : "Biography not available.",
+                    Nationality = !string.IsNullOrWhiteSpace(personInfo?.Place_Of_Birth) ? personInfo.Place_Of_Birth : "Unknown",
+                    BirthDate = (personInfo != null ? ParseDateSafely(personInfo.Birthday) : null) ?? new DateOnly(1900, 1, 1),
+                    DeathDate = personInfo != null ? ParseDateSafely(personInfo.Deathday) : null
+                }
+            };
+        }
 
+        public static DirectorMovie ToDirectorMovie(this TmdbCrew dto, TmdbPersonDetails personInfo)
+        {
+            return new DirectorMovie
+            {
+                Director = new Director
+                {
+                    Name = dto.Name,
+                    ProfilePicture = !string.IsNullOrEmpty(dto.Profile_Path) ? $"https://image.tmdb.org/t/p/w500{dto.Profile_Path}" : string.Empty,
+                    Biography = !string.IsNullOrWhiteSpace(personInfo?.Biography) ? personInfo.Biography : "Biography not available.",
+                    Nationality = !string.IsNullOrWhiteSpace(personInfo?.Place_Of_Birth) ? personInfo.Place_Of_Birth : "Unknown",
+                    BirthDate = (personInfo != null ? ParseDateSafely(personInfo.Birthday) : null) ?? new DateOnly(1900, 1, 1),
+                    DeathDate = personInfo != null ? ParseDateSafely(personInfo.Deathday) : null
+                }
+            };
+        }
+        public static ProducerMovie ToProducerMovie(this TmdbCrew dto, TmdbPersonDetails personInfo)
+        {
+            return new ProducerMovie
+            {
+                Producer = new Producer
+                {
+                    FullName = dto.Name,
+                    ProfilePicture = !string.IsNullOrEmpty(dto.Profile_Path) ? $"https://image.tmdb.org/t/p/w500{dto.Profile_Path}" : string.Empty,
+                    Bio = !string.IsNullOrWhiteSpace(personInfo?.Biography) ? personInfo.Biography : "Biography not available.",
+                    Nationality = !string.IsNullOrWhiteSpace(personInfo?.Place_Of_Birth) ? personInfo.Place_Of_Birth : "Unknown",
+                    BirthDate = (personInfo != null ? ParseDateSafely(personInfo.Birthday) : null) ?? new DateOnly(1900, 1, 1),
+                    DeathDate = personInfo != null ? ParseDateSafely(personInfo.Deathday) : null
+                }
+            };
+        }
+
+
+        private static DateOnly? ParseDateSafely(string dateString)
+        {
+            if (string.IsNullOrWhiteSpace(dateString)) return null;
+            if (DateOnly.TryParse(dateString, out DateOnly result))
+            {
+                return result;
+            }
+            return null; 
+        }
     }
 }

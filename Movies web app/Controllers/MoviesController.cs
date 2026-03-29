@@ -5,7 +5,7 @@ using Business.Managers.Categories;
 using Business.Managers.Cinemas;
 using Business.Managers.Movies;
 using Business.Managers.Producers;
-using Business.TMDB;
+using Business.Services.TmdbService;
 using Core.Entities.Helpers;
 using Core.Enums;
 using DataAccess.Contexts;

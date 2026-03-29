@@ -40,6 +40,8 @@ namespace Core
         public string TrailerUrl { get; set; }=string.Empty;
         [Display(Name = "Movie Runtime (Minutes)")]
         public int Runtime { get; set; }
+        public decimal Rating { get; set; }
+        public string ReleaseDate { get; set; } = string.Empty;
 
         //public DateTime CreatedDate { get; set; } = DateTime.Now;
 

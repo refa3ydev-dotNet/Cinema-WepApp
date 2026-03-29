@@ -3,62 +3,545 @@
     ViewData["Title"] = "My Screenings";
     Layout = "_Layout";
 }
-<link rel="stylesheet" href="/css/AgentCinema/AgentMovies.css"asp-append-version="true">
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-end mb-5">
-        <h1 class="page-title m-0">My <span class="text-danger">Screenings</span></h1>
-        <div class="d-flex gap-3 align-items-center">
-            <!-- MODERN SEARCH BAR -->
-            <div class="search-obsidian-box">
-                <i class="bi bi-search text-muted"></i>
-                <input type="text" id="screeningSearch" placeholder="Filter screenings...">
-            </div>
-            <a href="select-movie.html" class="btn-add-hero"><i class="bi bi-plus-lg me-2"></i> Add Movie</a>
-        </div>
-    </div>
+<link rel="stylesheet" href="/css/AgentCinema/AgentMovies.css" asp-append-version="true">
+    <script src="https://cdn.tailwindcss.com"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            950: '#050507',
+                            900: '#0a0a0f',
+                            850: '#0d0d14',
+                            800: '#12121a',
+                            700: '#1a1a25',
+                            600: '#252532',
+                        },
+                        neon: {
+                            red: '#ff0f39',
+                            pink: '#ff2d6a',
+                            orange: '#ff6b35',
+                        }
+                    },
+                    fontFamily: {
+                        jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+ <div class="relative min-h-screen mt-5">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-1 py-8 lg:py-10 mt-5">
+
+            <!-- Header Section -->
+            <header class="mb-12 mt-5">
+                <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-2 h-2 rounded-full bg-neon-red glow-pulse"></div>
+                            <span class="text-xs font-medium tracking-widest text-gray-500 uppercase">Dashboard</span>
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-none">
+                            <span class="text-white">My </span>
+                            <span class="bg-gradient-to-r from-neon-red via-neon-pink to-neon-orange bg-clip-text text-transparent">Cinema</span>
+                        </h1>
+                        <h2 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white/90 mt-1">Catalog</h2>
+                        <p class="mt-4 text-gray-400 text-base max-w-md">Manage your premium movie collection and schedule unforgettable showtimes.</p>
+                    </div>
+                    <a asp-action="SearchTmdb"  asp-controller="Movies" class="modern-btn px-6 py-3 rounded-2xl text-sm font-semibold text-white flex items-center gap-3 self-start lg:self-auto">
+                        <span class="relative z-10 flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Add Movies
+                        </span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 mb-14">
+                <!-- Total Movies -->
+                <div class="stat-card p-6 backdrop-blur-xl group hover:scale-[1.02] transition-transform duration-300">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-gray-500 text-xs font-semibold tracking-wider uppercase mb-2">Total Movies</p>
+                            <p class="stat-number text-5xl font-bold text-white tracking-tight">@Model.Count()</p>
+                            <div class="flex items-center gap-2 mt-3">
+                                <span class="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-semibold">+@ViewBag.NewMoviesThisMonth this month</span>
+                            </div>
+                        </div>
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/5 to-white/0 flex items-center justify-center border border-white/5 group-hover:border-neon-red/30 transition-colors duration-300">
+                            <svg class="w-7 h-7 text-gray-400 group-hover:text-neon-red transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Schedules -->
+                <div class="stat-card p-6 backdrop-blur-xl group hover:scale-[1.02] transition-transform duration-300">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-gray-500 text-xs font-semibold tracking-wider uppercase mb-2">Active Schedules</p>
+                            <p class="stat-number text-5xl font-bold text-white tracking-tight" style="animation-delay: 0.1s;">@ViewBag.ActiveSchedules</p>
+                            <div class="flex items-center gap-2 mt-3">
+                                <span class="px-2 py-1 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-semibold">This week</span>
+                            </div>
+                        </div>
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/5 to-white/0 flex items-center justify-center border border-white/5 group-hover:border-neon-red/30 transition-colors duration-300">
+                            <svg class="w-7 h-7 text-gray-400 group-hover:text-neon-red transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tickets Sold -->
+                <div class="stat-card p-6 backdrop-blur-xl group hover:scale-[1.02] transition-transform duration-300 sm:col-span-2 lg:col-span-1">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-gray-500 text-xs font-semibold tracking-wider uppercase mb-2">Tickets Sold</p>
+                            <p class="stat-number text-5xl font-bold text-white tracking-tight" style="animation-delay: 0.2s;">@ViewBag.TicketsSold</p>
+                            <div class="flex items-center gap-2 mt-3">
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                                <span class="text-emerald-400 text-xs font-semibold">0%</span>
+                                <span class="text-gray-600 text-xs">vs last week</span>
+                            </div>
+                        </div>
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-neon-red/20 to-neon-pink/10 flex items-center justify-center border border-neon-red/20">
+                            <svg class="w-7 h-7 text-neon-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl font-bold text-white">Movie Collection</h2>
+                    <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-400">@Model.Count() movies</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white transition-all duration-300 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                        </svg>
+                        Filter
+                    </button>
+                    <button class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white transition-all duration-300 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                        </svg>
+                        Sort
+                    </button>
+                </div>
+            </div>
+
+            <!-- Movie Grid -->
     @if (!Model.Any())
     {
-        <div class="text-center py-5">
-            <h3 class="text-secondary">No movies playing at your cinema yet.</h3>
-        </div>
+<section id="emptyState" class="hidden">
+                <div class="relative max-w-lg mx-auto py-20">
+                    <!-- Decorative rings -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-64 h-64 rounded-full border border-white/5 pulse-ring"></div>
+                    </div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-48 h-48 rounded-full border border-white/5 pulse-ring" style="animation-delay: -1s;"></div>
+                    </div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-32 h-32 rounded-full border border-neon-red/20 pulse-ring" style="animation-delay: -2s;"></div>
+                    </div>
+
+                    <div class="relative text-center">
+                        <!-- Icon -->
+                        <div class="w-24 h-24 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-white/5 to-white/0 border border-white/10 flex items-center justify-center">
+                            <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/>
+                            </svg>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-white mb-3">Your Catalog is Empty</h3>
+                        <p class="text-gray-500 mb-8 max-w-sm mx-auto">Start building your cinema's movie collection by discovering films from TMDB.</p>
+
+                        <button class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-neon-red via-neon-pink to-neon-orange text-white font-semibold transition-all duration-300 hover:shadow-[0_8px_32px_rgba(255,15,57,0.4)] hover:scale-105 active:scale-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Discover Movies from TMDB
+                        </button>
+                    </div>
+                </div>
+            </section>
+
     }
     else
     {
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-5">
         
-                 @foreach (var movie in Model)
-                 {
+    <section id="movieGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 lg:gap-7">
+        @foreach (var movie in Model)
+        {
+            
+        <!-- Movie Card 1 -->
+                <article class="movie-card group cursor-pointer">
+                    <button onclick="removeMovie(@movie.Id, this)" type="button" class="remove-btn absolute top-4 right-4 z-20 w-9 h-9 rounded-xl bg-black/60 backdrop-blur-md flex items-center justify-center text-gray-400 hover:text-red-400 hover:bg-red-500/20 border border-white/10 transition-all duration-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
 
-                    <div class="col">
-                        <div class="movie-obsidian-card">
-                            <div class="poster-container">
-                                <img src="@movie.PosterUrl" alt="@movie.Name" />
-                            </div>
+                    <div class="relative aspect-[2/3] overflow-hidden rounded-t-[20px]">
+                        <img src="@movie.PosterUrl" alt="@movie.Name" class="poster-img w-full h-full object-cover">
+                        <div class="poster-overlay absolute inset-0"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-950 via-dark-950/50 to-transparent"></div>
 
-                            <div class="card-info-pane">
-                                <h5 class="movie-title-modern">]@movie.Name</h5>
-                                <div class="movie-metadata">
-                                    <span class="tag-premium">>@movie.Translation</span>
-                                    <span>@(movie.CategoryNames.FirstOrDefault() ?? "General")</span>
-                                    <span>•</span>
-                                    <span>@movie.Language</span>
-                                    <span>1h 49m</span>
-                                </div>
-                            </div>
-
-                            <!-- GLIDING DRAWER -->
-                            <div class="action-drawer">
-                                <a href="#" class="btn-cinema btn-main"><i class="bi bi-calendar3"></i> Schedules</a>
-                                <form asp-action="RemoveMovieFromCinema" asp-route-movieId="@movie.Id" method="post" onsubmit="return confirm('Are you sure you want to remove @movie.Name from your cinema?');" style="display:flex;">
-                                    <button type="submit" class="btn-cinema btn-danger-outline" style="width: 50px;" title="Remove">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </form>
-                            </div>
+                        <!-- Rating Badge -->
+                        <div class="absolute top-4 left-4 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <span class="text-white text-xs font-bold">@movie.Rating.ToString("0.0")</span>
                         </div>
                     </div>
-                 }
-        </div>
+
+                    <div class="p-5 pt-0 relative z-10 -mt-20">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                        @if(movie.CategoryNames != null && movie.CategoryNames.Any())
+                        {
+                            @foreach (var category in movie.CategoryNames)
+                            {
+                                <span class="genre-tag px-2.5 py-1 text-[10px] font-semibold tracking-wide uppercase rounded-lg text-gray-300">@category</span>
+                            }
+                        }
+                        </div>
+                        <h3 class="text-lg font-bold text-white line-clamp-1 mb-1">@movie.Name</h3>
+                        <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
+                            <span>@movie.Release_Date</span>
+                            <span>@movie.Language</span>
+                            <span class="w-1 h-1 rounded-full bg-gray-700"></span>
+                            <span>@movie.Runtime min</span>
+                        </div>
+                        <button onclick="openScheduleModal('@movie.Name.Replace("'", "\\'")', @movie.Id')" class="schedule-btn w-full py-3 px-4 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            Schedule Showtime
+                        </button>
+                    </div>
+                </article>
+
+        }
+            </section>
+
     }
-</div>
+            <!-- Empty State -->
+            
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="scheduleModal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div class="modal-backdrop absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+
+        <!-- Modal Container -->
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <!-- Modal Content -->
+            <div class="modal-content relative w-full max-w-md transform scale-95 opacity-0 transition-all duration-300">
+                <!-- Decorative Elements -->
+                <div class="absolute -top-20 -left-20 w-40 h-40 bg-neon-red/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-neon-pink/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Card -->
+                <div class="relative bg-dark-850 rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+                    <!-- Header with gradient -->
+                    <div class="relative px-6 pt-6 pb-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-neon-red/10 to-transparent pointer-events-none"></div>
+
+                        <!-- Close Button -->
+                        <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+
+                        <!-- Icon -->
+                        <div class="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-neon-red to-neon-pink flex items-center justify-center mb-4 shadow-lg shadow-neon-red/30">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+
+                        <h3 class="relative text-2xl font-bold text-white mb-1">Schedule Showtime</h3>
+                        <p class="relative text-gray-400 text-sm" id="modalMovieTitle">Configure the screening details</p>
+                    </div>
+
+                    <!-- Form -->
+                    <form class="px-6 pb-6 space-y-5" onsubmit="handleSubmit(event)">
+                        <input type="hidden" id="selectedMovieId" />
+                        <!-- Room Select -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-300">
+                                <span class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-neon-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
+                                    Screening Room
+                                </span>
+                            </label>
+                            <div class="relative">
+                                <select name="RoomId" id="roomSelect" asp-items="@ViewBag.Rooms" required class="room-select w-full px-4 py-3.5 rounded-xl bg-dark-700 border border-white/10 text-white appearance-none cursor-pointer focus:outline-none focus:border-neon-red/50 focus:ring-2 focus:ring-neon-red/20 transition-all duration-300 hover:border-white/20">
+                                    <option value="" disabled selected>Select a room</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Start Time -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-300">
+                                <span class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-neon-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Start Time
+                                </span>
+                            </label>
+                            <input type="datetime-local" id="startTime" required class="w-full px-4 py-3.5 rounded-xl bg-dark-700 border border-white/10 text-white focus:outline-none focus:border-neon-red/50 focus:ring-2 focus:ring-neon-red/20 transition-all duration-300 hover:border-white/20 [color-scheme:dark]">
+                        </div>
+
+                        <!-- Price -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-300">
+                                <span class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-neon-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Ticket Price
+                                </span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 font-semibold">$</span>
+                                <input type="number" id="ticketPrice" required min="1" step="0.01" placeholder="0.00" class="w-full pl-10 pr-4 py-3.5 rounded-xl bg-dark-700 border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:border-neon-red/50 focus:ring-2 focus:ring-neon-red/20 transition-all duration-300 hover:border-white/20">
+                            </div>
+                        </div>
+
+                        <!-- Quick Price Buttons -->
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="setPrice(9.99)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">$9.99</button>
+                            <button type="button" onclick="setPrice(12.99)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">$12.99</button>
+                            <button type="button" onclick="setPrice(15.99)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">$15.99</button>
+                            <button type="button" onclick="setPrice(19.99)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">$19.99</button>
+                            <button type="button" onclick="setPrice(24.99)" class="px-3 py-1.5 rounded-lg bg-neon-red/10 border border-neon-red/20 text-sm text-neon-red hover:bg-neon-red/20 transition-all duration-300">$24.99 VIP</button>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="relative py-2">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-white/5"></div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-3">
+                            <button type="button" onclick="closeModal()" class="flex-1 px-6 py-3.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 font-semibold hover:bg-white/10 hover:text-white transition-all duration-300">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 px-6 py-3.5 rounded-xl bg-gradient-to-r from-neon-red to-neon-pink text-white font-semibold shadow-lg shadow-neon-red/25 hover:shadow-neon-red/40 hover:scale-[1.02] active:scale-100 transition-all duration-300 flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Confirm Schedule
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="successToast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 transform translate-y-20 opacity-0 transition-all duration-500 pointer-events-none">
+        <div class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-xl shadow-2xl">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-white font-semibold">Showtime Scheduled!</p>
+                <p class="text-emerald-300 text-sm">The movie has been added to the calendar</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Custom select styling */
+        .room-select option {
+            background: #12121a;
+            color: white;
+            padding: 12px;
+        }
+
+        /* Modal animations */
+        #scheduleModal.active .modal-backdrop {
+            opacity: 1;
+        }
+
+        #scheduleModal.active .modal-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Input autofill styling */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 30px #1a1a25 inset !important;
+            -webkit-text-fill-color: white !important;
+        }
+
+        /* Number input spinner removal */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    </style>
+
+    <script>
+        let currentMovieTitle = '';
+
+        // Open modal
+function openScheduleModal(movieTitle, movieId) {
+    currentMovieTitle = movieTitle;
+    document.getElementById('selectedMovieId').value = movieId; // سطر جديد مهم
+    
+    const modal = document.getElementById('scheduleModal');
+    const modalMovieTitle = document.getElementById('modalMovieTitle');
+
+    modalMovieTitle.textContent = `Scheduling: ${movieTitle}`;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    requestAnimationFrame(() => {
+        modal.classList.add('active');
+    });
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('startTime').min = now.toISOString().slice(0, 16);
+}
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('scheduleModal');
+            modal.classList.remove('active');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+                // Reset form
+                document.getElementById('roomSelect').value = '';
+                document.getElementById('startTime').value = '';
+                document.getElementById('ticketPrice').value = '';
+            }, 300);
+        }
+
+        // Set price from quick buttons
+        function setPrice(price) {
+            document.getElementById('ticketPrice').value = price.toFixed(2);
+        }
+
+        // Handle form submission
+function handleSubmit(e) {
+    e.preventDefault();
+
+    // بنجمع الداتا من الفورم
+    const movieId = document.getElementById('selectedMovieId').value;
+    const roomId = document.getElementById('roomSelect').value;
+    const startTime = document.getElementById('startTime').value;
+    const price = document.getElementById('ticketPrice').value;
+
+    // بنغير الزرار عشان اليوزر يعرف إنه بيحمل
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = 'Saving...';
+    submitBtn.disabled = true;
+
+    // 🚨 بنبعت الداتا للـ AgentController (دالة CreateSchedule)
+    fetch('/Agent/CreateSchedule', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            MovieId: parseInt(movieId),
+            RoomId: parseInt(roomId),
+            StartTime: startTime,
+            Price: parseFloat(price)
+            // CinemaId مش محتاجين نبعته، الكنترولر هيجيبه من الـ User
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            closeModal();
+            showSuccessToast(); // هيطلع الإشعار الأخضر الشيك
+            // اختياري: ممكن تعمل reload للصفحة بعد ثانيتين عشان الأرقام تتحدث
+            // setTimeout(() => window.location.reload(), 2000); 
+        } else {
+            alert('Failed to save schedule. Check data.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Network Error.');
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+    });
+    }
+
+        // Show success toast
+        function showSuccessToast() {
+            const toast = document.getElementById('successToast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('scheduleModal').addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('modal-backdrop')) {
+                closeModal();
+            }
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+
+

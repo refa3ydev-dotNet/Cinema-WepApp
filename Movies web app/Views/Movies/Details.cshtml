@@ -170,12 +170,9 @@
                 
                 @if (User.Identity.IsAuthenticated && User.IsInRole("CinemaAgent"))
                 {
-                    <form asp-action="CreateSchedule" asp-controller="Agent" method="get" asp-route-id="@Model.Id">
-                        <input type="hidden" name="tmdbId" value="@Model.Id" />
-                        <button type="submit" class="btn-action btn-agent">
-                            <i class="fa-solid fa-plus"></i> Add to My Cinema
-                        </button>
-                    </form>
+<button type="button" class="btn-action agent-btn" onclick="addToCatalog(@Model.Id, this)">
+    <i class="fa-solid fa-download"></i> Add to Cinema Catalog
+</button>
                 }
                 else
                 {
@@ -198,7 +195,7 @@
                 <div class="row">
                     <div class="col-6 fact-item">
                         <span class="fact-label">Rating</span>
-                        <span class="fact-value"><i class="fa-solid fa-star text-warning me-1"></i> @Model.Vote_Average.ToString("0.1")</span>
+                        <span class="fact-value"><i class="fa-solid fa-star text-warning me-1"></i> @Model.Vote_Average.ToString("0.0")</span>
                     </div>
                     <div class="col-6 fact-item">
                         <span class="fact-label">Status</span>
@@ -210,7 +207,7 @@
                     </div>
                     <div class="col-6 fact-item">
                         <span class="fact-label">Budget</span>
-                        <span class="fact-value">@(Model.Budget > 0 ? $"${(Model.Budget / 1000000.0).ToString("0.##")}M" : "N/A")</span>
+                        <span class="fact-value">@(Model.Budget > 0 ? $"${(Model.Budget / 1000000.0).ToString("0.##")}M" : "Unknown")</span>
                     </div>
                 </div>
 
@@ -239,3 +236,102 @@
 
     </div>
 </div>
+
+
+<div id="customToast" class="toast-notification"></div>
+
+<style>
+    /* تصميم الإشعار (Toast) */
+    .toast-notification {
+        visibility: hidden;
+        min-width: 300px;
+        background-color: #28a745; /* لون أخضر للنجاح */
+        color: #fff;
+        text-align: center;
+        border-radius: 12px;
+        padding: 16px;
+        position: fixed;
+        z-index: 9999;
+        left: 50%;
+        transform: translateX(-50%);
+        top: -50px; /* مخفي فوق الشاشة */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        font-weight: bold;
+    }
+    .toast-notification.show {
+        visibility: visible;
+        top: 30px; /* بينزل بـ أنيميشن ناعم */
+    }
+    .toast-notification.error {
+        background-color: var(--brand-red); /* أحمر لو حصل إيرور */
+    }
+</style>
+
+<script>
+    // الدالة الأولى: المسؤولة عن إضافة الفيلم
+    function addToCatalog(tmdbId, btnElement) {
+        const originalHtml = btnElement.innerHTML;
+        btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+        btnElement.style.pointerEvents = 'none'; 
+
+        const formData = new FormData();
+        formData.append('tmdbId', tmdbId);
+
+        const targetUrl = '@Url.Action("AddMovieToCinemaCatalog", "Agent")';
+
+        fetch(targetUrl, {
+            method: 'POST',
+            body: formData 
+        })
+        .then(async response => {
+            // بنقرأ الرد سواء نجح أو فشل
+            const data = await response.json(); 
+            return data;
+        })
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Added';
+                btnElement.style.background = '#28a745'; 
+            } else {
+                // 🚨 هنا هيعرض الإيرور الحقيقي بتاع الـ SQL في الإشعار!
+                showToast(data.message, 'error'); 
+                btnElement.innerHTML = originalHtml;
+                btnElement.style.pointerEvents = 'auto';
+            }
+        })
+        .catch(error => {
+            // ده لو السيرفر وقع خالص ومردش بـ JSON
+            console.error("Fetch error:", error);
+            showToast("Server crashed! Check VS Console.", 'error');
+            btnElement.innerHTML = originalHtml;
+            btnElement.style.pointerEvents = 'auto';
+        });
+    }
+
+    // 🚨 الدالة التانية: اللي كانت ممسوحة وعملتلك الإيرور (مسؤولة عن الإشعار)
+    function showToast(message, type) {
+        const toast = document.getElementById("customToast");
+        
+        // سطر حماية عشان لو نسيت تحط الـ div بتاع الإشعار في الـ HTML
+        if (!toast) {
+            alert(message); // لو ملقاش الإشعار، هيطلعه في alert عادي
+            return;
+        }
+
+        toast.innerText = message;
+        
+        if (type === 'error') {
+            toast.classList.add('error');
+        } else {
+            toast.classList.remove('error');
+        }
+
+        toast.classList.add("show");
+        
+        setTimeout(function(){ 
+            toast.classList.remove("show"); 
+        }, 3000);
+    }
+</script>
