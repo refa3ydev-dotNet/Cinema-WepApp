@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Movies_web_app.Helper;
 using Movies_web_app.Services;
-
+ 
 namespace Movies_web_app
 {
     public class Program
