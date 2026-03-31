@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Entities.Relations
 {
-    public class MovieSchedule
+    public class MovieSchedule:BaseEntity
     {
         [Key]
         public int Id { get; set; }

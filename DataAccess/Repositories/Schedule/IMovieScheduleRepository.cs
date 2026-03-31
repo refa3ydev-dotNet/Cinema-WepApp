@@ -8,5 +8,8 @@ namespace DataAccess.Repositories.Schedule
     public interface IMovieScheduleRepository
     {
         Task AddScheduleAsync(MovieSchedule schedule);
+        Task<IEnumerable<MovieSchedule>> GetSchedulesByCinemaIdAsync(int cinemaId);
+        Task<MovieSchedule> GetScheduleByIdAndCinemaIdAsync(int scheduleId, int cinemaId);
+        Task UpdateScheduleAsync(MovieSchedule schedule);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Business.DTOs.Schedule;
 using Business.Managers.Movies;
+using Business.Mapping;
 using Core.Entities.Relations;
 using DataAccess.Repositories.MOVIE;
 using DataAccess.Repositories.Schedule;
@@ -21,7 +22,6 @@ namespace Business.Managers.Schedule
         public async Task CreateScheduleAsync(CreateScheduleDto dto)
         {
             var movie = await _movieManager.GetMovieByIdAsync(dto.MovieId);
-            // 🚨 الخطوة دي هتحميك: لو مفيش فيلم بالرقم ده، اضرب إيرور صريح ومتكملش!
             if (movie == null)
             {
                 throw new Exception($"Cannot create schedule! Movie with ID {dto.MovieId} does not exist. Make sure you select a valid movie.");
@@ -40,6 +40,50 @@ namespace Business.Managers.Schedule
                 Price = dto.Price
             };
              await _movieScheduleRepository.AddScheduleAsync(movieSchedule);
-    }
+        }
+
+        public async Task<bool> DeleteScheduleAsync(int scheduleId, int cinemaId)
+        {
+            var schedule=await _movieScheduleRepository.GetScheduleByIdAndCinemaIdAsync(scheduleId, cinemaId);
+            if (schedule == null)
+            {
+                return false;
+
+            }
+            // ToDo : Teckits should be deleted
+            schedule.IsDeleted = true;
+            await _movieScheduleRepository.UpdateScheduleAsync(schedule);
+            return true;
+        }
+
+        public async Task<IEnumerable<ScheduleDisplayDto>> GetCinemaSchedulesAsync(int cinemaId)
+        {
+            var schedules=await _movieScheduleRepository.GetSchedulesByCinemaIdAsync(cinemaId);
+            return schedules.Select(s=>s.ToScheduleDisplayDto()).ToList();
+        }
+
+        public async Task<ScheduleDisplayDto> GetScheduleByIdAsync(int scheduleId, int cinemaId)
+        {
+            var schedule =await _movieScheduleRepository.GetScheduleByIdAndCinemaIdAsync(scheduleId, cinemaId);
+            if (schedule == null)
+            {
+                return null;
+            }
+            return schedule.ToScheduleDisplayDto();
+        }
+
+        public async Task UpdateScheduleAsync(UpdateScheduleDto dto)
+        {
+            var schedule = await _movieScheduleRepository.GetScheduleByIdAndCinemaIdAsync(dto.Id, dto.CinemaId);
+            if (schedule == null)
+            {
+                return;
+            }
+            schedule.StartDate = dto.StartTime;
+            schedule.EndDate = dto.StartTime.AddMinutes(dto.RunTime + 15);
+            schedule.RoomId = dto.RoomId;
+            schedule.Price = dto.Price;
+            await _movieScheduleRepository.UpdateScheduleAsync(schedule);
+        }
     }
 }
