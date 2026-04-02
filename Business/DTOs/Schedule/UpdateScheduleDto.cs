@@ -20,5 +20,9 @@ namespace Business.DTOs.Schedule
         [Range(0, 10000, ErrorMessage = "Price must between 0 and 10000")]
         public decimal Price { get; set; }
         public int RunTime { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 }

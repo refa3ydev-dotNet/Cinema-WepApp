@@ -16,8 +16,13 @@ namespace Business.Mapping
                 MovieName = schedule.Movie?.Name,
                 RoomName = schedule.Room?.RoomName,
                 StartTime = schedule.StartDate,
-                Price = schedule.Movie.Price,
-                Status = schedule.StartDate > DateTime.Now ? "Active":"Expired"
+                Price = schedule.Movie.Price + schedule.Price,
+                Status = schedule.StartDate > DateTime.Now ? "Active":"Expired",
+                PosterUrl=schedule.Movie.PosterImg,
+                CreateedAt=schedule.CreatedAt,
+                UpdatedAt=schedule.UpdatedAt,
+                IsDeleted=schedule.IsDeleted,
+                DeletedAt=schedule.DeletedAt
             };
         }
     }

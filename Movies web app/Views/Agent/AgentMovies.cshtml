@@ -227,12 +227,16 @@
                             <span class="w-1 h-1 rounded-full bg-gray-700"></span>
                             <span>@movie.Runtime min</span>
                         </div>
-                        <button onclick="openScheduleModal('@movie.Name.Replace("'", "\\'")', @movie.Id')" class="schedule-btn w-full py-3 px-4 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            Schedule Showtime
-                        </button>
+                    <button type="button" 
+                            data-movie-id="@movie.Id" 
+                            data-movie-title="@movie.Name" 
+                            onclick="openScheduleModal(this)" 
+                            class="schedule-btn w-full py-3 px-4 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Schedule Showtime
+                    </button>
                     </div>
                 </article>
 
@@ -245,33 +249,24 @@
         </div>
     </div>
 
-    <!-- Schedule Modal -->
-    <div id="scheduleModal" class="fixed inset-0 z-50 hidden">
-        <!-- Backdrop -->
-        <div class="modal-backdrop absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+<div id="scheduleModal" class="fixed inset-0 z-[9999] hidden">
+        <div class="modal-backdrop absolute inset-0 z-0 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
 
-        <!-- Modal Container -->
-        <div class="relative min-h-screen flex items-center justify-center p-4">
-            <!-- Modal Content -->
+        <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
             <div class="modal-content relative w-full max-w-md transform scale-95 opacity-0 transition-all duration-300">
-                <!-- Decorative Elements -->
                 <div class="absolute -top-20 -left-20 w-40 h-40 bg-neon-red/20 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-neon-pink/20 rounded-full blur-3xl pointer-events-none"></div>
 
-                <!-- Card -->
                 <div class="relative bg-dark-850 rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
-                    <!-- Header with gradient -->
                     <div class="relative px-6 pt-6 pb-4">
                         <div class="absolute inset-0 bg-gradient-to-b from-neon-red/10 to-transparent pointer-events-none"></div>
 
-                        <!-- Close Button -->
                         <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
 
-                        <!-- Icon -->
                         <div class="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-neon-red to-neon-pink flex items-center justify-center mb-4 shadow-lg shadow-neon-red/30">
                             <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -282,10 +277,8 @@
                         <p class="relative text-gray-400 text-sm" id="modalMovieTitle">Configure the screening details</p>
                     </div>
 
-                    <!-- Form -->
                     <form class="px-6 pb-6 space-y-5" onsubmit="handleSubmit(event)">
                         <input type="hidden" id="selectedMovieId" />
-                        <!-- Room Select -->
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-300">
                                 <span class="flex items-center gap-2">
@@ -295,7 +288,7 @@
                                     Screening Room
                                 </span>
                             </label>
-                            <div class="relative">
+                            <div class="relative z-20">
                                 <select name="RoomId" id="roomSelect" asp-items="@ViewBag.Rooms" required class="room-select w-full px-4 py-3.5 rounded-xl bg-dark-700 border border-white/10 text-white appearance-none cursor-pointer focus:outline-none focus:border-neon-red/50 focus:ring-2 focus:ring-neon-red/20 transition-all duration-300 hover:border-white/20">
                                     <option value="" disabled selected>Select a room</option>
                                 </select>
@@ -307,7 +300,6 @@
                             </div>
                         </div>
 
-                        <!-- Start Time -->
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-300">
                                 <span class="flex items-center gap-2">
@@ -320,7 +312,6 @@
                             <input type="datetime-local" id="startTime" required class="w-full px-4 py-3.5 rounded-xl bg-dark-700 border border-white/10 text-white focus:outline-none focus:border-neon-red/50 focus:ring-2 focus:ring-neon-red/20 transition-all duration-300 hover:border-white/20 [color-scheme:dark]">
                         </div>
 
-                        <!-- Price -->
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-300">
                                 <span class="flex items-center gap-2">
@@ -336,23 +327,20 @@
                             </div>
                         </div>
 
-                        <!-- Quick Price Buttons -->
                         <div class="flex flex-wrap gap-2">
-                            <button type="button" onclick="setPrice(9.99)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">$9.99</button>
-                            <button type="button" onclick="setPrice(12.99)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">$12.99</button>
-                            <button type="button" onclick="setPrice(15.99)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">$15.99</button>
-                            <button type="button" onclick="setPrice(19.99)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">$19.99</button>
-                            <button type="button" onclick="setPrice(24.99)" class="px-3 py-1.5 rounded-lg bg-neon-red/10 border border-neon-red/20 text-sm text-neon-red hover:bg-neon-red/20 transition-all duration-300">$24.99 VIP</button>
+                            <button type="button" onclick="setPrice(100)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">100 EGP</button>
+                            <button type="button" onclick="setPrice(120)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">120 EGP</button>
+                            <button type="button" onclick="setPrice(150)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">150 EGP</button>
+                            <button type="button" onclick="setPrice(200)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-400 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-300">200 EGP</button>
+                            <button type="button" onclick="setPrice(250)" class="px-3 py-1.5 rounded-lg bg-neon-red/10 border border-neon-red/20 text-sm text-neon-red hover:bg-neon-red/20 transition-all duration-300">250 EGP (Premium)</button>
                         </div>
 
-                        <!-- Divider -->
                         <div class="relative py-2">
                             <div class="absolute inset-0 flex items-center">
                                 <div class="w-full border-t border-white/5"></div>
                             </div>
                         </div>
 
-                        <!-- Buttons -->
                         <div class="flex gap-3">
                             <button type="button" onclick="closeModal()" class="flex-1 px-6 py-3.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 font-semibold hover:bg-white/10 hover:text-white transition-all duration-300">
                                 Cancel
@@ -425,46 +413,65 @@
     <script>
         let currentMovieTitle = '';
 
-        // Open modal
-function openScheduleModal(movieTitle, movieId) {
+// Open modal
+function openScheduleModal(btn) {
+    // 1. بنسحب الداتا من الزرار بأمان تام
+    const movieTitle = btn.getAttribute('data-movie-title');
+    const movieId = btn.getAttribute('data-movie-id');
+
     currentMovieTitle = movieTitle;
-    document.getElementById('selectedMovieId').value = movieId; // سطر جديد مهم
+    document.getElementById('selectedMovieId').value = movieId; 
     
     const modal = document.getElementById('scheduleModal');
     const modalMovieTitle = document.getElementById('modalMovieTitle');
 
     modalMovieTitle.textContent = `Scheduling: ${movieTitle}`;
+    
+    // 2. بنشيل الـ hidden ونوقف السكرول
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 
-    requestAnimationFrame(() => {
-        modal.classList.add('active');
-    });
+    // 3. بنظهر الـ Modal بالأنيميشن باستخدام كلاسات Tailwind 
+    const backdrop = modal.querySelector('.modal-backdrop');
+    const content = modal.querySelector('.modal-content');
+
+    setTimeout(() => {
+        backdrop.classList.remove('opacity-0');
+        backdrop.classList.add('opacity-100');
+        
+        content.classList.remove('opacity-0', 'scale-95');
+        content.classList.add('opacity-100', 'scale-100');
+    }, 10); // تأخير 10 ملي ثانية عشان الأنيميشن يشتغل صح
 
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     document.getElementById('startTime').min = now.toISOString().slice(0, 16);
 }
 
-        // Close modal
-        function closeModal() {
-            const modal = document.getElementById('scheduleModal');
-            modal.classList.remove('active');
+// Close modal
+function closeModal() {
+    const modal = document.getElementById('scheduleModal');
+    const backdrop = modal.querySelector('.modal-backdrop');
+    const content = modal.querySelector('.modal-content');
 
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                document.body.style.overflow = '';
-                // Reset form
-                document.getElementById('roomSelect').value = '';
-                document.getElementById('startTime').value = '';
-                document.getElementById('ticketPrice').value = '';
-            }, 300);
-        }
+    // 1. بنخفي الشاشة بالأنيميشن الأول
+    backdrop.classList.remove('opacity-100');
+    backdrop.classList.add('opacity-0');
+    
+    content.classList.remove('opacity-100', 'scale-100');
+    content.classList.add('opacity-0', 'scale-95');
 
-        // Set price from quick buttons
-        function setPrice(price) {
-            document.getElementById('ticketPrice').value = price.toFixed(2);
-        }
+    // 2. بعد ما الأنيميشن يخلص (300ms) بنعمل Reset
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        
+        // Reset form
+        document.getElementById('roomSelect').value = '';
+        document.getElementById('startTime').value = '';
+        document.getElementById('ticketPrice').value = '';
+    }, 300);
+}
 
         // Handle form submission
 function handleSubmit(e) {
@@ -541,6 +548,18 @@ function handleSubmit(e) {
                 closeModal();
             }
         });
+        // Set price from quick buttons
+        function setPrice(price) {
+            const priceInput = document.getElementById('ticketPrice');
+            priceInput.value = price;
+    
+            // بنعمل Focus على الحقل وأنيميشن بسيط عشان اليوزر يحس بالتغيير
+            priceInput.focus();
+            priceInput.classList.add('ring-2', 'ring-neon-red/50');
+            setTimeout(() => {
+                priceInput.classList.remove('ring-2', 'ring-neon-red/50');
+            }, 300);
+        }
     </script>
 
 

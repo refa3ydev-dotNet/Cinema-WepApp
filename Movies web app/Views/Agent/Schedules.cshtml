@@ -1,0 +1,352 @@
+﻿@model IEnumerable<Business.DTOs.Schedule.ScheduleDisplayDto>
+@{
+    ViewData["Title"] = "Manage Screenings";
+    Layout = "_Layout"; 
+}
+
+
+    <link rel="stylesheet" href="/css//AgentCinema/ManageScreenings.css" asp-append-version="true">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+<main class="screenings-page mt-5">
+    <div class="page-shell mt-5">
+        <header class="page-header">
+            <div class="page-title-group">
+                <span class="page-badge">Agent Panel</span>
+                <h1>Manage Screenings</h1>
+                <p>Monitor upcoming showtimes, adjust pricing, and handle schedule changes from one premium control surface.</p>
+            </div>
+            <a class="primary-link-button" href="/Agent/AgentMovies">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                Add New Screening
+            </a>
+        </header>
+
+        <section class="table-panel" aria-labelledby="screenings-table-title">
+            <div class="panel-topbar">
+                <div>
+                    <p class="panel-eyebrow">Live Schedule Board</p>
+                    <h2 id="screenings-table-title">Current Screenings</h2>
+                </div>
+                <div class="panel-meta">
+                    <span class="meta-chip"><i class="fa-solid fa-film" aria-hidden="true"></i> @(Model?.Count() ?? 0) Screenings</span>
+                    <span class="meta-chip"><i class="fa-regular fa-clock" aria-hidden="true"></i> Live Updates</span>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table class="screenings-table">
+                    <thead>
+                        <tr>
+                            <th>Movie</th>
+                            <th>Hall / Room</th>
+                            <th>Date &amp; Time</th>
+                            <th>Ticket Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                if(!item.IsDeleted )
+                                {
+                                    
+                                <tr class="screening-row" 
+                                    data-id="@item.Id"
+                                    data-movie="@item.MovieName" 
+                                    data-hall="@item.RoomName" 
+                                    data-datetime="@item.StartTime.ToString("yyyy-MM-ddTHH:mm")" 
+                                    data-displaytime="@item.StartTime.ToString("MMM dd, yyyy | hh:mm tt")" 
+                                    data-price="@item.Price" 
+                                    data-status="@item.Status" 
+                                    data-description="Screening of @item.MovieName in @item.RoomName." 
+                                    data-poster="@item.PosterUrl"> <td>
+                                        <div class="movie-cell">
+                                            <img src="@item.PosterUrl" alt="@item.MovieName poster" style="width:40px; height:60px; object-fit:cover; border-radius:4px;">
+                                            <div class="movie-copy"><strong>@item.MovieName</strong><span>Cinema Movie</span></div>
+                                        </div>
+                                    </td>
+                                    <td>@item.RoomName</td>
+                                    <td>@item.StartTime.ToString("MMM dd, yyyy | hh:mm tt")</td>
+                                    <td>EGP @item.Price</td>
+                                    <td>
+                                        <span class="status-badge @(item.Status.ToLower() == "active" ? "status-active" : "status-past")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-group">
+                                            <button class="action-button" type="button" data-action="view" aria-label="View screening"><i class="fa-regular fa-eye" aria-hidden="true"></i></button>
+                                            <button class="action-button" type="button" data-action="edit" aria-label="Edit screening"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></button>
+                                            <button class="action-button action-danger" type="button" data-action="delete" aria-label="Delete screening"><i class="fa-regular fa-trash-can" aria-hidden="true"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5" style="color: #9ba1a6;">
+                                    No screenings available right now.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<div class="modal-backdrop" id="modal-backdrop" hidden>
+    
+    <section class="glass-modal" id="view-modal" role="dialog" aria-modal="true" aria-labelledby="view-modal-title" hidden>
+        <button class="modal-close" type="button" data-close-modal aria-label="Close view details"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        <div class="modal-header">
+            <span class="modal-badge">View Details</span>
+            <h2 id="view-modal-title">Screening Overview</h2>
+            <p>Read-only schedule information for the selected screening.</p>
+        </div>
+        <article class="view-card">
+            <div class="view-poster-wrap"><img id="viewPoster" src="" alt="Selected movie poster"></div>
+            <div class="view-details">
+                <h3 id="viewMovie">Movie Name</h3>
+                <p id="viewDescription">Description</p>
+                <dl class="detail-grid">
+                    <div class="detail-item"><dt>Hall</dt><dd id="viewHall">-</dd></div>
+                    <div class="detail-item"><dt>Date &amp; Time</dt><dd id="viewTime">-</dd></div>
+                    <div class="detail-item"><dt>Ticket Price</dt><dd id="viewPrice">-</dd></div>
+                    <div class="detail-item"><dt>Status</dt><dd><span class="status-badge" id="viewStatus">-</span></dd></div>
+                </dl>
+            </div>
+        </article>
+    </section>
+
+    <section class="glass-modal" id="edit-modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title" hidden>
+        <button class="modal-close" type="button" data-close-modal aria-label="Close edit schedule"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        <div class="modal-header">
+            <span class="modal-badge">Edit Schedule</span>
+            <h2 id="edit-modal-title">Update Screening</h2>
+            <p>Adjust hall assignment, show time, or ticket pricing for the selected movie.</p>
+        </div>
+        <form class="modal-form" id="edit-form">
+            <input type="hidden" id="editScheduleId" name="Id" /> <div class="form-field"><label for="editMovieDisplay">Movie</label><input id="editMovieDisplay" type="text" readonly></div>
+            <div class="form-field">
+                <label for="editHall">Room</label>
+                    <select name="RoomId" id="editHall" asp-items="@ViewBag.Rooms" required class=" room-select w-full px-4 py-3.5 rounded-xl bg-dark-700 border border-white/10 text-white appearance-none cursor-pointer focus:outline-none focus:border-neon-red/50 focus:ring-2 focus:ring-neon-red/20 transition-all duration-300 hover:border-white/20 text-white">
+                        <option value="" disabled selected>Select a room</option>
+                    </select>
+            </div>
+            <div class="form-field"><label for="editDateTime">Show Time</label><input id="editDateTime" name="dateTime" type="datetime-local"></div>
+            <div class="form-field"><label for="editPrice">Price (EGP)</label><input id="editPrice" name="price" type="number" min="0" step="5"></div>
+            <button class="modal-primary-button" type="submit"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>Save Changes</button>
+        </form>
+    </section>
+
+    <section class="glass-modal glass-modal-danger" id="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title" hidden>
+        <button class="modal-close" type="button" data-close-modal aria-label="Close delete confirmation"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        <div class="delete-icon"><i class="fa-regular fa-trash-can" aria-hidden="true"></i></div>
+        <div class="modal-header modal-header-center">
+            <span class="modal-badge modal-badge-danger">Cancel Screening</span>
+            <h2 id="delete-modal-title">Are you sure you want to cancel this screening?</h2>
+            <p id="deleteMessage">This action will affect the selected screening entry.</p>
+        </div>
+        <div class="delete-actions">
+            <button class="modal-secondary-button" type="button" data-close-modal>Cancel</button>
+            <button class="modal-danger-button" type="button" id="confirmDeleteButton"><i class="fa-solid fa-trash" aria-hidden="true"></i>Yes, Delete</button>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const backdrop = document.getElementById('modal-backdrop');
+            const modals = { view: document.getElementById('view-modal'), edit: document.getElementById('edit-modal'), delete: document.getElementById('delete-modal') };
+            const viewFields = { poster: document.getElementById('viewPoster'), movie: document.getElementById('viewMovie'), description: document.getElementById('viewDescription'), hall: document.getElementById('viewHall'), time: document.getElementById('viewTime'), price: document.getElementById('viewPrice'), status: document.getElementById('viewStatus') };
+            const editFields = { id: document.getElementById('editScheduleId'), movie: document.getElementById('editMovieDisplay'), hall: document.getElementById('editHall'), dateTime: document.getElementById('editDateTime'), price: document.getElementById('editPrice') };
+            const deleteMessage = document.getElementById('deleteMessage');
+            const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+            const editForm = document.getElementById('edit-form');
+            let activeModal = null;
+            let activeRow = null;
+
+            function getRowData(row) {
+                return { id: row.dataset.id, movie: row.dataset.movie, hall: row.dataset.hall, dateTime: row.dataset.datetime, displayTime: row.dataset.displaytime, price: row.dataset.price, status: row.dataset.status, description: row.dataset.description, poster: row.dataset.poster };
+            }
+
+            function setStatusBadge(element, status) {
+                element.textContent = status;
+                element.classList.remove('status-active', 'status-past');
+                element.classList.add(status.toLowerCase() === 'active' ? 'status-active' : 'status-past');
+            }
+
+            function openModal(type, row) {
+                const data = getRowData(row);
+                activeRow = row;
+                activeModal = modals[type];
+                if (type === 'view') {
+                    viewFields.poster.src = data.poster;
+                    viewFields.poster.alt = data.movie + ' poster';
+                    viewFields.movie.textContent = data.movie;
+                    viewFields.description.textContent = data.description;
+                    viewFields.hall.textContent = data.hall;
+                    viewFields.time.textContent = data.displayTime;
+                    viewFields.price.textContent = 'EGP ' + data.price;
+                    setStatusBadge(viewFields.status, data.status);
+                }
+                if (type === 'edit') {
+                    editFields.id.value = data.id;
+                    editFields.movie.value = data.movie;
+                    editFields.dateTime.value = data.dateTime;
+                    editFields.price.value = data.price;
+                    
+                    Array.from(editFields.hall.options).forEach(option => {
+                        if (option.text === data.hall) {
+                            option.selected = true;
+                        }
+                    });
+                }
+                if (type === 'delete') {
+                    deleteMessage.textContent = 'This will remove "' + data.movie + '" scheduled in ' + data.hall + ' at ' + data.displayTime + '.';
+                }
+                backdrop.hidden = false;
+                activeModal.hidden = false;
+                document.body.classList.add('modal-open');
+                window.requestAnimationFrame(function () {
+                    backdrop.classList.add('is-visible');
+                    activeModal.classList.add('is-visible');
+                });
+            }
+
+            function closeModal() {
+                if (!activeModal) return;
+                backdrop.classList.remove('is-visible');
+                activeModal.classList.remove('is-visible');
+                activeModal.classList.add('is-hiding');
+                document.body.classList.remove('modal-open');
+                window.setTimeout(function () {
+                    backdrop.hidden = true;
+                    activeModal.hidden = true;
+                    activeModal.classList.remove('is-hiding');
+                    activeModal = null;
+                }, 260);
+            }
+
+            document.addEventListener('click', function (event) {
+                const actionButton = event.target.closest('[data-action]');
+                if (actionButton) {
+                    openModal(actionButton.dataset.action, actionButton.closest('.screening-row'));
+                    return;
+                }
+                if (event.target.matches('[data-close-modal]') || event.target === backdrop) closeModal();
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') closeModal();
+            });
+
+            editForm.addEventListener('submit', function (event) {
+                            event.preventDefault();
+                            if (!activeRow) return;
+                
+                            // تغيير شكل الزرار للتحميل
+                            const submitBtn = editForm.querySelector('button[type="submit"]');
+                            const originalBtnText = submitBtn.innerHTML;
+                            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+                            submitBtn.disabled = true;
+
+                            // تجميع الداتا لبعتها للـ C# (لاحظ إننا بنحول الأرقام عشان الـ DTO)
+                            const payload = {
+                                Id: parseInt(editFields.id.value),
+                                RoomId: parseInt(editFields.hall.value),
+                                StartTime: editFields.dateTime.value,
+                                Price: parseFloat(editFields.price.value)
+                            };
+
+                            fetch('/Agent/EditSchedule', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    const selectedHallText = editFields.hall.options[editFields.hall.selectedIndex].text;
+                        
+                                    activeRow.dataset.hall = selectedHallText;
+                                    activeRow.dataset.datetime = editFields.dateTime.value;
+                                    activeRow.dataset.price = editFields.price.value;
+                                    activeRow.dataset.displaytime = new Date(editFields.dateTime.value).toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', ' |');
+                        
+                                    activeRow.children[1].textContent = activeRow.dataset.hall;
+                                    activeRow.children[2].textContent = activeRow.dataset.displaytime;
+                                    activeRow.children[3].textContent = 'EGP ' + parseFloat(activeRow.dataset.price).toFixed(2);
+                        
+                                    closeModal();
+                                } else {
+                                    alert(data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('A network error occurred while updating.');
+                            })
+                            .finally(() => {
+                                submitBtn.innerHTML = originalBtnText;
+                                submitBtn.disabled = false;
+                            });
+                        });
+
+            confirmDeleteButton.addEventListener('click', function () {
+                if (!activeRow) return;
+
+                const originalHtml=confirmDeleteButton.innerHTML;
+                    confirmDeleteButton.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+                    confirmDeleteButton.disabled=true;
+
+                    const scheduleId=activeRow.dataset.id;
+                    fetch(`/Agent/DeleteSchedule/${scheduleId}`,
+                    {
+                        method: 'POST'
+                    }).then(res=>res.json())
+                    .then(data=>{
+                        if(data.success){
+                            activeRow.style.transition="opacity 0.3s ease, transform 0.3s ease"
+                            activeRow.style.opacity = "0";
+                            activeRow.style.transform = "scale(0.95)";
+                            setTimeout(()=>{
+                                activeRow.remove();
+                                confirmDeleteButton.innerHTML=originalHtml;
+                                confirmDeleteButton.disabled=false;
+                                    const totalSchedulesElem = document.querySelector('.panel-meta .meta-chip');
+                                    if(totalSchedulesElem) {
+                                        const currentCount = parseInt(totalSchedulesElem.innerText);
+                                        totalSchedulesElem.innerHTML = `<i class="fa-solid fa-film" aria-hidden="true"></i> ${currentCount - 1} Screenings`;
+                                    }
+                                    closeModal();
+                            },300);
+                        }else{
+                            alert(data.message);
+                            closeModal();
+                        }
+                    }).catch(Error=>{
+                        console.error("Error: ", Error);
+                        alert("A Network error occured");
+                        closeModal();
+                    }).finally(()=>{
+                        confirmDeleteButton.innerHTML=originalHtml;
+                        confirmDeleteButton.disabled=false;
+                    });
+            });
+        }());
+    </script>
+}

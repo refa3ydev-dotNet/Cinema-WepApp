@@ -52,7 +52,7 @@ namespace Movies_web_app.Controllers
         [HttpGet]
         public async Task<IActionResult> Dashboard()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -84,7 +84,7 @@ namespace Movies_web_app.Controllers
         [HttpGet]
         public async Task<IActionResult> FixApplication()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             var cinema = await _cinemaManager.GetCinemaByIdAsync(user.CinemaId.Value);
             if (user == null || cinema.ApprovalStatus != ApprovalStatus.Rejected)
             {
@@ -159,7 +159,7 @@ namespace Movies_web_app.Controllers
         [HttpGet]
         public async Task<IActionResult> Rooms()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("login", "Account");
@@ -179,7 +179,7 @@ namespace Movies_web_app.Controllers
             {
                 return View(dto);
             }
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -190,7 +190,7 @@ namespace Movies_web_app.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateRoom(int id)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -210,7 +210,7 @@ namespace Movies_web_app.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateRoom(UpdateRoomDto dto)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -230,7 +230,7 @@ namespace Movies_web_app.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteRoom(int id)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -254,7 +254,7 @@ namespace Movies_web_app.Controllers
         [HttpGet]
         public async Task<IActionResult> SelectMoviesForCinema()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -267,7 +267,7 @@ namespace Movies_web_app.Controllers
         [HttpPost]
         public async Task<IActionResult> SelectMoviesForCinema(int movieId)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -284,7 +284,7 @@ namespace Movies_web_app.Controllers
         [HttpGet]
         public async Task<IActionResult> AgentMovies()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -304,7 +304,7 @@ namespace Movies_web_app.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveMovieFromCinema(int movieId)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -330,7 +330,7 @@ namespace Movies_web_app.Controllers
                 TempData["ErrorMessage"] = "Please select a valid movie first!";
                 return RedirectToAction("AgentMovies");
             }
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
             if (user == null || user.CinemaId == null) return RedirectToAction("Login", "Account");
 
             var rooms = await _roomManager.GetCinemaRoomsAsync(user.CinemaId.Value);
@@ -352,7 +352,8 @@ namespace Movies_web_app.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSchedule([FromBody] CreateScheduleDto dto)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await GetValidAgentAsync();
+
             if (user == null || !user.CinemaId.HasValue)
             {
                 return Unauthorized(new { message = "You must be logged in and assigned to a cinema." });
@@ -384,11 +385,9 @@ namespace Movies_web_app.Controllers
         {
             try
             {
-                var user= await _userManager.GetUserAsync(User);
-                if (user == null || user.CinemaId == null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
+                var user = await GetValidAgentAsync();
+
+                if (user == null) return RedirectToAction("Login", "Account");
                 await _movieManager.SyncMovieFromTmdbAsync(tmdbId, user.CinemaId.Value);
                 return Json(new { success = true , message = $"Movie added to your cinema successfully!" });
             }catch(Exception ex)
@@ -399,6 +398,60 @@ namespace Movies_web_app.Controllers
                 return StatusCode(500, new { success = false, message = "DB Error: " + exactError });
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> Schedules()
+        {
+            var user = await GetValidAgentAsync();
+            if (user == null || user.CinemaId == null) return RedirectToAction("Login", "Account");
+            var rooms=await _roomManager.GetCinemaRoomsAsync(user.CinemaId.Value);
+            ViewBag.Rooms=new SelectList(rooms, "Id", "RoomName");
+            var schedule = await _movieScheduleManager.GetCinemaSchedulesAsync(user.CinemaId.Value);
+            if (schedule == null) return View("NotFound");
+            return View(schedule);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditSchedule([FromBody] UpdateScheduleDto dto)
+        {
+            var user = await GetValidAgentAsync();
+            if (user == null || user.CinemaId == null) return RedirectToAction("Login", "Account");
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    dto.CinemaId=user.CinemaId.Value;
+                    dto.UpdatedAt = DateTime.Now;
+                    await _movieScheduleManager.UpdateScheduleAsync(dto);
+                    return Json(new { success = true, message = "Screening updated successfully!" });
+                }
+                catch(Exception ex)
+                {
+                    return Json(new { success = false, message = "Error: "+ex.Message });
+                }
+            }
+            var errors = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+          
+            return Json(new { success = false, message = "Validation Error: " + errors });
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteSchedule(int id)
+        {
+            var user = await GetValidAgentAsync();
+            if (user == null || user.CinemaId == null) return RedirectToAction("Login", "Account");
+            bool isDeleted = await _movieScheduleManager.DeleteScheduleAsync(id,user.CinemaId.Value);
+            if (isDeleted)
+            {
+                return Json(new { success = true, message = "Schedule deleted successfully" });
+            }
+            return Json(new { success = false, message = "Cannot delete this schedule! There are active bookings linked to it. Cancel the bookings first." });
+        }
+        private async Task<ApplicationUser?> GetValidAgentAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.CinemaId == null)
+            {
+                return null;
+            }
+            return user;
+        }
     }
 }
