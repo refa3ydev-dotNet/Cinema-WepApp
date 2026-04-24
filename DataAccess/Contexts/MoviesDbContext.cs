@@ -27,6 +27,7 @@ namespace DataAccess.Contexts
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Seat> Seats { get; set; }
         public DbSet<BookingSeat> BookingSeats { get; set; }
+        public DbSet<UserFavorite> UserFavorites { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -48,6 +49,20 @@ namespace DataAccess.Contexts
             });
             modelBuilder.Entity<CinemaMovie>().HasOne(m => m.Movie).WithMany(cm => cm.CinemaMovies).HasForeignKey(m => m.MovieId);
             modelBuilder.Entity<CinemaMovie>().HasOne(m => m.Cinema).WithMany(cm => cm.CinemaMovies).HasForeignKey(m => m.CinemaId);
+
+            modelBuilder.Entity<UserFavorite>().HasKey(uf => new
+            {
+                uf.UserId,
+                uf.MovieId
+            });
+            modelBuilder.Entity<UserFavorite>()
+                .HasOne(uf => uf.User)
+                .WithMany(user => user.UserFavorites)
+                .HasForeignKey(uf => uf.UserId);
+            modelBuilder.Entity<UserFavorite>()
+                .HasOne(uf => uf.Movie)
+                .WithMany(movie => movie.UserFavorites)
+                .HasForeignKey(uf => uf.MovieId);
 
             modelBuilder.Entity<Movie>()
                 .Property(m => m.Price)

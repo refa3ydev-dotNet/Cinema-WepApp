@@ -1,0 +1,131 @@
+@model IEnumerable<Business.DTOs.Favorites.FavoriteMovieDto>
+
+@{
+    ViewData["Title"] = "My Favorites ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Home/MyFavorites.css" asp-append-version="true">
+
+<div class="fav-ambient fav-ambient--tl"></div>
+<div class="fav-ambient fav-ambient--br"></div>
+
+<header class="fav-header" id="fav-page-header">
+    <div class="fav-header__icon" id="fav-header-icon">
+        <i class="fas fa-heart"></i>
+    </div>
+    <h1 id="fav-title">My Favorites</h1>
+    <p class="fav-header__sub" id="fav-subtitle">Movies you love, saved in one place.</p>
+</header>
+
+<main class="fav-container" id="fav-container">
+
+    @if (Model == null || !Model.Any())
+    {
+        <section class="fav-empty" id="fav-empty-state">
+            <div class="fav-empty__icon">
+                <i class="fas fa-heart-crack"></i>
+            </div>
+            <h2 class="fav-empty__title">No favorites yet</h2>
+            <p class="fav-empty__text">Start exploring and add movies you love to your collection.</p>
+            <a asp-controller="Home" asp-action="Index" class="fav-empty__btn" id="fav-browse-btn">
+                <i class="fas fa-film"></i> Browse Movies
+            </a>
+        </section>
+    }
+    else
+    {
+        <section class="fav-grid" id="fav-grid">
+            @foreach (var movie in Model)
+            {
+                <article class="fav-card" id="fav-card-@movie.MovieId">
+                    <button class="fav-card__remove" aria-label="Remove from favorites" data-movie-id="@movie.MovieId" onclick="removeFavorite(this)">
+                        <i class="fas fa-heart-crack"></i>
+                    </button>
+                    
+                    <div class="fav-card__poster">
+                        <img src="@movie.PosterUrl" alt="@movie.MovieName poster">
+                    </div>
+                    
+                    <div class="fav-card__overlay">
+                        <h3 class="fav-card__title">@movie.MovieName</h3>
+                        <span class="fav-card__date">
+                            <i class="fas fa-calendar-alt"></i> Added @movie.AddedDate.ToString("MMM dd, yyyy")
+                        </span>
+                    </div>
+                </article>
+            }
+        </section>
+
+        <p class="fav-count" id="fav-count"><span id="fav-count-num">@Model.Count()</span> movies in your collection</p>
+    }
+
+</main>
+
+@section Scripts {
+    <script>
+        // ─── Remove Card with Animation & AJAX ───
+        async function removeFavorite(btn) {
+            // منع أي Events تانية في الكارت
+            event.stopPropagation();
+            
+            const movieId = btn.getAttribute('data-movie-id');
+            const card = document.getElementById(`fav-card-${movieId}`);
+
+            try {
+                // نداء الباك إند لمسح الفيلم من الداتابيز
+                const response = await fetch(`/Customer/ToggleFavorite?movieId=${movieId}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.success && !data.isFavorite) {
+                        // دمج حركات الأنيميشن اللي الـ AI عملها مع مسح الكارت
+                        card.classList.add('removing');
+                        card.style.transition = "all 0.4s ease";
+                        card.style.opacity = "0";
+                        card.style.transform = "scale(0.8)";
+                        
+                        setTimeout(() => {
+                            card.remove();
+                            updateCount();
+                        }, 400);
+                    }
+                }
+            } catch (error) {
+                console.error('Error removing favorite:', error);
+            }
+        }
+
+        function updateCount() {
+            const remaining = document.querySelectorAll('.fav-card').length;
+            const countEl = document.getElementById('fav-count-num');
+            
+            if (countEl) {
+                countEl.textContent = remaining;
+            }
+            
+            // لو اليوزر مسح آخر فيلم، بنعمل Refresh عشان السيرفر يعرض الـ Empty State
+            if (remaining === 0) {
+                window.location.reload();
+            }
+        }
+
+        // ─── Staggered Entrance Animations ───
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08 });
+        
+        document.querySelectorAll('.fav-card').forEach((card, i) => {
+            card.style.animationDelay = `${i * 0.07}s`;
+            observer.observe(card);
+        });
+    </script>
+}

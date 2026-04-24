@@ -19,13 +19,16 @@ namespace Movies_web_app.Services
             {
                 return null;
             }
+
+            
             string uploadsFolder = Path.Combine(_env.WebRootPath, "images", FolderName);
             if (!Directory.Exists(uploadsFolder))
             {
                 Directory.CreateDirectory(uploadsFolder);
             }
-
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
+            string extension = Path.GetExtension(image.FileName);
+            
+            string uniqueFileName = Guid.NewGuid().ToString()+ extension;
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
             using(var fileStream =image.OpenReadStream())
             using (var loadedImage = Image.Load(fileStream))

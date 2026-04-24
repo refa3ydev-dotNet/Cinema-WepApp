@@ -4,68 +4,59 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-    <link href="~/css/Home/Home.css" rel="stylesheet" asp-append-version="true" />
-@if(Model != null! && Model.Any())
+<link href="~/css/Home/Home.css" rel="stylesheet" asp-append-version="true" />
+@if (Model != null! && Model.Any())
 {
     var heroMovies = Model.Take(3).ToList();
     
-    <!-- HERO CAROUSEL -->
     <header class="hero" id="heroCarousel">
-        <!-- Slide 1 -->
-        @for (int i=0;i < heroMovies.Count();i++)
+        @for (int i = 0; i < heroMovies.Count(); i++)
         {
             var movie = heroMovies[i];
             var isActive = i == 0 ? "active" : "";
-        <div class="hero-slide @isActive" style="background-image:url('@movie.BackgroundImg')">
-            <div class="hero-vignette"></div>
-            <div class="hero-content">
-                <div class="hero-brand">@(movie.HasActiveSchedules ? "Now Showing" : "Coming Soon")</div>
-                <h1 class="hero-title">@movie.Name</h1>
-                <div class="hero-meta">
-                    <span class="meta-rating">IMDb @movie.Rating.ToString("0.0")</span>
-                    <span>@movie.Runtime m</span>
-                    <span class="meta-rating">HD</span>
-                </div>
-                <p class="hero-desc">@heroMovies[i].Description</p>
-                <div class="hero-buttons">
-                    @if (movie.HasActiveSchedules)
-                    {
-                        <button class="btn-primary-action" onclick="openBookingModal(this)"
-                                data-movie-id="@movie.Id" data-title="@movie.Name" data-poster="@movie.PosterUrl"
-                                data-genre="@string.Join(", ", movie.CategoryNames ?? new List<string>())"
-                                data-runtime="@movie.Runtime m" data-rating="@movie.Rating.ToString("0.0")"
-                                data-description="@movie.Description">
-                            <i class="fa-solid fa-ticket"></i> Book Tickets
-                        </button>
-                    }
-                    else
-                    {
-                        <button class="btn-secondary-action"><i class="fa-solid fa-bell"></i> Notify Me</button>
-                    }
-                    <button class="btn-secondary-action"><i class="fa-solid fa-circle-info"></i> More Info</button>
+            <div class="hero-slide @isActive" style="background-image:url('@movie.BackgroundImg')">
+                <div class="hero-vignette"></div>
+                <div class="hero-content">
+                    <div class="hero-brand">@(movie.HasActiveSchedules ? "Now Showing" : "Coming Soon")</div>
+                    <h1 class="hero-title">@movie.Name</h1>
+                    <div class="hero-meta">
+                        <span class="meta-rating">IMDb @movie.Rating.ToString("0.0")</span>
+                        <span>@movie.Runtime m</span>
+                        <span class="meta-rating">HD</span>
+                    </div>
+                    <p class="hero-desc">@heroMovies[i].Description</p>
+                    <div class="hero-buttons">
+                        @if (movie.HasActiveSchedules)
+                        {
+                            <button class="btn-primary-action" onclick="openBookingModal(this)"
+                                    data-movie-id="@movie.Id" data-title="@movie.Name" data-poster="@movie.PosterUrl"
+                                    data-genre="@string.Join(", ", movie.CategoryNames ?? new List<string>())"
+                                    data-runtime="@movie.Runtime m" data-rating="@movie.Rating.ToString("0.0")"
+                                    data-description="@movie.Description">
+                                <i class="fa-solid fa-ticket"></i> Book Tickets
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn-secondary-action"><i class="fa-solid fa-bell"></i> Notify Me</button>
+                        }
+                        <button class="btn-secondary-action"><i class="fa-solid fa-circle-info"></i> More Info</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        
         }
-        <!-- Nav arrows -->
         <button class="hero-nav-btn prev" onclick="heroSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
         <button class="hero-nav-btn next" onclick="heroSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
-        <!-- Indicators -->
         <div class="hero-indicators">
             @for (int i = 0; i < heroMovies.Count; i++)
             {
-                
-            <button class="hero-dot @(i==0?"active" : "")" onclick="heroGoTo(@i)"></button>
+                <button class="hero-dot @(i==0?"active" : "")" onclick="heroGoTo(@i)"></button>
             }
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
     <div class="content-rows">
 
-        <!-- CATEGORY PILLS -->
         <div class="category-bar">
             @foreach (var cat in Model.SelectMany(m => m.CategoryNames ?? new List<string>()).Distinct().Take(8))
             {
@@ -73,7 +64,6 @@
             }
         </div>
 
-        <!-- ROW 1: NOW SHOWING -->
         <div class="row-container">
             <div class="row-header">
                 <h2 class="row-title">Now Showing</h2>
@@ -89,7 +79,6 @@
                 <div class="carousel">
                     @foreach (var movie in Model)
                     {
-                        
                         <div class="card-16-9" onclick="openBookingModal(this)"
                              data-movie-id="@movie.Id" data-title="@movie.Name" data-poster="@movie.PosterUrl"
                              data-genre="@string.Join(", ", movie.CategoryNames ?? new List<string>())"
@@ -97,24 +86,25 @@
                              data-description="@movie.Description">
                             @if (movie.Rating > 8.0)
                             {
-                                
-                            <span class="prime-badge"><i class="fa-solid fa-check"></i> VIP</span>
+                                <span class="prime-badge"><i class="fa-solid fa-check"></i> VIP</span>
                             }
                             <img src="@movie.BackgroundImg" alt="@movie.Name">
                             <div class="card-hover-info">
                                 <div class="hover-title">@movie.Name</div>
                                 <div class="hover-actions">
                                     <button class="hover-btn book"><i class="fa-solid fa-ticket"></i></button>
-                                    <button class="hover-btn"><i class="fa-regular fa-bookmark"></i></button>
-                                    <a asp-controller="Movies" asp-action="Details" asp-route-id="@movie.Id" class="hover-btn"><i class="fa-solid fa-circle-info"></i></a>
+                                    
+                                    <button class="hover-btn fav-btn" data-movie-id="@movie.Id" onclick="event.stopPropagation(); toggleFavorite(this)">
+                                        <i class="fa-regular fa-heart"></i>
+                                    </button>
+
+                                    <a asp-controller="Movies" asp-action="Details" asp-route-id="@movie.Id" class="hover-btn" onclick="event.stopPropagation();"><i class="fa-solid fa-circle-info"></i></a>
                                 </div>
                                 <div class="hover-showtimes">
                                     @if (movie.HasActiveSchedules)
                                     {
-                                        
-                                    <span class="seats-label available">Available</span>
-                                    <span class="showtime-chip">Book now</span>
-                                    
+                                        <span class="seats-label available">Available</span>
+                                        <span class="showtime-chip">Book now</span>
                                     }
                                     else
                                     {
@@ -129,10 +119,9 @@
                         </div>
                     }
                 </div>
-                </div>
+            </div>
         </div>
 
-        <!-- ROW 2: RECOMMENDED MOVIES (Vertical 2:3 cards) -->
         <div class="row-container">
             <div class="row-header">
                 <h2 class="row-title">Recommended Movies</h2>
@@ -147,7 +136,12 @@
                              data-movie-id="@movie.Id" data-title="@movie.Name" data-poster="@movie.PosterUrl"
                              data-genre="@string.Join(", ", movie.CategoryNames ?? new List<string>())"
                              data-runtime="@movie.Runtime m" data-rating="@movie.Rating.ToString("0.0")"
-                             data-description="@movie.Description">
+                             data-description="@movie.Description" style="position: relative;">
+                            
+                            <button class="abs-fav-btn" data-movie-id="@movie.Id" onclick="event.stopPropagation(); toggleFavorite(this)">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+
                             <span class="prime-badge"><i class="fa-solid fa-check"></i> VIP</span>
                             <img src="@movie.PosterUrl" alt="@movie.Name" style="object-position: center;">
                             <div class="card-overlay">
@@ -159,7 +153,6 @@
             </div>
         </div>
 
-        <!-- ROW 3: PREMIUM CINEMAS NEAR YOU (16:9 cards) -->
         <div class="row-container">
             <div class="row-header">
                 <h2 class="row-title">Premium Cinemas Near You</h2>
@@ -200,7 +193,6 @@
             </div>
         </div>
 
-        <!-- ROW 4: TOP 10 -->
         <div class="row-container">
             <div class="row-header">
                 <h2 class="row-title">Most Booked This Week</h2>
@@ -216,12 +208,16 @@
                     @{ var topMovies = Model.Take(10).ToList();}
                     @for (int i = 0; i < topMovies.Count; i++)
                     {
-                        
                         <div class="top10-card" onclick="openBookingModal(this)"
                              data-movie-id="@topMovies[i].Id" data-title="@topMovies[i].Name" data-poster="@topMovies[i].PosterUrl"
                              data-genre="@string.Join(", ", topMovies[i].CategoryNames ?? new List<string>())"
                              data-runtime="@topMovies[i].Runtime m" data-rating="@topMovies[i].Rating.ToString("0.0")"
-                             data-description="@topMovies[i].Description">
+                             data-description="@topMovies[i].Description" style="position: relative;">
+                            
+                            <button class="abs-fav-btn" data-movie-id="@topMovies[i].Id" onclick="event.stopPropagation(); toggleFavorite(this)">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+
                             <span class="top10-number">@(i+1)</span>
                             <div class="top10-poster"><img src="@topMovies[i].PosterUrl" alt="@(i+1) @topMovies[i].Name"></div>
                         </div>
@@ -229,19 +225,18 @@
                 </div>
             </div>
         </div>
-        </div>
-        }
-        else
-        {
-        <div style="min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-            <i class="fa-solid fa-film" style="font-size: 4rem; color: var(--accent-color); margin-bottom: 20px;"></i>
-            <h2 style="color: white; font-weight: bold; font-size: 2.5rem;">No Movies Available</h2>
-            <p style="color: var(--text-secondary); font-size: 1.2rem;">Our catalog is currently empty.</p>
-        </div>
-        }
-        
-        
-        <div id="customBookingModal" class="booking-modal-overlay">
+    </div>
+}
+else
+{
+    <div style="min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+        <i class="fa-solid fa-film" style="font-size: 4rem; color: var(--accent-color); margin-bottom: 20px;"></i>
+        <h2 style="color: white; font-weight: bold; font-size: 2.5rem;">No Movies Available</h2>
+        <p style="color: var(--text-secondary); font-size: 1.2rem;">Our catalog is currently empty.</p>
+    </div>
+}
+
+<div id="customBookingModal" class="booking-modal-overlay">
     <div class="booking-modal-content">
         <button class="close-modal-btn" onclick="closeBookingModal()"><i class="fa-solid fa-xmark"></i></button>
         
@@ -256,13 +251,42 @@
         <div class="booking-modal-body">
             <h3 class="schedules-title">Available Showtimes</h3>
             <div id="modalSchedulesContainer" class="schedules-list">
-                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-    /* Premium Booking Modal Styles */
+    /* CSS for Absolute Favorite Buttons (2:3 Cards & Top 10) */
+    .abs-fav-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10; /* فوق أي Overlay */
+    }
+    .abs-fav-btn:hover {
+        background: rgba(229, 9, 20, 0.2);
+        transform: scale(1.1);
+    }
+    .abs-fav-btn i.fa-solid, .fav-btn i.fa-solid {
+        color: #e50914; /* أحمر لما يبقى في المفضلة */
+        text-shadow: 0 0 8px rgba(229, 9, 20, 0.5);
+    }
+
+    /* Modal Styles */
     .booking-modal-overlay {
         display: none;
         position: fixed;
@@ -278,7 +302,7 @@
     .booking-modal-overlay.show { opacity: 1; }
     
     .booking-modal-content {
-        background: #13151f; /* نفس لون الـ Card بتاعك */
+        background: #13151f;
         border: 1px solid rgba(255,255,255,0.06);
         border-radius: 24px;
         width: 90%;
@@ -362,104 +386,136 @@
     }
     .btn-select-seats:hover { background: #ff1a25; color: white; box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4); }
 </style>
-        <script>
-        // Category pill toggle (كودك القديم)
-        document.querySelectorAll('.cat-pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-                document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-            });
+
+<script>
+    // Category pill toggle
+    document.querySelectorAll('.cat-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
         });
+    });
 
-        // Hero carousel (كودك القديم)
-        let heroIndex = 0;
-        const slides = document.querySelectorAll('.hero-slide');
-        const dots = document.querySelectorAll('.hero-dot');
-        let heroTimer = setInterval(() => heroSlide(1), 6000);
+    // Hero carousel
+    let heroIndex = 0;
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.hero-dot');
+    let heroTimer = setInterval(() => heroSlide(1), 6000);
 
-        function heroGoTo(i) {
-            slides[heroIndex].classList.remove('active');
-            dots[heroIndex].classList.remove('active');
-            heroIndex = i;
-            slides[heroIndex].classList.add('active');
-            dots[heroIndex].classList.add('active');
-            resetTimer();
-        }
-        function heroSlide(dir) {
-            heroGoTo((heroIndex + dir + slides.length) % slides.length);
-        }
-        function resetTimer() {
-            clearInterval(heroTimer);
-            heroTimer = setInterval(() => heroSlide(1), 6000);
-        }
+    function heroGoTo(i) {
+        slides[heroIndex].classList.remove('active');
+        dots[heroIndex].classList.remove('active');
+        heroIndex = i;
+        slides[heroIndex].classList.add('active');
+        dots[heroIndex].classList.add('active');
+        resetTimer();
+    }
+    function heroSlide(dir) {
+        heroGoTo((heroIndex + dir + slides.length) % slides.length);
+    }
+    function resetTimer() {
+        clearInterval(heroTimer);
+        heroTimer = setInterval(() => heroSlide(1), 6000);
+    }
 
-        // ==========================================
-        // NEW: Booking Modal Logic
-        // ==========================================
+    // ==========================================
+    // NEW: Favorite AJAX Logic
+    // ==========================================
+    async function toggleFavorite(btn) {
+        const movieId = btn.getAttribute('data-movie-id');
+        const icon = btn.querySelector('i');
 
-        function openBookingModal(btn) {
-            // 1. سحب بيانات الفيلم من الـ attributes بتاعت الزرار
-            const movieId = btn.getAttribute('data-movie-id');
-            const title = btn.getAttribute('data-title');
-            const poster = btn.getAttribute('data-poster');
-            const runtime = btn.getAttribute('data-runtime');
-            const genre = btn.getAttribute('data-genre');
+        // Optional: Animate a little pop effect immediately
+        icon.style.transform = "scale(0.8)";
+        setTimeout(() => icon.style.transform = "scale(1)", 150);
 
-            // 2. وضع البيانات في الـ Modal UI
-            document.getElementById('modalMovieTitle').innerText = title;
-            document.getElementById('modalMoviePoster').src = poster;
-            document.getElementById('modalMovieMeta').innerText = `${runtime} • ${genre}`;
+        try {
+            const response = await fetch(`/Customer/ToggleFavorite?movieId=${movieId}`, {
+                method: 'POST'
+            });
 
-            const schedulesContainer = document.getElementById('modalSchedulesContainer');
-            schedulesContainer.innerHTML = '<div class="text-center text-warning py-4"><i class="fa-solid fa-spinner fa-spin fs-2"></i><p class="mt-2">Loading schedules...</p></div>';
-
-            // إظهار الـ Modal
-            document.getElementById('customBookingModal').style.display = 'flex';
-            setTimeout(() => document.getElementById('customBookingModal').classList.add('show'), 10);
-
-            // 3. عمل AJAX Request لجلب المواعيد (Schedules) المتاحة للفيلم
-            fetch(`/Customer/GetMovieSchedules?movieId=${movieId}`)
-                .then(response => response.json())
-                .then(data => {
-                    schedulesContainer.innerHTML = ''; // مسح الـ Loader
-
-                    if (!data || data.length === 0) {
-                        schedulesContainer.innerHTML = '<div class="text-center text-muted py-4"><i class="fa-regular fa-calendar-xmark fs-2 mb-2"></i><p>No active schedules found for this movie today.</p></div>';
-                        return;
-                    }
-
-                    // 4. رسم المواعيد والزرار اللي بيودي على صفحة الكراسي
-                    data.forEach(schedule => {
-                        const scheduleHtml = `
-                    <div class="schedule-item">
-                        <div class="schedule-info">
-                            <h4 class="schedule-time">${schedule.time}</h4>
-                            <span class="schedule-room">${schedule.roomName} • <span class="text-success">$${schedule.price}</span></span>
-                        </div>
-                        <a href="/Customer/SelectSeats?scheduleId=${schedule.id}" class="btn-select-seats">
-                            Select Seats <i class="fa-solid fa-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                `;
-                        schedulesContainer.insertAdjacentHTML('beforeend', scheduleHtml);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching schedules:', error);
-                    schedulesContainer.innerHTML = '<div class="text-center text-danger py-4"><p>Error loading schedules. Please try again later.</p></div>';
-                });
-        }
-
-        function closeBookingModal() {
-            const modal = document.getElementById('customBookingModal');
-            modal.classList.remove('show');
-            setTimeout(() => modal.style.display = 'none', 300); // إنتظار الأنيميشن
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('customBookingModal');
-            if (event.target == modal) {
-                closeBookingModal();
+            if (response.status === 401 || response.status === 404) {
+                window.location.href = '/Account/Login';
+                return;
             }
+
+            const data = await response.json();
+            
+            if (data.success) {
+                if (data.isFavorite) {
+                    icon.classList.remove('fa-regular');
+                    icon.classList.add('fa-solid');
+                } else {
+                    icon.classList.remove('fa-solid');
+                    icon.classList.add('fa-regular');
+                }
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
         }
-    </script>
+    }
+
+    // ==========================================
+    // Booking Modal Logic
+    // ==========================================
+    function openBookingModal(btn) {
+        const movieId = btn.getAttribute('data-movie-id');
+        const title = btn.getAttribute('data-title');
+        const poster = btn.getAttribute('data-poster');
+        const runtime = btn.getAttribute('data-runtime');
+        const genre = btn.getAttribute('data-genre');
+
+        document.getElementById('modalMovieTitle').innerText = title;
+        document.getElementById('modalMoviePoster').src = poster;
+        document.getElementById('modalMovieMeta').innerText = `${runtime} • ${genre}`;
+
+        const schedulesContainer = document.getElementById('modalSchedulesContainer');
+        schedulesContainer.innerHTML = '<div class="text-center text-warning py-4"><i class="fa-solid fa-spinner fa-spin fs-2"></i><p class="mt-2">Loading schedules...</p></div>';
+
+        document.getElementById('customBookingModal').style.display = 'flex';
+        setTimeout(() => document.getElementById('customBookingModal').classList.add('show'), 10);
+
+        fetch(`/Customer/GetMovieSchedules?movieId=${movieId}`)
+            .then(response => response.json())
+            .then(data => {
+                schedulesContainer.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    schedulesContainer.innerHTML = '<div class="text-center text-muted py-4"><i class="fa-regular fa-calendar-xmark fs-2 mb-2"></i><p>No active schedules found for this movie today.</p></div>';
+                    return;
+                }
+
+                data.forEach(schedule => {
+                    const scheduleHtml = `
+                <div class="schedule-item">
+                    <div class="schedule-info">
+                        <h4 class="schedule-time">${schedule.time}</h4>
+                        <span class="schedule-room">${schedule.roomName} • <span class="text-success">$${schedule.price}</span></span>
+                    </div>
+                    <a href="/Customer/SelectSeats?scheduleId=${schedule.id}" class="btn-select-seats">
+                        Select Seats <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            `;
+                    schedulesContainer.insertAdjacentHTML('beforeend', scheduleHtml);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching schedules:', error);
+                schedulesContainer.innerHTML = '<div class="text-center text-danger py-4"><p>Error loading schedules. Please try again later.</p></div>';
+            });
+    }
+
+    function closeBookingModal() {
+        const modal = document.getElementById('customBookingModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('customBookingModal');
+        if (event.target == modal) {
+            closeBookingModal();
+        }
+    }
+</script>

@@ -51,6 +51,7 @@ namespace Core
         public ICollection<CinemaMovie> CinemaMovies { get; set; } = new List<CinemaMovie>(); //many to many>
         public ICollection<MovieSchedule> MovieSchedules { get; set; } = new List<MovieSchedule>();
         public ICollection<ProducerMovie> ProducerMovies { get; set; }=new List<ProducerMovie>();
+        public ICollection<UserFavorite> UserFavorites { get; set; } = new List<UserFavorite>();
 
     }
 }

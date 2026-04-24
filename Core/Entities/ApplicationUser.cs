@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Core.Entities.Relations;
 using Microsoft.AspNetCore.Identity;
 namespace Core.Entities
 {
@@ -21,5 +22,6 @@ namespace Core.Entities
         public DateTime? DeleteAt { get; set; }
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<UserFavorite> UserFavorites { get; set; } = new List<UserFavorite>();
     }
 }
