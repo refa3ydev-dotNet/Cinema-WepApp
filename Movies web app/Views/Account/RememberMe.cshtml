@@ -15,9 +15,7 @@
         </div>
 
         <form asp-action="RememberMe" asp-controller="Account" method="post">
-
-            <input type="hidden" name="email" value="@ViewBag.Email" />
-
+            
             <div class="form-check" style="margin-bottom: 2rem;">
                 <input type="checkbox" id="DontShowAgain" name="DontShowAgain" class="form-check-input" style="cursor: pointer;">
                 <label for="DontShowAgain" class="form-check-label" style="cursor: pointer;">Don't show this again</label>

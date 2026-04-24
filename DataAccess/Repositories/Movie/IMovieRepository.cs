@@ -16,5 +16,6 @@ namespace DataAccess.Repositories.MOVIE
         Task<List<Movie>> GetMovieByActorAsync(string name);
         Task<bool> HasActiveSchedulesForCinemaAsync(int movieId, int cinemaId);
         Task<Movie> UpsertMovieFromTmdbAsync(Movie movie);
+        Task<IEnumerable<Movie>> GetAllCatalogMoviesAsync();
     }
 }

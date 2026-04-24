@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModel\" />
     <Folder Include="wwwroot\Images\Actors\" />
     <Folder Include="wwwroot\Images\Cinemas\" />
     <Folder Include="wwwroot\Images\Movies\" />

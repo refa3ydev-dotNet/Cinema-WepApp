@@ -74,6 +74,36 @@ namespace Business.Mapping
                 }).ToList() ?? new List<DirectorMovie>(),
             };
         }
+        public static Movie ToEntity(this TmdbMovieDetails tmdbMovie, List<Category> categories)
+        {
+            return new Movie()
+            {
+                TmdbId = tmdbMovie.Id,
+                Name = tmdbMovie.Title,
+                Description = !string.IsNullOrWhiteSpace(tmdbMovie.Overview) ? tmdbMovie.Overview : "No description available.",
+        
+                PosterImg = !string.IsNullOrEmpty(tmdbMovie.Poster_Path) 
+                    ? $"https://image.tmdb.org/t/p/w500{tmdbMovie.Poster_Path}" 
+                    : "",
+            
+                BackgroundImg = !string.IsNullOrEmpty(tmdbMovie.Backdrop_Path) 
+                    ? $"https://image.tmdb.org/t/p/original{tmdbMovie.Backdrop_Path}" 
+                    : (!string.IsNullOrEmpty(tmdbMovie.Poster_Path) ? $"https://image.tmdb.org/t/p/w500{tmdbMovie.Poster_Path}" : ""),
+
+                Runtime = tmdbMovie.Runtime,
+                Rating = (decimal)tmdbMovie.Vote_Average,
+                ReleaseDate = tmdbMovie.Release_Date,
+        
+                Price = 150, 
+                Language = Core.Enums.Language.English, 
+                Translation = Core.Enums.TranslationType.Subtitled,
+        
+                // ربط الفئات (Categories)
+                Categories = categories ?? new List<Category>(),
+        
+                CreatedAt = DateTime.Now
+            };
+        }
 
         public static List<GetAllMoviesDto> ToDto(this List<Movie> movies)
         {

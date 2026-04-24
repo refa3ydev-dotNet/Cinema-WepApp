@@ -1,0 +1,212 @@
+@model IEnumerable<Business.DTOs.Bookings.MyTicketDto>;
+
+@{
+    ViewData["Title"] = "My Tickets";
+    Layout = "_Layout";
+}
+
+<link href="~/css/Booking/MyTickets.css" rel="stylesheet" asp-append-version="true"/>
+<!-- PAGE HEADER -->
+    <header class="page-header" id="page-header">
+        <h1><i class="fas fa-ticket-alt"></i> My Tickets</h1>
+        <p class="subtitle">Your premium cinema experience, all in one place</p>
+    </header>
+
+    <div class="container" style="max-width: 1200px;">
+    @{
+        int totalTickets = Model.Count();
+        int upcomingCount = Model.Count(t => t.StartTime > DateTime.Now);
+        int passedCount=Model.Count(t => t.StartTime <= DateTime.Now);
+    }
+        <!-- FILTER TABS -->
+        <div class="filter-bar" id="filter-bar">
+            <button class="filter-btn active" data-filter="all" id="filter-all">All <span class="filter-count">@totalTickets</span></button>
+            <button class="filter-btn" data-filter="upcoming" id="filter-upcoming">Upcoming <span class="filter-count">@upcomingCount</span></button>
+            <button class="filter-btn" data-filter="passed" id="filter-passed">Passed <span class="filter-count">@passedCount</span></button>
+        </div>
+
+        <!-- TICKET GRID -->
+        <div class="row g-4" id="ticket-grid">
+        @foreach (var ticket in Model)
+        {
+            bool isUpcoming = ticket.StartTime > DateTime.Now;
+            string statusData = isUpcoming ? "upcoming" : "passed";
+            string cardStatusClass = isUpcoming ? "upcoming" : "passed";
+            string budgeClass = isUpcoming ? "status-badge upcoming" : "status-badge passed-badge";
+            string badgeText = isUpcoming ? "UPCOMING" : "PASSED";
+            <!-- Ticket 1: Upcoming -->
+            <div class="col-lg-4 col-md-6 ticket-item" data-status="@statusData">
+                <div class="ticket-card @cardStatusClass">
+                    <div class="ticket-poster">
+                        <img src="@ticket.PosterUrl" alt="@ticket.MovieName">
+                        <span class="@budgeClass">@badgeText</span>
+                    </div>
+                    <div class="ticket-info">
+                        <h3 class="ticket-title">@ticket.MovieName</h3>
+                        <div class="ticket-meta">
+                            <div class="ticket-meta-item"><i class="fas fa-calendar-alt"></i>@ticket.StartTime.ToString("ddd, MMM dd, yyyy")</div>
+                            <div class="ticket-meta-item"><i class="fas fa-clock"></i> @ticket.StartTime.ToString("hh:mm tt")</div>
+                        </div>
+                    </div>
+                    <hr class="ticket-tear">
+                    <div class="ticket-details">
+                        <div class="detail-block"><label>Cinema</label><span>@ticket.CinemaName</span></div>
+                        <div class="detail-block"><label>Room</label><span>@ticket.RoomName</span></div>
+                        <div class="detail-block"><label>Seats</label><span class="seat-numbers">@string.Join(", ",ticket.Seats)</span></div>
+                    </div>
+                    <div class="ticket-footer">
+                        <div class="total-paid"><label>Total Paid</label><span class="amount">EGP @ticket.TotalPrice.ToString("0.00")</span></div>
+                        <div class="qr-code">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=TicketID_@ticket.BookingId&color=000000&bgcolor=ffffff" alt="QR Code">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        }
+
+        </div>
+
+        <!-- EMPTY STATE (hidden by default) -->
+        <div class="empty-state" id="empty-state" style="@(totalTickets==0?"":"display:none;")">
+            <div class="ghost-icon"><i class="fas fa-ticket-alt"></i></div>
+            <h3>No tickets found</h3>
+            <p>Time to grab some popcorn! 🍿</p>
+            <a asp-controller="Home" asp-action="Index" class="btn-browse" id="btn-browse-movies"><i class="fas fa-film"></i> Browse Movies</a>
+        </div>
+
+    </div>
+
+    <!-- TICKET DETAIL MODAL -->
+    <div class="modal-overlay" id="ticket-modal">
+        <div class="modal-card" id="modal-card">
+            <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
+            <div class="modal-poster">
+                <img id="modal-poster-img" src="" alt="">
+                <span class="status-badge" id="modal-badge"></span>
+            </div>
+            <div class="modal-body">
+                <h2 class="modal-movie-title" id="modal-title"></h2>
+                <div class="modal-meta-row">
+                    <div class="modal-meta-item"><i class="fas fa-calendar-alt"></i> <span id="modal-date"></span></div>
+                    <div class="modal-meta-item"><i class="fas fa-clock"></i> <span id="modal-time"></span></div>
+                </div>
+                <hr class="modal-tear">
+                <div class="modal-details-grid">
+                    <div class="modal-detail-block"><label>Cinema</label><span id="modal-cinema"></span></div>
+                    <div class="modal-detail-block"><label>Room</label><span id="modal-room"></span></div>
+                    <div class="modal-detail-block"><label>Seats</label><span class="seat-numbers" id="modal-seats"></span></div>
+                    <div class="modal-detail-block"><label>Ticket Type</label><span>Standard</span></div>
+                </div>
+                <div class="modal-footer-section">
+                    <div class="modal-total">
+                        <div class="label">Total Paid</div>
+                        <div class="amount" id="modal-amount"></div>
+                    </div>
+                    <div class="modal-qr"><img id="modal-qr-img" src="" alt="QR Code"></div>
+                </div>
+                <div class="scan-hint"><i class="fas fa-info-circle"></i> Present this QR code at the cinema entrance</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        // Filter logic
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const ticketItems = document.querySelectorAll('.ticket-item');
+        const emptyState = document.getElementById('empty-state');
+        const ticketGrid = document.getElementById('ticket-grid');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filter;
+                let visibleCount = 0;
+
+                ticketItems.forEach((item, i) => {
+                    const status = item.dataset.status;
+                    const show = filter === 'all' || status === filter;
+                    item.style.display = show ? '' : 'none';
+                    if (show) {
+                        visibleCount++;
+                        const card = item.querySelector('.ticket-card');
+                        card.style.animation = 'none';
+                        card.offsetHeight;
+                        card.style.animation = `fadeInUp 0.5s ease ${visibleCount * 0.08}s both`;
+                    }
+                });
+
+                emptyState.style.display = visibleCount === 0 ? '' : 'none';
+                ticketGrid.style.display = visibleCount === 0 ? 'none' : '';
+            });
+        });
+
+        // ─── Modal logic ───
+        const modal = document.getElementById('ticket-modal');
+        const modalCard = document.getElementById('modal-card');
+        const modalClose = document.getElementById('modal-close');
+
+        function openModal(card) {
+            // Extract data from the clicked card
+            const poster = card.querySelector('.ticket-poster img');
+            const badge = card.querySelector('.status-badge');
+            const title = card.querySelector('.ticket-title');
+            const metaItems = card.querySelectorAll('.ticket-meta-item');
+            const details = card.querySelectorAll('.detail-block span');
+            const amount = card.querySelector('.amount');
+            const qrImage = card.querySelector('.qr-code img'); // إضافة سطر الـ QR
+
+            // Populate modal
+            document.getElementById('modal-poster-img').src = poster.src;
+            document.getElementById('modal-poster-img').alt = poster.alt;
+
+            const modalBadge = document.getElementById('modal-badge');
+            modalBadge.textContent = badge.textContent;
+            modalBadge.className = 'status-badge ' + (badge.classList.contains('upcoming') ? 'upcoming' : 'passed-badge');
+
+            document.getElementById('modal-title').textContent = title.textContent;
+            document.getElementById('modal-date').textContent = metaItems[0].textContent.trim();
+            document.getElementById('modal-time').textContent = metaItems[1].textContent.trim();
+            document.getElementById('modal-cinema').textContent = details[0].textContent;
+            document.getElementById('modal-room').textContent = details[1].textContent;
+            document.getElementById('modal-seats').textContent = details[2].textContent;
+            document.getElementById('modal-amount').textContent = amount.textContent;
+
+            // نقل صورة الـ QR من الكارت للمودال
+            document.getElementById('modal-qr-img').src = qrImage.src;
+
+            // Show
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Attach click to all ticket cards
+        document.querySelectorAll('.ticket-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => openModal(card));
+        });
+
+        // Close on X button
+        modalClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeModal();
+        });
+
+        // Close on overlay click (outside modal card)
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>

@@ -18,7 +18,7 @@ namespace Business.Managers.Rooms
         {
             var roomEntity = dto.ToEntity(cinemaId);
             roomEntity.Seats = GenerateSeats(dto.SeatCount, dto.SeatsPerRow);
-            await _roomRepository.AddRoomAsync(dto.ToEntity(cinemaId));
+            await _roomRepository.AddRoomAsync(roomEntity);
         }
 
         public async Task<bool> DeleteRoomAsync(int id)
@@ -56,15 +56,37 @@ namespace Business.Managers.Rooms
 
         }
 
-        public async Task UpdateRoomAsync(UpdateRoomDto dto)
+        public async Task<bool> UpdateRoomAsync(UpdateRoomDto dto)
         {
             var existingRoom=await _roomRepository.GetRoomByIdAsync(dto.Id);
-            if (existingRoom != null)
-            { 
+            if (existingRoom==null)
+            {
+                return false;
+            }
+
                 existingRoom.RoomName = dto.RoomName;
                 existingRoom.UpdatedAt=DateTime.Now;
+                if (dto.SeatCount != existingRoom.SeatCount || dto.SeatsPerRow != existingRoom.SeatsPerRow)
+                {
+                    bool hasFutureSchedules = existingRoom.MovieSchedules!=null&& existingRoom.MovieSchedules
+                        .Any(s=>s.StartDate>=DateTime.Now);
+                    if (hasFutureSchedules)
+                    {
+                        return false;
+                    }
+                    existingRoom.SeatCount=dto.SeatCount;   
+                    existingRoom.SeatsPerRow=dto.SeatsPerRow;
+
+                    if (existingRoom.Seats != null)
+                    {
+                        existingRoom.Seats.Clear();
+                    }
+                    
+                existingRoom.Seats=GenerateSeats(dto.SeatCount, dto.SeatsPerRow);
+                }
                 await _roomRepository.UpdateRoomAsync(existingRoom);
-            }
+                return true;
+
         }
         private List<Seat> GenerateSeats(int seatCount, int seatsPerRow)
         {

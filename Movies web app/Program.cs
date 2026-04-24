@@ -1,14 +1,14 @@
 ﻿using Business.Managers.Agent;
-using Business.Managers.Directors;
+using Business.Managers.Bookings;
 using Business.Managers.Schedule;
 using Business.Services.TmdbService;
 using Core.Entities;
 using DataAccess.Contexts;
+using DataAccess.Repositories;
 using DataAccess.Repositories.Dashboard;
 using DataAccess.Repositories.Schedule;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Movies_web_app.Helper;
 using Movies_web_app.Services;
  
@@ -64,6 +64,9 @@ namespace Movies_web_app
             builder.Services.AddHttpClient<ITmdbService, TmdbService>();
             builder.Services.AddScoped<IMovieScheduleManager, MovieScheduleManager>();
             builder.Services.AddScoped<IMovieScheduleRepository, MovieScheduleRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+            builder.Services.AddScoped<IBookingManager, BookingManager>();
+            
 
             // ? DbContext configuration using the connection string from appsettings.json
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

@@ -1,9 +1,11 @@
 ﻿using Business.DTOs.Movies;
+using Core;
 using Core.Helpers;
 
 namespace Business.Managers.Movies
 {
-    public interface IMovieManager
+    public interface 
+        IMovieManager
     {
         Task CreateMovieAsync(CreateMovieDto dto);
         Task DeleteMovieAsync(int id);
@@ -15,6 +17,7 @@ namespace Business.Managers.Movies
         Task<List<GetAllMoviesDto>> GetMoviesByCinemaIdAsync(int cinemaId);
         Task<bool> RemoveMovieFromCinemaAsync(int movieId, int cinemaId); // عشان زرار الحذف
         Task SyncMovieFromTmdbAsync(int tmdbMovieId, int cinemaId);
+        Task<IEnumerable<CustomerMovieCatalogDto>> GetAllCatalogMoviesAsync();
 
     }
 }

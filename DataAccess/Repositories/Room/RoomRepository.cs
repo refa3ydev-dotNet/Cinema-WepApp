@@ -40,7 +40,10 @@ namespace DataAccess.Repositories.ROOM
         }
         public async Task<Room> GetRoomByIdAsync(int id)
         {
-            var exRoom = _context.Rooms.FirstOrDefault(x => x.Id == id);
+            var exRoom = _context.Rooms
+                .Include(r=>r.Seats)
+                .Include(r=>r.MovieSchedules)
+                .FirstOrDefault(x => x.Id == id&&!x.IsDeleted);
             return exRoom;
         }
 

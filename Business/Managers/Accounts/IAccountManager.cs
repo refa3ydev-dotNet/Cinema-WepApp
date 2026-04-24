@@ -14,6 +14,8 @@ namespace Business.Managers.Accounts
          Task<bool> CheckPasswordAsync(ApplicationUser user, string password);
          Task<IdentityResult> UpdateUserAsync(ApplicationUser user);
         Task<IList<string>> GetUserRolesAsync(ApplicationUser user);
+        Task<ApplicationUser> GetUserByIdAsync(string userId);
+        Task<(bool IsSuccess,String ErrorMessage)> UpdateProfileAsync(string userId, UserProfileDto dto);
 
     }
 }

@@ -42,5 +42,23 @@ namespace DataAccess.Repositories.Schedule
             _context.MovieSchedules.Update(schedule);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<MovieSchedule> GetScheduleWithDetailsByIdAsync(int scheduleId)
+        {
+            return await _context.MovieSchedules
+                .Include(ms=>ms.Movie)
+                .Include(ms => ms.Cinema)
+                .Include(ms => ms.Room)
+                .ThenInclude(r=>r.Seats)
+                .FirstOrDefaultAsync(ms=>ms.Id==scheduleId);
+        }
+        public async Task<IEnumerable<MovieSchedule>> GetActiveSchedulesByMovieIdAsync(int movieId)
+        {
+            return await _context.MovieSchedules
+                .Include(s => s.Room)
+                .Where(s => s.MovieId == movieId && s.StartDate > DateTime.Now && !s.IsDeleted)
+                .OrderBy(s => s.StartDate)
+                .ToListAsync();
+        }
     }
 }

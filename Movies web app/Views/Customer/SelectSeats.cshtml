@@ -1,0 +1,242 @@
+@model Business.DTOs.Bookings.SeatSelectionDto
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Select Your Seats - "+Model.MovieTitle;
+}
+
+<link href="~/css/Booking/SelectSeats.css" rel="stylesheet" asp-append-version="true"/>
+
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <a asp-controller="Home" asp-action="Index" class="btn-back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </a>
+            <div class="movie-info">
+                <h1 class="movie-title">@Model.MovieTitle</h1>
+                <div class="movie-meta">
+                    <span class="meta-badge">@Model.CinemaName.ToUpper()</span>
+                    <span>@Model.CinemaAddress • @Model.StartTime.ToString("dd MMM yyy , hh:mm tt") • @Model.RoomName</span>
+                </div>
+            </div>
+            <div class="step-pill">Step 2 of 3</div>
+        </div>
+    </header>
+@if (TempData["ErrorMessage"] != null)
+{
+<div class="container mt-4">
+    <div class="alert alert-danger text-center fw-bold shadow-lg" style="background-color: rgba(229, 9, 20, 0.15); border: 1px solid var(--red); color: white; border-radius: 12px; max-width: 600px; margin: 0 auto;">
+        <i class="fa-solid fa-triangle-exclamation me-2 text-warning"></i> @TempData["ErrorMessage"]
+    </div>
+</div>
+}
+    <!-- Screen Section -->
+    <section class="screen-section">
+        <div class="screen-container">
+            <div class="screen-frame">
+                <div class="screen"></div>
+                <div class="screen-reflection"></div>
+            </div>
+            <div class="screen-label">Screen</div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Seating Area -->
+        <section class="seating-card">
+            <div class="seating-scroll">
+            <div class="seating-grid" id="seatingGrid">
+                @{
+                    var groupedSeats = Model.AllSeats.GroupBy(s => s.Row).OrderBy(g => g.Key).ToList();
+                    foreach (var rowGroup in groupedSeats)
+                    {
+                        bool isVipRow = rowGroup.Any((s => s.SeatType?.ToLower() == "vip"));
+                        if (isVipRow && rowGroup.Key == groupedSeats.FirstOrDefault(g => g.Any(s => s.SeatType?.ToLower() == "vip"))?.Key)
+                        {
+                            <div class="vip-divider">
+                                <div class="vip-line"></div>
+                                <span class="vip-badge">♛ VIP PREMIUM</span>
+                                <div class="vip-line"></div>
+                            </div>
+                        }
+                        <div class="seat-row">
+                                
+                            <span class="row-letter">@rowGroup.Key</span>
+                            <div class="row-seats">
+                                @foreach (var seat in rowGroup.OrderBy(s => int.Parse(s.Column)))
+                                {
+                                    bool isBooked = Model.BookedSeatIds != null && Model.BookedSeatIds.Contains(seat.Id);
+                                    string seatStatusClass = isBooked ? "occupied" : "available";
+                                    bool isVipSeat = seat.SeatType?.ToLower() == "vip";
+                                    string vipClass = isVipSeat ? "vip" : "";
+                                        
+                                    decimal seatPrice = isVipSeat ? Model.TicketPrice+13 : Model.TicketPrice;
+                                        
+                                    <div class="seat @seatStatusClass @vipClass"
+                                         data-id="@seat.Id" data-label="@seat.Row@seat.Column" 
+                                         data-price="@seatPrice" data-row="@seat.Row" data-num="@seat.Column"
+                                         data-vip="@(isVipSeat?"true":"false")">
+                                        <div class="seat-shadow"></div>
+                                        <div class="seat-legs"></div>
+                                        <div class="seat-armrest seat-armrest-left"></div>
+                                        <div class="seat-armrest seat-armrest-right"></div>
+                                        <div class="seat-back"></div>
+                                        <div class="seat-bottom"></div>
+                                        <span class="seat-num">@seat.Column</span>
+                                    </div>
+                                }
+                                    
+                            </div>
+                            <span class="row-letter">@rowGroup.Key</span>
+                        </div>
+                                    
+                    }
+                }
+            </div>
+            </div>
+            
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-icon available"></div>
+                    <span>Available</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon selected"></div>
+                    <span>Selected</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon occupied"></div>
+                    <span>Taken</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon vip"></div>
+                    <span>VIP $25</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary Panel -->
+        <aside class="summary-panel">
+            <div class="summary-card">
+                <div class="summary-header">
+                    <div class="summary-title">Your Selection</div>
+                    <div class="summary-subtitle" id="summarySubtitle">No seats selected</div>
+                </div>
+                <div class="summary-body" id="summaryBody">
+                    <div class="summary-empty">
+                        <div class="summary-empty-icon">🎬</div>
+                        <div class="summary-empty-text">Tap seats to select</div>
+                    </div>
+                </div>
+                <div class="summary-footer">
+                    <div class="total-block">
+                        <div class="total-label">Total</div>
+                        <div class="total-amount" id="totalAmount">$0</div>
+                    </div>
+                    <form id="checkoutForm" method="post" asp-action="Checkout" asp-controller="Customer">
+                        <input type="hidden" name="ScheduleId" value="@Model.ScheduleId" />
+                        <input type="hidden" name="SelectedSeatIds" id="selectedSeatIdsInput" value="" />
+                        <button type="submit" class="btn-continue" id="btnContinue" disabled>
+                            <span>Checkout</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const state = { selected: [] };
+
+            const grid = document.getElementById('seatingGrid');
+            const summaryBody = document.getElementById('summaryBody');
+            const summarySubtitle = document.getElementById('summarySubtitle');
+            const totalAmount = document.getElementById('totalAmount');
+            const btnContinue = document.getElementById('btnContinue');
+            const selectedSeatIdsInput = document.getElementById('selectedSeatIdsInput');
+
+            grid.addEventListener('click', (e) => {
+                const seat = e.target.closest('.seat');
+                if (!seat || seat.classList.contains('occupied')) return;
+
+                const id = seat.dataset.id; // Database ID
+                const label = seat.dataset.label; // E.g., "A1"
+                const idx = state.selected.findIndex(s => s.id === id);
+
+                if (idx > -1) {
+                    state.selected.splice(idx, 1);
+                    seat.classList.remove('selected');
+                    seat.classList.add('available');
+                } else {
+                    state.selected.push({
+                        id: id,
+                        label: label,
+                        row: seat.dataset.row,
+                        num: parseInt(seat.dataset.num),
+                        price: parseFloat(seat.dataset.price),
+                        vip: seat.dataset.vip === 'true'
+                    });
+                    seat.classList.remove('available');
+                    seat.classList.add('selected');
+                }
+
+                state.selected.sort((a, b) => a.row.localeCompare(b.row) || a.num - b.num);
+                render();
+            });
+
+            function render() {
+                const count = state.selected.length;
+                const total = state.selected.reduce((sum, s) => sum + s.price, 0);
+
+                summarySubtitle.textContent = count ? `${count} seat${count > 1 ? 's' : ''} selected` : 'No seats selected';
+                totalAmount.textContent = `$${total.toFixed(2)}`;
+
+                // تحديث الـ Input المخفي عشان يتبعت للـ Controller
+                selectedSeatIdsInput.value = state.selected.map(s => s.id).join(',');
+
+                btnContinue.disabled = count === 0;
+
+                if (count === 0) {
+                    summaryBody.innerHTML = `
+                        <div class="summary-empty">
+                            <div class="summary-empty-icon">🎬</div>
+                            <div class="summary-empty-text">Tap seats to select</div>
+                        </div>`;
+                    return;
+                }
+
+                const regular = state.selected.filter(s => !s.vip);
+                const vip = state.selected.filter(s => s.vip);
+
+                let html = `<div class="seats-chips">`;
+                state.selected.forEach(s => {
+                    html += `<span class="seat-chip${s.vip ? ' vip' : ''}">${s.label} <span class="price">$${s.price}</span></span>`;
+                });
+                html += `</div>`;
+
+                if (regular.length) {
+                    html += `<div class="summary-row"><span class="label">Standard × ${regular.length}</span><span class="value">$${(regular.length * regular[0].price).toFixed(2)}</span></div>`;
+                }
+                if (vip.length) {
+                    html += `<div class="summary-row"><span class="label">VIP × ${vip.length}</span><span class="value">$${(vip.length * vip[0].price).toFixed(2)}</span></div>`;
+                }
+
+                summaryBody.innerHTML = html;
+            }
+
+            render();
+        })();
+    </script>
+

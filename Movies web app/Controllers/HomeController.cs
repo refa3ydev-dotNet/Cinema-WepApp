@@ -1,4 +1,5 @@
 using Business.Managers.Movies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies_web_app.Models;
 using System.Diagnostics;
@@ -16,11 +17,11 @@ public class HomeController : Controller
         _logger = logger;
         _movieManager = movieManager;
     }
-
+    [Authorize]
     public async Task<IActionResult> Index()
     {
-        var activeMovires=await _movieManager.GetAllMoviesAsync();
-        return View();
+        var activeMovires=await _movieManager.GetAllCatalogMoviesAsync();
+        return View(activeMovires);
     }
 
 

@@ -219,12 +219,19 @@ namespace Movies_web_app.Controllers
             {
                 return View(dto);
             }
+
             var existingRoom = await _roomManager.GetRoomByIdAsync(dto.Id);
             if (existingRoom == null || existingRoom.CinemaId != user.CinemaId.Value || existingRoom.IsDeleted)
             {
                 return View("NotFound");
             }
-            await _roomManager.UpdateRoomAsync(dto);
+            bool isUpdated = await _roomManager.UpdateRoomAsync(dto);
+            if (!isUpdated)
+            {
+                TempData["ErrorMassage"] = "Cannot update seats! This room has active upcoming schedules.";
+                return View(dto);
+            }
+            TempData["SuccessMassage"] = "Room updated successfully!";
             return RedirectToAction("Rooms");
         }
         [HttpPost]

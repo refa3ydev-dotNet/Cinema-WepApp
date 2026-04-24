@@ -1,229 +1,465 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<Business.DTOs.Movies.CustomerMovieCatalogDto>
+@{
+    ViewData["Title"] = "Premium Cinema Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link href="~/css/Home.css" rel="stylesheet" />
-<section class="hero-carousel">
-    <div class="carousel-track-container">
-        <ul class="carousel-track">
-            <!-- Slide 1: Dune -->
-            <li class="carousel-slide current-slide" data-bg="assets/hero_bg.png">
-                <div class="slide-overlay"></div>
-                <div class="slide-content">
-                    <div class="badge-container">
-                        <span class="badge">NOW SHOWING</span>
-                        <span class="rating"><i class="fas fa-star"></i> 9.2/10 IMDb</span>
+
+
+    <link href="~/css/Home/Home.css" rel="stylesheet" asp-append-version="true" />
+@if(Model != null! && Model.Any())
+{
+    var heroMovies = Model.Take(3).ToList();
+    
+    <!-- HERO CAROUSEL -->
+    <header class="hero" id="heroCarousel">
+        <!-- Slide 1 -->
+        @for (int i=0;i < heroMovies.Count();i++)
+        {
+            var movie = heroMovies[i];
+            var isActive = i == 0 ? "active" : "";
+        <div class="hero-slide @isActive" style="background-image:url('@movie.BackgroundImg')">
+            <div class="hero-vignette"></div>
+            <div class="hero-content">
+                <div class="hero-brand">@(movie.HasActiveSchedules ? "Now Showing" : "Coming Soon")</div>
+                <h1 class="hero-title">@movie.Name</h1>
+                <div class="hero-meta">
+                    <span class="meta-rating">IMDb @movie.Rating.ToString("0.0")</span>
+                    <span>@movie.Runtime m</span>
+                    <span class="meta-rating">HD</span>
+                </div>
+                <p class="hero-desc">@heroMovies[i].Description</p>
+                <div class="hero-buttons">
+                    @if (movie.HasActiveSchedules)
+                    {
+                        <button class="btn-primary-action" onclick="openBookingModal(this)"
+                                data-movie-id="@movie.Id" data-title="@movie.Name" data-poster="@movie.PosterUrl"
+                                data-genre="@string.Join(", ", movie.CategoryNames ?? new List<string>())"
+                                data-runtime="@movie.Runtime m" data-rating="@movie.Rating.ToString("0.0")"
+                                data-description="@movie.Description">
+                            <i class="fa-solid fa-ticket"></i> Book Tickets
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn-secondary-action"><i class="fa-solid fa-bell"></i> Notify Me</button>
+                    }
+                    <button class="btn-secondary-action"><i class="fa-solid fa-circle-info"></i> More Info</button>
+                </div>
+            </div>
+        </div>
+        
+        }
+        <!-- Nav arrows -->
+        <button class="hero-nav-btn prev" onclick="heroSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="hero-nav-btn next" onclick="heroSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        <!-- Indicators -->
+        <div class="hero-indicators">
+            @for (int i = 0; i < heroMovies.Count; i++)
+            {
+                
+            <button class="hero-dot @(i==0?"active" : "")" onclick="heroGoTo(@i)"></button>
+            }
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="content-rows">
+
+        <!-- CATEGORY PILLS -->
+        <div class="category-bar">
+            @foreach (var cat in Model.SelectMany(m => m.CategoryNames ?? new List<string>()).Distinct().Take(8))
+            {
+                <span class="cat-pill">@cat</span>
+            }
+        </div>
+
+        <!-- ROW 1: NOW SHOWING -->
+        <div class="row-container">
+            <div class="row-header">
+                <h2 class="row-title">Now Showing</h2>
+                <a href="#" class="row-subtitle">See all movies</a>
+            </div>
+            <div class="carousel-wrapper">
+                <button class="carousel-arrow left" onclick="this.closest('.carousel-wrapper').querySelector('.carousel').scrollBy({left:-400,behavior:'smooth'})">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="carousel-arrow right" onclick="this.closest('.carousel-wrapper').querySelector('.carousel').scrollBy({left:400,behavior:'smooth'})">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <div class="carousel">
+                    @foreach (var movie in Model)
+                    {
+                        
+                        <div class="card-16-9" onclick="openBookingModal(this)"
+                             data-movie-id="@movie.Id" data-title="@movie.Name" data-poster="@movie.PosterUrl"
+                             data-genre="@string.Join(", ", movie.CategoryNames ?? new List<string>())"
+                             data-runtime="@movie.Runtime m" data-rating="@movie.Rating.ToString("0.0")"
+                             data-description="@movie.Description">
+                            @if (movie.Rating > 8.0)
+                            {
+                                
+                            <span class="prime-badge"><i class="fa-solid fa-check"></i> VIP</span>
+                            }
+                            <img src="@movie.BackgroundImg" alt="@movie.Name">
+                            <div class="card-hover-info">
+                                <div class="hover-title">@movie.Name</div>
+                                <div class="hover-actions">
+                                    <button class="hover-btn book"><i class="fa-solid fa-ticket"></i></button>
+                                    <button class="hover-btn"><i class="fa-regular fa-bookmark"></i></button>
+                                    <a asp-controller="Movies" asp-action="Details" asp-route-id="@movie.Id" class="hover-btn"><i class="fa-solid fa-circle-info"></i></a>
+                                </div>
+                                <div class="hover-showtimes">
+                                    @if (movie.HasActiveSchedules)
+                                    {
+                                        
+                                    <span class="seats-label available">Available</span>
+                                    <span class="showtime-chip">Book now</span>
+                                    
+                                    }
+                                    else
+                                    {
+                                        <span class="seats-label limited">Coming Soon</span>
+                                    }
+                                </div>
+                                <div class="hover-tags">
+                                    <span class="hover-tag">@string.Join(", ", movie.CategoryNames?.Take(2) ?? new List<string>())</span>
+                                    <span class="hover-tag">@movie.Runtime m</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                </div>
+        </div>
+
+        <!-- ROW 2: RECOMMENDED MOVIES (Vertical 2:3 cards) -->
+        <div class="row-container">
+            <div class="row-header">
+                <h2 class="row-title">Recommended Movies</h2>
+            </div>
+            <div class="carousel-wrapper">
+                <button class="carousel-arrow left" onclick="this.closest('.carousel-wrapper').querySelector('.carousel').scrollBy({left:-400,behavior:'smooth'})"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="carousel-arrow right" onclick="this.closest('.carousel-wrapper').querySelector('.carousel').scrollBy({left:400,behavior:'smooth'})"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="carousel">
+                    @foreach (var movie in Model.OrderByDescending(m => m.Rating).Take(10))
+                    {
+                        <div class="card-2-3" onclick="openBookingModal(this)"
+                             data-movie-id="@movie.Id" data-title="@movie.Name" data-poster="@movie.PosterUrl"
+                             data-genre="@string.Join(", ", movie.CategoryNames ?? new List<string>())"
+                             data-runtime="@movie.Runtime m" data-rating="@movie.Rating.ToString("0.0")"
+                             data-description="@movie.Description">
+                            <span class="prime-badge"><i class="fa-solid fa-check"></i> VIP</span>
+                            <img src="@movie.PosterUrl" alt="@movie.Name" style="object-position: center;">
+                            <div class="card-overlay">
+                                <div class="card-title">@movie.Name</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 3: PREMIUM CINEMAS NEAR YOU (16:9 cards) -->
+        <div class="row-container">
+            <div class="row-header">
+                <h2 class="row-title">Premium Cinemas Near You</h2>
+            </div>
+           <div class="carousel-wrapper">
+                <button class="carousel-arrow left" onclick="this.closest('.carousel-wrapper').querySelector('.carousel').scrollBy({left:-400,behavior:'smooth'})"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="carousel-arrow right" onclick="this.closest('.carousel-wrapper').querySelector('.carousel').scrollBy({left:400,behavior:'smooth'})"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="carousel">
+                    <div class="card-16-9">
+                        <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Noir Downtown">
+                        <div class="card-overlay">
+                            <div class="card-title">Noir Downtown</div>
+                            <div class="card-meta">1.4 mi • Metro District</div>
+                        </div>
                     </div>
-                    <h1 class="movie-title">DUNE: <span class="highlight">PART TWO</span></h1>
-                    <p class="movie-description">Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against the conspirators who destroyed his family.</p>
-                    <div class="hero-buttons">
-                        <button class="btn btn-primary"><i class="fas fa-ticket"></i> Book Tickets</button>
-                        <button class="btn btn-secondary"><i class="fas fa-play"></i> Watch Trailer</button>
+                    <div class="card-16-9">
+                        <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="The Grand Palace">
+                        <div class="card-overlay">
+                            <div class="card-title">The Grand Palace</div>
+                            <div class="card-meta">3.1 mi • Old Town</div>
+                        </div>
+                    </div>
+                    <div class="card-16-9">
+                        <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Starlight Drive-In">
+                        <div class="card-overlay">
+                            <div class="card-title">Starlight Drive-In</div>
+                            <div class="card-meta">8.7 mi • Desert Edge</div>
+                        </div>
+                    </div>
+                    <div class="card-16-9">
+                        <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Plaza IMAX">
+                        <div class="card-overlay">
+                            <div class="card-title">Plaza IMAX</div>
+                            <div class="card-meta">12 mi • City Center</div>
+                        </div>
                     </div>
                 </div>
-            </li>
-            <!-- Slide 2: Civil War -->
-            <li class="carousel-slide" data-bg="assets/hero_bg_civil_war.png">
-                <div class="slide-overlay"></div>
-                <div class="slide-content">
-                    <div class="badge-container">
-                        <span class="badge">New Release</span>
-                        <span class="rating"><i class="fas fa-star"></i> 8.8/10 IMDb</span>
-                    </div>
-                    <h1 class="movie-title">CIVIL <span class="highlight">WAR</span></h1>
-                    <p class="movie-description">
-                        A journey across a dystopian future America, following a team of military-embedded journalists as they race against time to reach DC.
-                    </p>
-                    <div class="hero-buttons">
-                        <button class="btn btn-primary"><i class="fas fa-ticket"></i> Book Tickets</button>
-                        <button class="btn btn-secondary"><i class="fas fa-play"></i> Watch Trailer</button>
-                    </div>
+            </div>
+        </div>
+
+        <!-- ROW 4: TOP 10 -->
+        <div class="row-container">
+            <div class="row-header">
+                <h2 class="row-title">Most Booked This Week</h2>
+            </div>
+            <div class="carousel-wrapper">
+                <button class="carousel-arrow left" onclick="this.closest('.carousel-wrapper').querySelector('.carousel').scrollBy({left:-400,behavior:'smooth'})">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="carousel-arrow right" onclick="this.closest('.carousel-wrapper').querySelector('.carousel').scrollBy({left:400,behavior:'smooth'})">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <div class="carousel">
+                    @{ var topMovies = Model.Take(10).ToList();}
+                    @for (int i = 0; i < topMovies.Count; i++)
+                    {
+                        
+                        <div class="top10-card" onclick="openBookingModal(this)"
+                             data-movie-id="@topMovies[i].Id" data-title="@topMovies[i].Name" data-poster="@topMovies[i].PosterUrl"
+                             data-genre="@string.Join(", ", topMovies[i].CategoryNames ?? new List<string>())"
+                             data-runtime="@topMovies[i].Runtime m" data-rating="@topMovies[i].Rating.ToString("0.0")"
+                             data-description="@topMovies[i].Description">
+                            <span class="top10-number">@(i+1)</span>
+                            <div class="top10-poster"><img src="@topMovies[i].PosterUrl" alt="@(i+1) @topMovies[i].Name"></div>
+                        </div>
+                    }
                 </div>
-            </li>
-            <!-- Slide 3: Cyber Odyssey -->
-            <li class="carousel-slide" data-bg="assets/hero_bg_cyber_odyssey.png">
-                <div class="slide-overlay"></div>
-                <div class="slide-content">
-                    <div class="badge-container">
-                        <span class="badge">Trending</span>
-                        <span class="rating"><i class="fas fa-star"></i> 9.1/10 IMDb</span>
-                    </div>
-                    <h1 class="movie-title">CYBER <span class="highlight">ODYSSEY</span></h1>
-                    <p class="movie-description">
-                        In a neon-soaked future, a lone hacker uncovers a conspiracy that threatens the very fabric of reality itself.
-                    </p>
-                    <div class="hero-buttons">
-                        <button class="btn btn-primary"><i class="fas fa-ticket"></i> Book Tickets</button>
-                        <button class="btn btn-secondary"><i class="fas fa-play"></i> Watch Trailer</button>
-                    </div>
+            </div>
+        </div>
+        </div>
+        }
+        else
+        {
+        <div style="min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <i class="fa-solid fa-film" style="font-size: 4rem; color: var(--accent-color); margin-bottom: 20px;"></i>
+            <h2 style="color: white; font-weight: bold; font-size: 2.5rem;">No Movies Available</h2>
+            <p style="color: var(--text-secondary); font-size: 1.2rem;">Our catalog is currently empty.</p>
+        </div>
+        }
+        
+        
+        <div id="customBookingModal" class="booking-modal-overlay">
+    <div class="booking-modal-content">
+        <button class="close-modal-btn" onclick="closeBookingModal()"><i class="fa-solid fa-xmark"></i></button>
+        
+        <div class="booking-modal-header">
+            <img id="modalMoviePoster" src="" alt="Movie Poster" class="modal-poster">
+            <div class="modal-header-info">
+                <h2 id="modalMovieTitle" class="modal-title">Movie Title</h2>
+                <div id="modalMovieMeta" class="modal-meta">120 m • Action</div>
+            </div>
+        </div>
+
+        <div class="booking-modal-body">
+            <h3 class="schedules-title">Available Showtimes</h3>
+            <div id="modalSchedulesContainer" class="schedules-list">
                 </div>
-            </li>
-        </ul>
-    </div>
-
-    <button class="carousel-button carousel-button--left is-hidden">
-        <i class="fas fa-chevron-left"></i>
-    </button>
-    <button class="carousel-button carousel-button--right">
-        <i class="fas fa-chevron-right"></i>
-    </button>
-
-    <div class="carousel-nav">
-        <button class="carousel-indicator current-slide"></button>
-        <button class="carousel-indicator"></button>
-        <button class="carousel-indicator"></button>
-    </div>
-
-    <!-- Scroll Indicator -->
-    <div class="scroll-indicator">
-        <i class="fas fa-chevron-down"></i>
-    </div>
-</section>
-
-<!-- Search Bar (Floating) -->
-<div class="search-container">
-    <div class="search-bar">
-        <i class="fas fa-search search-icon"></i>
-        <input type="text" name="SearchQuery" placeholder="Search movies, cinemas, or genres...">
-        <button class="btn btn-primary" style="padding: 0.5rem 1.5rem; margin-right: 1rem;">Now Showing</button>
-        <div class="search-filters">
-            <a href="#">Coming Soon</a>
-            <a href="#"><i class="fas fa-square"></i> IMAX</a>
-            <a href="#"><i class="fas fa-volume-up"></i> Dolby</a>
         </div>
     </div>
 </div>
 
-<!-- Trending Now Section -->
-<section class="section now-showing reveal-up">
-    <div class="section-header">
-        <div>
-            <h2 class="section-title">Trending Now</h2>
-            <p class="section-subtitle">Top picks for you this week</p>
-        </div>
-        <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
-    </div>
+<style>
+    /* Premium Booking Modal Styles */
+    .booking-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .booking-modal-overlay.show { opacity: 1; }
+    
+    .booking-modal-content {
+        background: #13151f; /* نفس لون الـ Card بتاعك */
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 24px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 85vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    .booking-modal-overlay.show .booking-modal-content { transform: translateY(0); }
+    
+    .close-modal-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.2s;
+    }
+    .close-modal-btn:hover { background: #e50914; border-color: #e50914; transform: scale(1.1); }
+    
+    .booking-modal-header {
+        display: flex;
+        gap: 20px;
+        padding: 30px;
+        background: linear-gradient(180deg, #1a1d2a 0%, #13151f 100%);
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    
+    .modal-poster {
+        width: 80px;
+        height: 120px;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    }
+    
+    .modal-header-info { display: flex; flex-direction: column; justify-content: center; }
+    .modal-title { color: white; font-size: 22px; font-weight: 800; margin: 0 0 8px 0; }
+    .modal-meta { color: #a3a3a3; font-size: 14px; font-weight: 500; }
+    
+    .booking-modal-body { padding: 24px 30px; overflow-y: auto; flex: 1; }
+    .schedules-title { color: white; font-size: 16px; font-weight: 700; margin: 0 0 20px 0; border-left: 3px solid #e50914; padding-left: 10px; }
+    
+    .schedules-list { display: flex; flex-direction: column; gap: 12px; }
+    
+    .schedule-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #1a1d2a;
+        padding: 16px 20px;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.03);
+        transition: all 0.2s;
+    }
+    .schedule-item:hover { background: #222633; border-color: rgba(255,255,255,0.1); transform: translateX(5px); }
+    
+    .schedule-time { color: white; margin: 0 0 4px 0; font-size: 18px; font-weight: 700; }
+    .schedule-room { color: #a3a3a3; font-size: 13px; }
+    
+    .btn-select-seats {
+        background: #e50914;
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        transition: all 0.2s;
+    }
+    .btn-select-seats:hover { background: #ff1a25; color: white; box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4); }
+</style>
+        <script>
+        // Category pill toggle (كودك القديم)
+        document.querySelectorAll('.cat-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+            });
+        });
 
-    <div class="movie-grid">
-        <!-- Card 1: Civil War -->
-        <div class="movie-card">
-            <div class="card-image">
-                <!-- BG image set in CSS nth-child(1) -->
-                <div class="card-overlay">
-                    <span class="genre">ACTION</span>
-                    <span class="rating"><i class="fas fa-star"></i> 8.8</span>
-                </div>
-            </div>
-            <div class="card-info">
-                <h3>Civil War</h3>
-                <p>2h 15m • English</p>
-                <button class="btn-block">Book Now</button>
-            </div>
-        </div>
+        // Hero carousel (كودك القديم)
+        let heroIndex = 0;
+        const slides = document.querySelectorAll('.hero-slide');
+        const dots = document.querySelectorAll('.hero-dot');
+        let heroTimer = setInterval(() => heroSlide(1), 6000);
 
-        <!-- Card 2: Cyber Odyssey -->
-        <div class="movie-card">
-            <div class="card-image">
-                <!-- BG image set in CSS nth-child(2) -->
-                <div class="card-overlay">
-                    <span class="genre">SCI-FI</span>
-                    <span class="rating"><i class="fas fa-star"></i> 9.1</span>
-                </div>
-            </div>
-            <div class="card-info">
-                <h3>Cyber Odyssey</h3>
-                <p>2h 45m • English</p>
-                <button class="btn-block">Book Now</button>
-            </div>
-        </div>
+        function heroGoTo(i) {
+            slides[heroIndex].classList.remove('active');
+            dots[heroIndex].classList.remove('active');
+            heroIndex = i;
+            slides[heroIndex].classList.add('active');
+            dots[heroIndex].classList.add('active');
+            resetTimer();
+        }
+        function heroSlide(dir) {
+            heroGoTo((heroIndex + dir + slides.length) % slides.length);
+        }
+        function resetTimer() {
+            clearInterval(heroTimer);
+            heroTimer = setInterval(() => heroSlide(1), 6000);
+        }
 
-        <!-- Card 3: The Whispering -->
-        <div class="movie-card">
-            <div class="card-image">
-                <!-- BG image set in CSS nth-child(3) -->
-                <div class="card-overlay">
-                    <span class="genre">HORROR</span>
-                    <span class="rating"><i class="fas fa-star"></i> 7.9</span>
-                </div>
-            </div>
-            <div class="card-info">
-                <h3>The Whispering</h3>
-                <p>1h 50m • English</p>
-                <button class="btn-block">Book Now</button>
-            </div>
-        </div>
+        // ==========================================
+        // NEW: Booking Modal Logic
+        // ==========================================
 
-        <!-- Card 4: Last Sunset -->
-        <div class="movie-card">
-            <div class="card-image">
-                <!-- BG image set in CSS nth-child(4) -->
-                <div class="card-overlay">
-                    <span class="genre">DRAMA</span>
-                    <span class="rating"><i class="fas fa-star"></i> 8.5</span>
-                </div>
-            </div>
-            <div class="card-info">
-                <h3>Last Sunset</h3>
-                <p>2h 10m • English</p>
-                <button class="btn-block">Book Now</button>
-            </div>
-        </div>
-    </div>
-</section>
+        function openBookingModal(btn) {
+            // 1. سحب بيانات الفيلم من الـ attributes بتاعت الزرار
+            const movieId = btn.getAttribute('data-movie-id');
+            const title = btn.getAttribute('data-title');
+            const poster = btn.getAttribute('data-poster');
+            const runtime = btn.getAttribute('data-runtime');
+            const genre = btn.getAttribute('data-genre');
 
-<!-- Experience Section -->
-<section class="section experience-section reveal-up">
-    <div class="experience-image">
-        <div class="image-wrapper">
-            <img src="assets/luxury_recliners.png" alt="Luxury Recliners">
-        </div>
-        <div class="image-caption">
-            <span class="badge-red">PREMIUM</span>
-            <h3>Luxury Recliners</h3>
-        </div>
-    </div>
-    <div class="experience-content">
-        <h2>Immerse Yourself in the <span class="highlight">Ultimate Experience</span></h2>
-        <p>Discover a new standard of cinema with our state-of-the-art theaters. From crystal clear IMAX projection to the earth-shattering sound of Dolby Atmos.</p>
-        <div class="features-grid">
-            <div class="feature-card">
-                <i class="fas fa-volume-up feature-icon"></i>
-                <h4>Dolby Atmos</h4>
-                <p>360° Sound Immersion</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-video feature-icon"></i>
-                <h4>Laser Projection</h4>
-                <p>Crystal Clear 4K</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-couch feature-icon"></i>
-                <h4>VIP Comfort</h4>
-                <p>Full Recliners & Service</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-utensils feature-icon"></i>
-                <h4>Gourmet Dining</h4>
-                <p>In-Seat Delivery</p>
-            </div>
-        </div>
-    </div>
-</section>
+            // 2. وضع البيانات في الـ Modal UI
+            document.getElementById('modalMovieTitle').innerText = title;
+            document.getElementById('modalMoviePoster').src = poster;
+            document.getElementById('modalMovieMeta').innerText = `${runtime} • ${genre}`;
 
-<!-- Club Banner Section -->
-<section class="section club-banner-section reveal-up">
-    <div class="club-banner">
-        <div class="club-content">
-            <h2>Join the FlickIt Club</h2>
-            <p>Get 50% off your first ticket, free popcorn upgrades, and exclusive access to premiere screenings.</p>
-            <div class="club-actions">
-                <button class="btn btn-white">Get Started Free</button>
-                <button class="btn btn-outline-white">Learn More</button>
-            </div>
-        </div>
-        <div class="club-visual">
-            <i class="fas fa-ticket-alt"></i>
-        </div>
-    </div>
-</section>
+            const schedulesContainer = document.getElementById('modalSchedulesContainer');
+            schedulesContainer.innerHTML = '<div class="text-center text-warning py-4"><i class="fa-solid fa-spinner fa-spin fs-2"></i><p class="mt-2">Loading schedules...</p></div>';
 
-<script src="~/js/Home.js"></script>
+            // إظهار الـ Modal
+            document.getElementById('customBookingModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('customBookingModal').classList.add('show'), 10);
+
+            // 3. عمل AJAX Request لجلب المواعيد (Schedules) المتاحة للفيلم
+            fetch(`/Customer/GetMovieSchedules?movieId=${movieId}`)
+                .then(response => response.json())
+                .then(data => {
+                    schedulesContainer.innerHTML = ''; // مسح الـ Loader
+
+                    if (!data || data.length === 0) {
+                        schedulesContainer.innerHTML = '<div class="text-center text-muted py-4"><i class="fa-regular fa-calendar-xmark fs-2 mb-2"></i><p>No active schedules found for this movie today.</p></div>';
+                        return;
+                    }
+
+                    // 4. رسم المواعيد والزرار اللي بيودي على صفحة الكراسي
+                    data.forEach(schedule => {
+                        const scheduleHtml = `
+                    <div class="schedule-item">
+                        <div class="schedule-info">
+                            <h4 class="schedule-time">${schedule.time}</h4>
+                            <span class="schedule-room">${schedule.roomName} • <span class="text-success">$${schedule.price}</span></span>
+                        </div>
+                        <a href="/Customer/SelectSeats?scheduleId=${schedule.id}" class="btn-select-seats">
+                            Select Seats <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                `;
+                        schedulesContainer.insertAdjacentHTML('beforeend', scheduleHtml);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching schedules:', error);
+                    schedulesContainer.innerHTML = '<div class="text-center text-danger py-4"><p>Error loading schedules. Please try again later.</p></div>';
+                });
+        }
+
+        function closeBookingModal() {
+            const modal = document.getElementById('customBookingModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300); // إنتظار الأنيميشن
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('customBookingModal');
+            if (event.target == modal) {
+                closeBookingModal();
+            }
+        }
+    </script>

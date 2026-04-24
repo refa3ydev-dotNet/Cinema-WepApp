@@ -1,0 +1,208 @@
+@model Business.DTOs.Accounts.UserProfileDto
+
+@{
+    ViewData["Title"] = "Profile Settings ";
+    Layout = "_Layout"; 
+}
+
+<link rel="stylesheet" href="~/css/Account/Profile.css" asp-append-version="true">
+
+<div class="ambient-glow ambient-glow--1"></div>
+<div class="ambient-glow ambient-glow--2"></div>
+
+<header class="ps-page-header" id="ps-page-header">
+    <a asp-controller="Home" asp-action="Index" class="ps-back-link" id="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Home</span>
+    </a>
+    <h1><i class="fas fa-cog"></i> Profile Settings</h1>
+    <p class="ps-subtitle">Manage your personal information and security</p>
+</header>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="container mb-4" style="max-width: 900px;">
+        <div class="alert alert-success text-center" style="background: rgba(70, 211, 105, 0.1); border: 1px solid #46d369; color: #46d369; border-radius: 12px; padding: 15px;">
+            <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+        </div>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="container mb-4" style="max-width: 900px;">
+        <div class="alert alert-danger text-center" style="background: rgba(229, 9, 20, 0.1); border: 1px solid #e50914; color: #ff4d4d; border-radius: 12px; padding: 15px;">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+        </div>
+    </div>
+}
+
+<main class="ps-container" id="ps-container">
+    <div class="ps-card" id="ps-card">
+
+        <div class="ps-left" id="ps-left-column">
+            <div class="ps-avatar-wrapper" id="ps-avatar-wrapper">
+                @{
+                    string currentPic = string.IsNullOrEmpty(Model.ProfilePicture) ? "/images/Users/default-avatar.png" : Model.ProfilePicture;
+                }
+                <img src="@currentPic" alt="Profile Picture" class="ps-avatar-img" id="ps-avatar-img">
+                
+                <label for="ProfilePictureFile" class="ps-avatar-overlay" id="ps-avatar-overlay">
+                    <i class="fas fa-camera"></i>
+                    <span>Change</span>
+                </label>
+            </div>
+            
+            <h2 class="ps-user-name" id="ps-user-name">@Model.FirstName @Model.LastName</h2>
+            
+            <div class="ps-vip-badge" id="ps-vip-badge">
+                <i class="fas fa-crown"></i> Member
+            </div>
+            
+            <div class="ps-user-stats" id="ps-user-stats">
+                <div class="ps-stat">
+                    <span class="ps-stat-value">24</span>
+                    <span class="ps-stat-label">Movies</span>
+                </div>
+                <div class="ps-stat-divider"></div>
+                <div class="ps-stat">
+                    <span class="ps-stat-value">6</span>
+                    <span class="ps-stat-label">Tickets</span>
+                </div>
+                <div class="ps-stat-divider"></div>
+                <div class="ps-stat">
+                    <span class="ps-stat-value">$195</span>
+                    <span class="ps-stat-label">Spent</span>
+                </div>
+            </div>
+            <p class="ps-member-since">Update your profile to keep your account secure.</p>
+        </div>
+
+        <div class="ps-right" id="ps-right-column">
+            
+            <form id="ps-settings-form" asp-action="Profile" asp-controller="Account" method="post" enctype="multipart/form-data">
+                
+                @Html.AntiForgeryToken()
+                
+                <input type="file" asp-for="ProfilePictureFile" id="ProfilePictureFile" accept="image/*" hidden>
+                <input type="hidden" asp-for="ProfilePicture" />
+
+                <div class="ps-section" id="ps-section-personal">
+                    <div class="ps-section-header">
+                        <i class="fas fa-user"></i>
+                        <h3>Personal Information</h3>
+                    </div>
+                    <div class="ps-form-row">
+                        <div class="ps-form-group" id="fg-first-name">
+                            <label asp-for="FirstName">First Name</label>
+                            <input asp-for="FirstName" type="text" placeholder="First name">
+                            <span asp-validation-for="FirstName" class="text-danger small" style="display:block; margin-top:5px; color:#ff4d4d;"></span>
+                        </div>
+                        <div class="ps-form-group" id="fg-last-name">
+                            <label asp-for="LastName">Last Name</label>
+                            <input asp-for="LastName" type="text" placeholder="Last name">
+                            <span asp-validation-for="LastName" class="text-danger small" style="display:block; margin-top:5px; color:#ff4d4d;"></span>
+                        </div>
+                    </div>
+                    <div class="ps-form-group ps-email-group" id="fg-email">
+                        <label asp-for="Email">Email Address</label>
+                        <div class="ps-input-locked-wrapper">
+                            <input asp-for="Email" type="email" readonly>
+                            <i class="fas fa-lock ps-lock-icon"></i>
+                        </div>
+                        <small class="ps-hint">Contact support to change your email address</small>
+                    </div>
+                </div>
+
+                <div class="ps-section" id="ps-section-security">
+                    <div class="ps-section-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Security</h3>
+                    </div>
+                    <div class="ps-form-group" id="fg-current-password">
+                        <label asp-for="CurrentPassword">Current Password</label>
+                        <div class="ps-password-wrapper">
+                            <input asp-for="CurrentPassword" type="password" id="current-password" placeholder="Enter current password">
+                            <button type="button" class="ps-eye-toggle" data-target="current-password">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="CurrentPassword" class="text-danger small" style="display:block; margin-top:5px; color:#ff4d4d;"></span>
+                    </div>
+                    <div class="ps-form-row">
+                        <div class="ps-form-group" id="fg-new-password">
+                            <label asp-for="Password">New Password</label>
+                            <div class="ps-password-wrapper">
+                                <input asp-for="Password" type="password" id="new-password" placeholder="Enter new password">
+                                <button type="button" class="ps-eye-toggle" data-target="new-password">
+                                    <i class="far fa-eye"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small" style="display:block; margin-top:5px; color:#ff4d4d;"></span>
+                        </div>
+                        <div class="ps-form-group" id="fg-confirm-password">
+                            <label asp-for="ConfirmPassword">Confirm Password</label>
+                            <div class="ps-password-wrapper">
+                                <input asp-for="ConfirmPassword" type="password" id="confirm-password" placeholder="Confirm new password">
+                                <button type="button" class="ps-eye-toggle" data-target="confirm-password">
+                                    <i class="far fa-eye"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small" style="display:block; margin-top:5px; color:#ff4d4d;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ps-actions" id="ps-actions">
+                    <button type="submit" class="ps-save-btn" id="ps-save-btn">
+                        <i class="fas fa-check"></i> Save Changes
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Password visibility toggles
+        document.querySelectorAll('.ps-eye-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = btn.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
+
+        // Avatar preview
+        const avatarUpload = document.getElementById('ProfilePictureFile');
+        const avatarImg = document.getElementById('ps-avatar-img');
+        avatarUpload.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = ev => { avatarImg.src = ev.target.result; };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Entrance animations
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.ps-section, .ps-left').forEach(el => observer.observe(el));
+        
+        // أنا شلت كود الـ Animation الوهمي بتاع الـ Save اللي كان بيوقف الـ Submit
+        // وسيبت الـ Form تعمل Submit حقيقي للـ Backend عشان الداتا تتحفظ.
+    </script>
+}

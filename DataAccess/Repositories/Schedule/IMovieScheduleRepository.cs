@@ -11,5 +11,7 @@ namespace DataAccess.Repositories.Schedule
         Task<IEnumerable<MovieSchedule>> GetSchedulesByCinemaIdAsync(int cinemaId);
         Task<MovieSchedule> GetScheduleByIdAndCinemaIdAsync(int scheduleId, int cinemaId);
         Task UpdateScheduleAsync(MovieSchedule schedule);
+        Task<MovieSchedule> GetScheduleWithDetailsByIdAsync(int scheduleId);
+        Task<IEnumerable<MovieSchedule>> GetActiveSchedulesByMovieIdAsync(int movieId);
     }
 }

@@ -7,7 +7,7 @@ namespace Business.Managers.Rooms
     {
         Task AddRoomAsync(CreateRoomDto dto,int cinemaId);
         Task<bool> DeleteRoomAsync(int id);
-        Task UpdateRoomAsync(UpdateRoomDto dto);
+        Task<bool> UpdateRoomAsync(UpdateRoomDto dto);
         Task<GetRoomByIdDto> GetRoomByIdAsync(int id);
         Task<List<GetAllRoomsDto>> GetCinemaRoomsAsync(int cinemaId);
 

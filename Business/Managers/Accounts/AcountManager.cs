@@ -29,6 +29,34 @@ namespace Business.Managers.Accounts
             return await _userManager.GetRolesAsync(user);
         }
 
+        public async Task<(bool IsSuccess, string ErrorMessage)> UpdateProfileAsync(string userId, UserProfileDto dto)
+        {
+            var user=await _userManager.FindByIdAsync(userId);
+            if (user==null)return (false, "User not found");
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            if (!string.IsNullOrEmpty(dto.ProfilePicture))
+            {
+                user.ProfilePictureUrl = dto.ProfilePicture;
+            }
+
+            if (!string.IsNullOrEmpty(dto.CurrentPassword) && !string.IsNullOrEmpty(dto.Password))
+            {
+                var passwordResult = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.Password);
+
+                if (!passwordResult.Succeeded)
+                {
+                    return (false, passwordResult.Errors.FirstOrDefault()?.Description);
+                }
+            }
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                return (false, updateResult.Errors.FirstOrDefault()?.Description);
+            }
+            return (true, "Profile successfully updated");
+        }
+
         public async Task<IdentityResult> RegisterUserAsync(RegisterDto registerDto)
         {
             bool IsAutoApproved = registerDto.Role == "Customer";
@@ -52,6 +80,10 @@ namespace Business.Managers.Accounts
         public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user)
         {
             return await _userManager.UpdateAsync(user);
+        }
+        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
+        {
+            return await _userManager.FindByIdAsync(userId);
         }
     }
 }

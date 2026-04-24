@@ -242,6 +242,15 @@ namespace DataAccess.Repositories.MOVIE
             await _context.SaveChangesAsync();
             return movie;
             }
+
+        public async Task<IEnumerable<Movie>> GetAllCatalogMoviesAsync() 
+        {
+            return await _context.Movies
+                .Include(m => m.Categories)
+                .Include(m => m.MovieSchedules)
+                .Where(m => !m.IsDeleted) 
+                .ToListAsync();
         }
+    }
     }
 

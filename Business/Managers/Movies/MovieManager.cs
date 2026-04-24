@@ -224,5 +224,26 @@ namespace Business.Managers.Movies
 
         return tmdbLangCode.ToLower() == "ar" ? TranslationType.None : TranslationType.Subtitled;
     }
-}
+        public async Task<IEnumerable<CustomerMovieCatalogDto>> GetAllCatalogMoviesAsync() 
+        {
+            var movies = await _movieRepository.GetAllCatalogMoviesAsync();
+            var now = DateTime.Now;
+
+            var dto = movies.Select(m => new CustomerMovieCatalogDto
+            {
+                Id = m.Id,
+                Name = m.Name,
+                PosterUrl = m.PosterImg,
+                BackgroundImg = m.BackgroundImg,
+                Description = m.Description,
+                Runtime = m.Runtime,
+                Rating = (double)m.Rating,
+                CategoryNames = m.Categories?.Select(c => c.CategoryName).ToList() ?? new List<string>(),
+
+                HasActiveSchedules = m.MovieSchedules != null && m.MovieSchedules.Any(s => s.StartDate > now && !s.IsDeleted)
+            }).ToList(); 
+
+            return dto;
+        }
+    }
 }
