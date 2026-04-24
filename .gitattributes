@@ -66,6 +66,3 @@
 ###############################################################################
 wwwroot/* linguist-vendored
 *.html linguist-detectable=false
-*.css linguist-detectable=false
-*.js linguist-detectable=false
-*.cshtml linguist-detectable=false
