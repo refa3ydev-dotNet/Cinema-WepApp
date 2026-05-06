@@ -1,6 +1,7 @@
 ﻿using Core;
 using Core.Entities;
 using Core.Entities.Relations;
+using Core.Enums;
 using Core.Helpers;
 using DataAccess.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -250,6 +251,40 @@ namespace DataAccess.Repositories.MOVIE
                 .Include(m => m.MovieSchedules)
                 .Where(m => !m.IsDeleted) 
                 .ToListAsync();
+        }
+
+        public async Task<PaginationResult<Movie>> GetFilteredMoviesAsync(string? searchTerm, MovieCategory? category, int pageNumber, int pageSize)
+        {
+            var query = _context.Movies.Include(m=>m.CinemaMovies).ThenInclude(c=>c.Cinema).AsQueryable();
+
+
+            if(!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var lowerSearchTerm = searchTerm.ToLower();
+
+                query = query.Where(m => m.Name.ToLower().Contains(lowerSearchTerm) 
+                || m.Description.ToLower().Contains(lowerSearchTerm));
+            }
+
+            if (category.HasValue)
+            {
+                query = query.Where(m => m.Categories.Any(c => c.CategoryName == category.Value.ToString()));
+            }
+            int totalMovies =await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(await query.CountAsync() / (double)pageSize);
+
+            var movies = await query
+                .OrderByDescending(m=>m.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PaginationResult<Movie>
+            {
+                Items = movies,
+                CurrentPage = pageNumber,
+                TotalPages = totalPages
+            };
         }
     }
     }

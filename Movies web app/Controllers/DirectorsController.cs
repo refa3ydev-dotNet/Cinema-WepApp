@@ -57,6 +57,8 @@ namespace Movies_web_app.Controllers
                 Biography = director.Biography,
                 BirthDate = director.BirthDate,
                 IMDB = director.IMDB,
+                DeathDate = director.DeathDate,
+                Nationality = director.Nationality,
             };
             if (director.ProfilePicture != null)
             {

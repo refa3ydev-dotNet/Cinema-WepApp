@@ -1,7 +1,9 @@
 ﻿@model Business.DTOs.Integration.TmdbMovieDetails
 @{
     ViewData["Title"] = Model.Title;
-    Layout = "_Layout";
+    Layout = User.IsInRole("Admin") ? "_AdminLayout" : "_Layout";
+    ViewData["AdminPageIcon"] = "fas fa-film";
+    ViewData["AdminPageSubtitle"] = "Review movie details.";
 
     var trailer = Model.Videos?.Results?.FirstOrDefault(v => v.Type == "Trailer" && v.Site == "YouTube");
     var backdropUrl = !string.IsNullOrEmpty(Model.Backdrop_Path) ? $"https://image.tmdb.org/t/p/original{Model.Backdrop_Path}" : "/Images/DefaultBackdrop.jpg";

@@ -1,13 +1,30 @@
-﻿using Business.Managers.Agent;
+﻿using Business.Managers.Accounts;
+using Business.Managers.Actors;
+using Business.Managers.Admin;
+using Business.Managers.Agent;
 using Business.Managers.Bookings;
+using Business.Managers.Categories;
+using Business.Managers.Cinemas;
+using Business.Managers.Directors;
 using Business.Managers.Favorites;
+using Business.Managers.Movies;
+using Business.Managers.Producers;
+using Business.Managers.Rooms;
 using Business.Managers.Schedule;
 using Business.Services.TmdbService;
 using Core.Entities;
 using DataAccess.Contexts;
 using DataAccess.Repositories;
+using DataAccess.Repositories.ACTOR;
+using DataAccess.Repositories.Admin;
+using DataAccess.Repositories.CATEGORY;
+using DataAccess.Repositories.CINEMA;
 using DataAccess.Repositories.Dashboard;
+using DataAccess.Repositories.DIRECTOR;
 using DataAccess.Repositories.Favorite;
+using DataAccess.Repositories.MOVIE;
+using DataAccess.Repositories.PRODUCER;
+using DataAccess.Repositories.ROOM;
 using DataAccess.Repositories.Schedule;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,52 +41,36 @@ namespace Movies_web_app
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddScoped<Business.Managers.Actors.IActorsManager,
-                Business.Managers.Actors.ActorsManager>();
-            builder.Services.AddScoped<DataAccess.Repositories.ACTOR.IActorRepository,
-                DataAccess.Repositories.ACTOR.ActorRepository>();
-
-            builder.Services.AddScoped<Business.Managers.Rooms.IRoomManager,
-                Business.Managers.Rooms.RoomManager>();
-            builder.Services.AddScoped<DataAccess.Repositories.ROOM.IRoomRepository,
-                DataAccess.Repositories.ROOM.RoomRepository>();
-
-            builder.Services.AddScoped<Business.Managers.Producers.IProducersManager,
-                Business.Managers.Producers.ProducersManager>();
-            builder.Services.AddScoped<DataAccess.Repositories.PRODUCER.IProducerRepository,
-                DataAccess.Repositories.PRODUCER.ProducerRepository>();
-
-            builder.Services.AddScoped<Business.Managers.Cinemas.ICinemasManager,
-                Business.Managers.Cinemas.CinemasManager>();
-            builder.Services.AddScoped<DataAccess.Repositories.CINEMA.ICinemaRepository,
-                DataAccess.Repositories.CINEMA.CinemaRepository>();
-
-            builder.Services.AddScoped<Business.Managers.Movies.IMovieManager,
-                Business.Managers.Movies.MovieManager>();
-            builder.Services.AddScoped<DataAccess.Repositories.MOVIE.IMovieRepository,
-                DataAccess.Repositories.MOVIE.MovieRepository>();
-
-            builder.Services.AddScoped<Business.Managers.Categories.ICategoryManager,
-                Business.Managers.Categories.CategoryManager>();
-            builder.Services.AddScoped<DataAccess.Repositories.CATEGORY.ICategoryRepository,
-                DataAccess.Repositories.CATEGORY.CategoryRepository>();
-            builder.Services.AddScoped<IImageService, ImageService>();
-
-            builder.Services.AddScoped<Business.Managers.Directors.IDirectorManager,
-                Business.Managers.Directors.DirectorManager>();
-            builder.Services.AddScoped<DataAccess.Repositories.DIRECTOR.IDirectorRepository,
-                DataAccess.Repositories.DIRECTOR.DirectorRepository>();
-            builder.Services.AddScoped<Business.Managers.Accounts.IAccountManager, Business.Managers.Accounts.AccountManager>();
-
+            //Repositories
+            builder.Services.AddScoped<IActorRepository,ActorRepository>();
+            builder.Services.AddScoped<IRoomRepository,RoomRepository>();
+            builder.Services.AddScoped<IProducerRepository, ProducerRepository>();
+            builder.Services.AddScoped<ICinemaRepository, CinemaRepository>();
+            builder.Services.AddScoped<IMovieRepository,MovieRepository>();
+            builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
+            builder.Services.AddScoped<IDirectorRepository,DirectorRepository>();
             builder.Services.AddScoped<IAgentDashboardRepository, AgentDashboardRepository>();
+            builder.Services.AddScoped<IMovieScheduleRepository, MovieScheduleRepository>();
+            builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+            builder.Services.AddScoped<IAdminDashboardRepository,AdminDashboardRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+            
+            
+            builder.Services.AddScoped<IActorsManager,ActorsManager>();
+            builder.Services.AddScoped<IRoomManager, RoomManager>();
+            builder.Services.AddScoped<IProducersManager, ProducersManager>();
+            builder.Services.AddScoped<ICinemasManager, CinemasManager>();
+            builder.Services.AddScoped<IMovieManager,MovieManager>();
+            builder.Services.AddScoped<ICategoryManager,CategoryManager>();
+            builder.Services.AddScoped<IImageService, ImageService>();
+            builder.Services.AddScoped<IDirectorManager,DirectorManager>();
+            builder.Services.AddScoped<IAccountManager, AccountManager>();
             builder.Services.AddScoped<IAgentDashboardManager, AgentDashboardManager>();
             builder.Services.AddHttpClient<ITmdbService, TmdbService>();
             builder.Services.AddScoped<IMovieScheduleManager, MovieScheduleManager>();
-            builder.Services.AddScoped<IMovieScheduleRepository, MovieScheduleRepository>();
-            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IBookingManager, BookingManager>();
-            builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             builder.Services.AddScoped<IFavoriteManager, FavoriteManager>();
+            builder.Services.AddScoped<IAdminManager, AdminManager>();
             
 
             // ? DbContext configuration using the connection string from appsettings.json

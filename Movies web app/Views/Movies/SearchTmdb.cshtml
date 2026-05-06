@@ -1,7 +1,17 @@
 ﻿@model Business.DTOs.Integration.TmdbSearchResponse
 @{
-    ViewData["Title"] = "Discover Movies";
-    Layout = "_Layout";
+    if(!User.IsInRole("Admin")){
+
+        ViewData["Title"] = "Discover Movies";
+        Layout = "_Layout";
+    }
+    else
+    {
+        ViewData["Title"] = "Search Movies";
+        Layout = "_AdminLayout";
+        ViewData["AdminPageIcon"] = "fas fa-film";
+        ViewData["AdminPageSubtitle"] = "Search TMDB and add movies to the platform catalog.";
+    }
 }
 
 <style>
@@ -99,6 +109,20 @@
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
                 <button type="submit" class="btn-filter"><i class="fa-solid fa-arrow-right"></i></button>
             </form>
+            <div class="filter-bar d-flex gap-3 mb-4 p-3 rounded-4" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+    
+                <input type="text" id="localSearch" class="form-control bg-dark text-white border-secondary" placeholder="Search our catalog...">
+    
+                <select id="categoryFilter" class="form-select bg-dark text-white border-secondary" style="max-width: 250px;">
+                    <option value="">All Categories</option>
+                    <option value="Action">Action</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Horror">Horror</option>
+                    <option value="SciFi">Sci-Fi</option>
+                    <!-- ضيفي باقي الأقسام اللي في الـ Enum بتاعك -->
+                </select>
+            </div>
         </div>
     </div>
 
@@ -292,3 +316,62 @@ else if (Model != null && Model.Results != null && Model.Results.Any())
         }, 3000);
     }
 </script>
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // تحميل كل الأفلام أول ما الصفحة تفتح
+        loadFilteredMovies();
+    });
+
+    // مراقبة تغيير الـ Category
+    document.getElementById('categoryFilter').addEventListener('change', function () {
+        loadFilteredMovies();
+    });
+
+    // مراقبة البحث (مع تأخير نص ثانية عشان منضغطش على السيرفر)
+    let searchTimeout;
+    document.getElementById('localSearch').addEventListener('keyup', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(loadFilteredMovies, 500);
+    });
+
+    function loadFilteredMovies() {
+        const searchTerm = document.getElementById('localSearch').value;
+        const category = document.getElementById('categoryFilter').value;
+        const grid = document.getElementById('localMoviesGrid');
+
+        // استدعاء الـ API اللي عملناه في الباك إند
+        let url = `/Movies/FilterCatalog?pageNumber=1&pageSize=12`;
+        if (searchTerm) url += `&searchTerm=${encodeURIComponent(searchTerm)}`;
+        if (category) url += `&category=${encodeURIComponent(category)}`;
+
+        grid.innerHTML = '<div class="text-center w-100"><i class="fa-solid fa-spinner fa-spin fs-2 text-danger"></i></div>';
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                grid.innerHTML = ''; // مسح علامة التحميل
+                
+                if (data.success && data.data.items.length > 0) {
+                    data.data.items.forEach(movie => {
+                        const poster = movie.posterUrl ? movie.posterUrl : '/Images/NotFound/404.jpg';
+                        // رسم الكارت
+                        grid.innerHTML += `
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                                <div class="movie-card" style="border-radius: 16px; overflow: hidden; position: relative;">
+                                    <img src="${poster}" class="img-fluid w-100" style="aspect-ratio: 2/3; object-fit: cover;">
+                                    <div class="p-3" style="background: #0a0a0c;">
+                                        <h5 class="text-white text-truncate">${movie.name}</h5>
+                                        <p class="text-danger small">${movie.categoryNames.join(', ')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    grid.innerHTML = '<div class="text-white text-center w-100 py-5">No movies found in this category.</div>';
+                }
+            });
+    }
+</script>
+}

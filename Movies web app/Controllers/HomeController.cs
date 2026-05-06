@@ -20,6 +20,10 @@ public class HomeController : Controller
     [Authorize]
     public async Task<IActionResult> Index()
     {
+        if (User.IsInRole("Admin"))
+        {
+            return RedirectToAction("Index", "Admin");
+        }
         var activeMovires=await _movieManager.GetAllCatalogMoviesAsync();
         return View(activeMovires);
     }

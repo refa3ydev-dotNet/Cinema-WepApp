@@ -3,7 +3,10 @@
 
 @{
     ViewData["Title"] = "update " + Model.Name;
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = User.IsInRole("Admin") ? "_AdminLayout" : "_Layout";
+    ViewData["AdminPageTitle"] = "Edit Cinema";
+    ViewData["AdminPageIcon"] = "fas fa-building";
+    ViewData["AdminPageSubtitle"] = "Update cinema profile and venue details.";
 }
 <link href="~/css/Cinemas/Cinema.css" rel="stylesheet" asp-append-version="true" />
 <section class="admin-section">

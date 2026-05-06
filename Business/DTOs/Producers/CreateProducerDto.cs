@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Business.DTOs.Producers
@@ -7,13 +7,22 @@ namespace Business.DTOs.Producers
     {
         public int Id { get; set; }
         public string? ProfilePath { get; set; }
-        [Required(ErrorMessage = "Please upload a profile picture.")]
-        public IFormFile ProfilePicture { get; set; }
-        public string FullName { get; set; }
-        public string Bio { get; set; }
-        public string IMDBLink { get; set; }
+
+        public IFormFile? ProfilePicture { get; set; }
+
+        [Required(ErrorMessage = "Producer name is required")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Bio is required")]
+        public string Bio { get; set; } = string.Empty;
+
+        [Url(ErrorMessage = "Please enter a valid IMDb URL")]
+        public string? IMDBLink { get; set; }
+
         public DateOnly? BirthDate { get; set; }
         public DateOnly? DeathDate { get; set; }
-        public string Nationality { get; set; }
+
+        [Required(ErrorMessage = "Nationality is required")]
+        public string Nationality { get; set; } = string.Empty;
     }
 }

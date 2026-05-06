@@ -1,5 +1,6 @@
 ﻿using Business.DTOs.Movies;
 using Core;
+using Core.Enums;
 using Core.Helpers;
 
 namespace Business.Managers.Movies
@@ -18,6 +19,11 @@ namespace Business.Managers.Movies
         Task<bool> RemoveMovieFromCinemaAsync(int movieId, int cinemaId); // عشان زرار الحذف
         Task SyncMovieFromTmdbAsync(int tmdbMovieId, int cinemaId);
         Task<IEnumerable<CustomerMovieCatalogDto>> GetAllCatalogMoviesAsync();
+        Task<PaginationResult<CustomerMovieCatalogDto>> GetFilteredMoviesAsync(
+            string? searchTerm,
+            MovieCategory? category,
+            int pageNumber,
+            int pageSize);
 
     }
 }

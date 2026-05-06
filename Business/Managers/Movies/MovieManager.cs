@@ -10,6 +10,7 @@ using Core.Enums;
 using Core.Helpers;
 using DataAccess.Repositories.CINEMA;
 using DataAccess.Repositories.MOVIE;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Business.Managers.Movies
@@ -191,6 +192,7 @@ namespace Business.Managers.Movies
             }
 
         }
+
          
         private Language MapTmdbLanguage(string tmdbLangCode)
         {
@@ -244,6 +246,35 @@ namespace Business.Managers.Movies
             }).ToList(); 
 
             return dto;
+        }
+
+        public async Task<PaginationResult<CustomerMovieCatalogDto>> GetFilteredMoviesAsync(string? searchTerm, MovieCategory? category, int pageNumber, int pageSize)
+        {
+            var dbResult =await _movieRepository.GetFilteredMoviesAsync(searchTerm, category, pageNumber, pageSize);
+            var now = DateTime.Now;
+
+
+            var dtos =dbResult.Items.Select(m=>new CustomerMovieCatalogDto
+            {
+                Id = m.Id,
+                Name = m.Name,
+                PosterUrl = m.PosterImg,
+                BackgroundImg = m.BackgroundImg,
+                Description = m.Description,
+                Runtime = m.Runtime,
+                Rating = (double)m.Rating,
+                CategoryNames = m.Categories?.Select(c => c.CategoryName).ToList() ?? new List<string>(),
+
+                HasActiveSchedules = m.MovieSchedules != null && m.MovieSchedules.Any(s => s.StartDate > now && !s.IsDeleted)
+            }).ToList();
+
+
+            return new PaginationResult<CustomerMovieCatalogDto>
+            {
+                Items = dtos,
+                CurrentPage = dbResult.CurrentPage,
+                TotalPages = dbResult.TotalPages
+            };
         }
     }
 }

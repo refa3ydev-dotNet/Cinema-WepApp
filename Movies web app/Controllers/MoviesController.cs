@@ -95,7 +95,10 @@ namespace Movies_web_app.Controllers
 
             if (!ModelState.IsValid)
             {
-                await populatesDropDowns(movie.ActorsIds, movie.ProducerIds, movie.CategoryIds);
+                await populatesDropDowns(
+                    selectedActors: movie.ActorsIds,
+                    selectedProducers: movie.ProducerIds,
+                    selectedCategories: movie.CategoryIds);
                 var errors = ModelState
                     .Where(m => m.Value.Errors.Any())
                     .Select(m => new
@@ -191,7 +194,10 @@ namespace Movies_web_app.Controllers
         {
             if (!ModelState.IsValid)
             {
-                await populatesDropDowns(dto.ActorsIds, dto.ProducerIds, dto.CategoryIds);
+                await populatesDropDowns(
+                    selectedActors: dto.ActorsIds,
+                    selectedProducers: dto.ProducerIds,
+                    selectedCategories: dto.CategoryIds);
                 var errors = ModelState
                     .Where(m => m.Value.Errors.Any())
                     .Select(m => new

@@ -4,8 +4,10 @@
 @model PaginationResult<GetAllMoviesDto>
 
 @{
-    Layout = "_Layout";
-    ViewData["Title"] = "Cinemas";
+    Layout = User.IsInRole("Admin") ? "_AdminLayout" : "_Layout";
+    ViewData["Title"] = "Movies";
+    ViewData["AdminPageIcon"] = "fas fa-film";
+    ViewData["AdminPageSubtitle"] = "Manage movies in the platform catalog.";
 
 }
 

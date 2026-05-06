@@ -101,6 +101,9 @@
         @RenderBody()
     </div>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 
 </html>

@@ -2,8 +2,10 @@
 @model GetActorByIdDto
 
 @{
-    Layout = "_Layout";
     ViewData["Title"] = Model.FullName;
+    Layout = User.IsInRole("Admin") ? "_AdminLayout" : "_Layout";
+    ViewData["AdminPageIcon"] = "fas fa-user-group";
+    ViewData["AdminPageSubtitle"] = "Review actor profile details.";
 }
 <link href="~/css/Actor.css" rel="stylesheet" />
 

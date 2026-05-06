@@ -4,8 +4,19 @@
 @model PaginationResult<GetAllCinemasDto>
 
 @{
-    Layout = "_Layout";
-    ViewData["Title"] = "Cinemas";
+    if (!User.IsInRole("Admin"))
+    {
+
+        Layout = "_Layout";
+        ViewData["Title"] = "Cinemas";
+    }
+    else
+    {
+        Layout = "_AdminLayout";
+        ViewData["Title"] = "Cinemas";
+        ViewData["AdminPageIcon"] = "fas fa-building";
+        ViewData["AdminPageSubtitle"] = "Manage registered cinemas.";
+    }
 }
 
 <link href="~/css/Cinemas/Cinema.css" rel="stylesheet" asp-append-version="true"/>
@@ -143,4 +154,5 @@
     </div>
     }
 </section>
+
 

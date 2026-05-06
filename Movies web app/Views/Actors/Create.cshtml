@@ -3,7 +3,9 @@
 
 @{
     ViewData["Title"] = "Create New Actor";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = User.IsInRole("Admin") ? "_AdminLayout" : "_Layout";
+    ViewData["AdminPageIcon"] = "fas fa-user-plus";
+    ViewData["AdminPageSubtitle"] = "Add a new actor to the cinema database.";
 }
 
 <link rel="stylesheet" href="~/css/Director/Director.css" asp-append-version="true">
@@ -20,6 +22,7 @@
 
     <!-- Form Card -->
     <form asp-controller="Actors" asp-action="Create" enctype="multipart/form-data" method="post" class="create-director-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <!-- Profile Image Row -->
         <div class="upload-row">
             <div class="dashed-upload-circle">
@@ -41,6 +44,8 @@
                     <input asp-for="ProfilePath" type="url" id="ActorImageUrl" class="input-custom" placeholder="Paste direct image link (ends in .jpg, .png)" style="width: 100%;">
                     <button type="button" class="btn-text" id="btnSwitchToFile" style="margin-left: 0.5rem; white-space: nowrap;">Cancel</button>
                 </div>
+                <span asp-validation-for="ProfilePath" class="text-danger"></span>
+                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
 
                 <div style="margin-top: 0.5rem;">
                     <a href="#" class="remove-link">Remove Image</a>
@@ -55,6 +60,7 @@
                 <i class="fas fa-user"></i>
                 <input asp-for="FullName" type="text" id="Name"  class="input-custom" placeholder="e.g. Robert De Niro">
             </div>
+            <span asp-validation-for="FullName" class="text-danger"></span>
         </div>
 
         <!-- Biography -->
@@ -64,6 +70,7 @@
                 <i class="fas fa-file-alt" style="top: 1.5rem;"></i>
                 <textarea asp-for="Bio" id="Biography" rows="5" class="textarea-custom" placeholder="Write a brief biography describing the actor's career and style..."></textarea>
             </div>
+            <span asp-validation-for="Bio" class="text-danger"></span>
             <div class="char-count">0/500 characters</div>
         </div>
 
@@ -77,6 +84,7 @@
                     <i class="fas fa-calendar"></i>
                     <input asp-for="BirthDate" type="date" id="BirthDate" class="input-custom">
                 </div>
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
 
             <!-- Deceased Checkbox & Death Date -->
@@ -92,6 +100,7 @@
                     <i class="fas fa-skull"></i>
                     <input asp-for="DeathDate" type="date" id="DeathDate" class="input-custom" placeholder="Death Date">
                 </div>
+                <span asp-validation-for="DeathDate" class="text-danger"></span>
             </div>
 
             <!-- Nationality -->
@@ -104,6 +113,7 @@
                         <!-- Populated via API -->
                     </select>
                 </div>
+                <span asp-validation-for="Nationality" class="text-danger"></span>
             </div>
 
             <!-- IMDb Link -->
@@ -113,6 +123,7 @@
                     <i class="fab fa-imdb"></i>
                     <input asp-for="IMDBLink" type="url" id="IMDB" class="input-custom" placeholder="https://imdb.com/name/nm...">
                 </div>
+                <span asp-validation-for="IMDBLink" class="text-danger"></span>
             </div>
         </div>
 
@@ -125,4 +136,6 @@
     </form>
 </div>
 
-                    <script src="~/js/create-actor.js"></script>
+@section Scripts {
+    <script src="~/js/create-actor.js" asp-append-version="true"></script>
+}

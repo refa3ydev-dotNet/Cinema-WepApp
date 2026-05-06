@@ -31,7 +31,9 @@ namespace Movies_web_app.Controllers
             }
             var newCategory = new CreateCategoryDto
             {
-                Name = category.Name
+                Name = category.Name,
+                Description = category.Description,
+                ImageUrl = category.ImageUrl
             };
             await _categoryManager.CreateCategoryAsync(newCategory);
             return RedirectToAction("Index");
@@ -43,12 +45,15 @@ namespace Movies_web_app.Controllers
             if (category == null) return View("NotFound");
             var dto = new UpdateCategoryDto
             {
-                Name = category.Name
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description,
+                ImageUrl = category.ImageUrl
             };
-            return View(category);
+            return View(dto);
         }
         [HttpPost]
-        public IActionResult Edit(UpdateCategoryDto category)
+        public async Task<IActionResult> Edit(UpdateCategoryDto category)
         {
             if (!ModelState.IsValid)
             {
@@ -56,9 +61,12 @@ namespace Movies_web_app.Controllers
             }
             var newCategory = new UpdateCategoryDto
             {
-                Name = category.Name
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description,
+                ImageUrl = category.ImageUrl
             };
-            _categoryManager.UpdateCategoryAsync(newCategory);
+            await _categoryManager.UpdateCategoryAsync(newCategory);
             return RedirectToAction("Index");
         }
         [HttpGet]
@@ -69,9 +77,9 @@ namespace Movies_web_app.Controllers
             return View(category);
         }
         [HttpPost]
-        public IActionResult Delete(UpdateCategoryDto category)
+        public async Task<IActionResult> Delete(UpdateCategoryDto category)
         {
-            _categoryManager.DeleteCategoryAsync(category.Id);
+            await _categoryManager.DeleteCategoryAsync(category.Id);
             return RedirectToAction("Index");
         }
     }

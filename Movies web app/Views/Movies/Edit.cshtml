@@ -5,8 +5,10 @@
 @model UpdateMovieDto
 
 @{
-    ViewData["Title"] = "Create New Movie";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Edit Movie";
+    Layout = User.IsInRole("Admin") ? "_AdminLayout" : "_Layout";
+    ViewData["AdminPageIcon"] = "fas fa-film";
+    ViewData["AdminPageSubtitle"] = "Update movie catalog details.";
 }
 <!-- head: below existing links -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@4.0.1/dist/css/multi-select-tag.min.css">
@@ -17,18 +19,21 @@
 <div class="row text">
     <div class="col-md-8 offset-2">
         <h1 class="text-white">
-            Add a New Movie
+            Edit Movie
         </h1>
     </div>
     <div class="col-md-8 offset-2">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PosterUrl" />
+            <input type="hidden" asp-for="BackgroundUrl" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group text-center">
                 <img id="ProfilePicturePreview" style="max-width: 200px; height: auto;" />
             </div>
             <div class="form-group text-white">
                 <label asp-for="PosterImg" class="control-label">Movie Poster </label>
-                <input asp-for="PosterImg" class="form-control" id="ProfilePictureURL" placeholder="" type="file" />
+                <input asp-for="PosterImg" class="form-control" placeholder="" type="file" />
                 <span asp-validation-for="PosterImg" class="text-danger"></span>
             </div>
             <div class="form-group text-white">
@@ -57,6 +62,7 @@
                     <label class="text-white">Select Categories</label>
                     <select asp-for="CategoryIds" asp-items="@(ViewBag.categories)" id="Categories" multiple class="text-secondary">
                     </select>
+                    <span asp-validation-for="CategoryIds" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
@@ -64,6 +70,7 @@
                     <label class="text-white">Select Actors</label>
                     <select asp-for="ActorsIds" asp-items="@(ViewBag.actors)" id="Actors" multiple class="text-secondary">
                     </select>
+                    <span asp-validation-for="ActorsIds" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
@@ -71,6 +78,7 @@
                     <label class="text-white">Select Porducer</label>
                     <select asp-for="ProducerIds" asp-items="@(ViewBag.producers)" id="Producers" multiple class="text-secondary">
                     </select>
+                    <span asp-validation-for="ProducerIds" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group text-white">
@@ -86,11 +94,11 @@
                         asp-items="@(Html.GetEnumSelectList<Core.Enums.Language>())">
                     <option value="0">Select Language</option>
                 </select>
-                <span asp-validation-for="Translation" class="text-danger"></span>
+                <span asp-validation-for="Language" class="text-danger"></span>
             </div>
 
             <div class="form-group d-flex justify-content-between mb-2 mt-2">
-                <input type="submit" value="Create" class="btn btn-outline-success" />
+                <input type="submit" value="Save" class="btn btn-outline-success" />
                 <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
             </div>
         </form>
@@ -107,8 +115,8 @@
         $("#PosterImg").on("change", function () {
             const [file] = this.files;
             if (file) {
-                const output = document.getElementById("PosterPreview");
-                output.src = URL.createObjectURL(file);
+                const output = document.getElementById("ProfilePicturePreview");
+                if (output) output.src = URL.createObjectURL(file);
             }
         });
     </script>

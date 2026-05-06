@@ -1,0 +1,506 @@
+﻿@model Business.DTOs.Admin.AdminDashboardDto
+@using System.Text.Json
+
+@{
+    Layout = "_AdminLayout";
+
+    ViewData["AdminPageTitle"] = "Dashboard";
+    ViewData["AdminPageSubtitle"] = $"Welcome back, {User.Identity?.Name ?? "Admin"}. Here's your platform overview.";
+    ViewData["AdminPageIcon"] = "fas fa-shield-halved";
+    ViewData["ActiveAdminPage"] = "dashboard";
+
+    ViewData["ActiveCinemasCount"] = Model.Summary.ActiveCinemas;
+    ViewData["PendingApprovalsCount"] = Model.Summary.PendingApprovals;
+}
+<link rel="stylesheet" href="~/css/Admin/Dashboard.css" asp-append-version="true"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="~/css/admin-dashboard.css" asp-append-version="true" />
+
+        <!-- KPI CARDS -->
+        <section class="stats-row" id="statsRow">
+
+            <div class="stat-card anim-card" data-delay="0">
+                <div class="stat-header">
+                    <div class="stat-icon icon-red">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+
+                    <span class="stat-trend @(Model.Summary.RevenueGrowthPercentage >= 0 ? "trend-up" : "trend-down")">
+                        <i class="fas @(Model.Summary.RevenueGrowthPercentage >= 0 ? "fa-arrow-up" : "fa-arrow-down")"></i>
+                        @Math.Abs(Model.Summary.RevenueGrowthPercentage).ToString("0.0")%
+                    </span>
+                </div>
+
+                <div class="stat-value">@Model.Summary.TotalRevenue.ToString("C0")</div>
+                <div class="stat-label">Total Revenue</div>
+
+                <div class="stat-sparkline">
+                    <div class="sparkline-bar" style="height:40%"></div>
+                    <div class="sparkline-bar" style="height:65%"></div>
+                    <div class="sparkline-bar" style="height:50%"></div>
+                    <div class="sparkline-bar" style="height:80%"></div>
+                    <div class="sparkline-bar" style="height:60%"></div>
+                    <div class="sparkline-bar" style="height:95%"></div>
+                    <div class="sparkline-bar" style="height:75%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card anim-card" data-delay="1">
+                <div class="stat-header">
+                    <div class="stat-icon icon-green">
+                        <i class="fas fa-ticket"></i>
+                    </div>
+
+                    <span class="stat-trend @(Model.Summary.BookingGrowthPercentage >= 0 ? "trend-up" : "trend-down")">
+                        <i class="fas @(Model.Summary.BookingGrowthPercentage >= 0 ? "fa-arrow-up" : "fa-arrow-down")"></i>
+                        @Math.Abs(Model.Summary.BookingGrowthPercentage).ToString("0.0")%
+                    </span>
+                </div>
+
+                <div class="stat-value">@Model.Summary.TotalBookings.ToString("N0")</div>
+                <div class="stat-label">Total Bookings</div>
+
+                <div class="stat-sparkline">
+                    <div class="sparkline-bar" style="height:55%"></div>
+                    <div class="sparkline-bar" style="height:70%"></div>
+                    <div class="sparkline-bar" style="height:45%"></div>
+                    <div class="sparkline-bar" style="height:85%"></div>
+                    <div class="sparkline-bar" style="height:65%"></div>
+                    <div class="sparkline-bar" style="height:90%"></div>
+                    <div class="sparkline-bar" style="height:80%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card anim-card" data-delay="2">
+                <div class="stat-header">
+                    <div class="stat-icon icon-blue">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <span class="stat-trend trend-up">
+                        <i class="fas fa-check"></i> Active
+                    </span>
+                </div>
+
+                <div class="stat-value">@Model.Summary.ActiveCinemas</div>
+                <div class="stat-label">Active Cinemas</div>
+
+                <div class="stat-sparkline">
+                    <div class="sparkline-bar" style="height:30%"></div>
+                    <div class="sparkline-bar" style="height:50%"></div>
+                    <div class="sparkline-bar" style="height:45%"></div>
+                    <div class="sparkline-bar" style="height:60%"></div>
+                    <div class="sparkline-bar" style="height:70%"></div>
+                    <div class="sparkline-bar" style="height:65%"></div>
+                    <div class="sparkline-bar" style="height:80%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card anim-card" data-delay="3">
+                <div class="stat-header">
+                    <div class="stat-icon icon-orange">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+
+                    <span class="stat-trend trend-neutral">
+                        <i class="fas fa-clock"></i> Waiting
+                    </span>
+                </div>
+
+                <div class="stat-value">@Model.Summary.PendingApprovals</div>
+                <div class="stat-label">Pending Approvals</div>
+
+                <div class="stat-sparkline">
+                    <div class="sparkline-bar" style="height:20%"></div>
+                    <div class="sparkline-bar" style="height:40%"></div>
+                    <div class="sparkline-bar" style="height:30%"></div>
+                    <div class="sparkline-bar" style="height:25%"></div>
+                    <div class="sparkline-bar" style="height:35%"></div>
+                    <div class="sparkline-bar" style="height:20%"></div>
+                    <div class="sparkline-bar" style="height:30%"></div>
+                </div>
+            </div>
+
+            <div class="stat-card anim-card" data-delay="4">
+                <div class="stat-header">
+                    <div class="stat-icon icon-purple">
+                        <i class="fas fa-users"></i>
+                    </div>
+
+                    <span class="stat-trend trend-up">
+                        <i class="fas fa-user-plus"></i> Users
+                    </span>
+                </div>
+
+                <div class="stat-value">@Model.Summary.RegisteredUsers.ToString("N0")</div>
+                <div class="stat-label">Registered Users</div>
+
+                <div class="stat-sparkline">
+                    <div class="sparkline-bar" style="height:35%"></div>
+                    <div class="sparkline-bar" style="height:45%"></div>
+                    <div class="sparkline-bar" style="height:55%"></div>
+                    <div class="sparkline-bar" style="height:60%"></div>
+                    <div class="sparkline-bar" style="height:70%"></div>
+                    <div class="sparkline-bar" style="height:75%"></div>
+                    <div class="sparkline-bar" style="height:90%"></div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- CHARTS -->
+        <section class="charts-row anim-card" id="adminCharts" data-delay="5">
+            <div class="glass-panel chart-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-chart-area"></i> Revenue Overview
+                    </h2>
+
+                    <div class="period-toggle">
+                        <button class="period-btn active" data-days="7" type="button">7D</button>
+                        <button class="period-btn" data-days="30" type="button">30D</button>
+                        <button class="period-btn" data-days="90" type="button">90D</button>
+                    </div>
+                </div>
+
+                <div class="chart-wrap">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-panel chart-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-chart-bar"></i> Bookings Trend
+                    </h2>
+
+                    <div class="period-toggle">
+                        <button class="period-btn active" data-days="7" type="button">7D</button>
+                        <button class="period-btn" data-days="30" type="button">30D</button>
+                        <button class="period-btn" data-days="90" type="button">90D</button>
+                    </div>
+                </div>
+
+                <div class="chart-wrap">
+                    <canvas id="bookingsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- PENDING CINEMAS + SIDE STACK -->
+        <section class="split-section">
+
+            <div class="glass-panel panel-wide anim-card" data-delay="6">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-file-signature"></i>
+                        Pending Approvals
+                        <span class="title-badge">@Model.Summary.PendingApprovals</span>
+                    </h2>
+
+                    <a asp-controller="Admin"
+                           asp-action="PendingRequests"
+                           class="panel-link">
+                        View All →
+                    </a>
+                </div>
+
+                <div class="table-scroll">
+                    <table class="data-table" id="approvalsTable">
+                        <thead>
+                            <tr>
+                                <th>Cinema</th>
+                                <th>Agent</th>
+                                <th>Location</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (Model.PendingCinemas != null && Model.PendingCinemas.Any())
+                            {
+                                foreach (var cinema in Model.PendingCinemas)
+                                {
+                                    var cinemaLogo = string.IsNullOrWhiteSpace(cinema.ImageUrl)
+                                        ? Url.Content("~/images/default-cinema.jpg")
+                                        : cinema.ImageUrl;
+
+                                    <tr>
+                                        <td>
+                                            <div class="cell-cinema">
+                                                <img src="@cinemaLogo"
+                                                     alt="@cinema.CinemaName"
+                                                     class="cinema-thumb">
+                                                <span>@cinema.CinemaName</span>
+                                            </div>
+                                        </td>
+
+                                        <td>@cinema.AgentName</td>
+
+                                        <td>
+                                            <i class="fas fa-map-marker-alt cell-icon"></i>
+                                            @cinema.Location
+                                        </td>
+
+                                        <td>@cinema.SubmittedAt.ToString("MMM dd, yyyy")</td>
+
+                                        <td>
+                                            <span class="status-badge status-pending">@cinema.Status</span>
+                                        </td>
+
+                                        <td>
+                                            <div class="action-btns">
+                                                <a asp-controller="Cinemas"
+                                                       asp-action="Details"
+                                                       asp-route-id="@cinema.CinemaId"
+                                                       class="tbl-btn btn-view"
+                                                       title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+
+                                                <form asp-controller="Admin"
+                                                      asp-action="ApproveCinema"
+                                                      asp-route-id="@cinema.CinemaId"
+                                                      method="post"
+                                                      class="inline-form">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit"
+                                                            class="tbl-btn btn-approve"
+                                                            title="Approve">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+
+                                                <form asp-controller="Admin"
+                                                      asp-action="RejectCinema"
+                                                      asp-route-id="@cinema.CinemaId"
+                                                      method="post"
+                                                      class="inline-form">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden"
+                                                           name="reason"
+                                                           value="Your request has been rejected. Please update your information." />
+
+                                                    <button type="submit"
+                                                            class="tbl-btn btn-reject"
+                                                            title="Reject">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="empty-table-message">
+                                        No pending cinema approvals right now.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="side-stack">
+
+                <!-- RECENT ACTIVITY -->
+                <div class="glass-panel anim-card" data-delay="7">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-bolt"></i> Recent Activity
+                        </h2>
+                    </div>
+
+                    <div class="activity-feed" id="activityFeed">
+                        @if (Model.RecentActivities != null && Model.RecentActivities.Any())
+                        {
+                            foreach (var activity in Model.RecentActivities)
+                            {
+                                var dotClass = activity.Type switch
+                                {
+                                    "success" => "dot-green",
+                                    "warning" => "dot-orange",
+                                    "danger" => "dot-red",
+                                    _ => "dot-blue"
+                                };
+
+                                <div class="activity-item">
+                                    <span class="activity-dot @dotClass"></span>
+
+                                    <div class="activity-body">
+                                        <p>
+                                            <strong>@activity.Title</strong>
+                                            @activity.Description
+                                        </p>
+
+                                        <time>@activity.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</time>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state-small">
+                                No recent activity.
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div class="glass-panel anim-card" data-delay="8">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-rocket"></i> Quick Actions
+                        </h2>
+                    </div>
+
+                    <div class="quick-actions">
+                        <a asp-controller="Admin"
+                               asp-action="CreateMovies"
+                               class="qaction-card">
+                            <div class="qaction-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+
+                            <div>
+                                <div class="qaction-title">Add Movie</div>
+                                <div class="qaction-desc">Expand the catalog</div>
+                            </div>
+                        </a>
+
+                        <a asp-controller="Admin"
+                               asp-action="PendingRequests"
+                               class="qaction-card">
+                            <div class="qaction-icon">
+                                <i class="fas fa-file-signature"></i>
+                            </div>
+
+                            <div>
+                                <div class="qaction-title">Review Approvals</div>
+                                <div class="qaction-desc">@Model.Summary.PendingApprovals requests waiting</div>
+                            </div>
+                        </a>
+
+                        <a asp-controller="Cinemas"
+                               asp-action="Index"
+                               class="qaction-card">
+                            <div class="qaction-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+
+                            <div>
+                                <div class="qaction-title">Manage Cinemas</div>
+                                <div class="qaction-desc">@Model.Summary.ActiveCinemas active cinemas</div>
+                            </div>
+                        </a>
+
+                        <a href="#"
+                               class="qaction-card">
+                            <div class="qaction-icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+
+                            <div>
+                                <div class="qaction-title">View Reports</div>
+                                <div class="qaction-desc">Revenue & analytics</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TOP MOVIES -->
+        <section class="glass-panel anim-card" data-delay="9" id="topMoviesSection">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <i class="fas fa-fire"></i> Top Performing Movies
+                </h2>
+
+                <a asp-controller="Admin"
+                       asp-action="CreateMovies"
+                       class="panel-link">
+                    All Movies →
+                </a>
+            </div>
+
+            <div class="movies-grid">
+                @if (Model.TopMovies != null && Model.TopMovies.Any())
+                {
+                    for (int i = 0; i < Model.TopMovies.Count; i++)
+                    {
+                        var movie = Model.TopMovies[i];
+                        var rank = i + 1;
+
+                        var rankClass = rank == 1
+                            ? "rank-gold"
+                            : rank == 2
+                                ? "rank-silver"
+                                : rank == 3
+                                    ? "rank-bronze"
+                                    : "";
+
+                        var poster = string.IsNullOrWhiteSpace(movie.PosterUrl)
+                            ? Url.Content("~/images/default-movie.jpg")
+                            : movie.PosterUrl;
+
+                        <div class="movie-card">
+                            <span class="movie-rank @rankClass">#@rank</span>
+
+                            <img src="@poster"
+                                 alt="@movie.Title"
+                                 class="movie-poster">
+
+                            <div class="movie-details">
+                                <h3 class="movie-name">@movie.Title</h3>
+                                <div class="movie-meta">
+                                    <span>
+                                        <i class="fas fa-ticket"></i>
+                                        @movie.TicketsSold.ToString("N0")
+                                    </span>
+
+                                    <span>
+                                        <i class="fas fa-star star-gold"></i>
+                                        @movie.Rating.ToString()
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="movie-revenue">
+                                @movie.Revenue.ToString("C0")
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-state-small">
+                        No movie performance data yet.
+                    </div>
+                }
+            </div>
+        </section>
+
+<script id="dashboardData" type="application/json">
+    @Html.Raw(JsonSerializer.Serialize(new
+    {
+        revenueChart = Model.RevenueChart,
+        bookingsChart = Model.BookingsChart
+    }))
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="~/js/Admin/Dashboard.js" asp-append-version="true"></script>

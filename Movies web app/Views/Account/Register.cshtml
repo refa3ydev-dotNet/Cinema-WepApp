@@ -145,11 +145,13 @@
                     <label asp-for="FirstName" class="form-label">First Name</label>
                     <input type="text" class="form-control" id="FirstName" asp-for="FirstName" placeholder="John"
                            required>
+                    <span asp-validation-for="FirstName" class="text-danger" style="font-size: 0.85em; display: block; margin-top: 5px;"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="LastName" class="form-label">Last Name</label>
                     <input type="text" class="form-control" id="LastName" asp-for="LastName" placeholder="Doe"
                            required>
+                    <span asp-validation-for="LastName" class="text-danger" style="font-size: 0.85em; display: block; margin-top: 5px;"></span>
                 </div>
             </div>
 
@@ -168,6 +170,7 @@
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
+                    <span asp-validation-for="Gender" class="text-danger" style="font-size: 0.85em; display: block; margin-top: 5px;"></span>
                 </div>
             </div>
 
@@ -192,13 +195,14 @@
                             <div class="req-item" id="req-number"><i class="fas fa-circle"></i> Number</div>
                         </div>
                     </div>
-                    <span asp-validation-for="Email" class="text-danger" style="font-size: 0.85em; display: block; margin-top: 5px;"></span>
+                    <span asp-validation-for="Password" class="text-danger" style="font-size: 0.85em; display: block; margin-top: 5px;"></span>
 
                 </div>
                 <div class="form-group">
                     <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
                     <input type="password" class="form-control" id="ConfirmPassword" asp-for="ConfirmPassword"
                            placeholder="••••••••" required>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger" style="font-size: 0.85em; display: block; margin-top: 5px;"></span>
                 </div>
             </div>
 

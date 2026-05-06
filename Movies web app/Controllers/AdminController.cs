@@ -1,5 +1,6 @@
 ﻿using Business.DTOs.Movies;
 using Business.Managers.Actors;
+using Business.Managers.Admin;
 using Business.Managers.Categories;
 using Business.Managers.Cinemas;
 using Business.Managers.Directors;
@@ -26,6 +27,7 @@ namespace Movies_web_app.Controllers
         private readonly IActorsManager _actorManager;
         private readonly ICategoryManager _categoryManager;
         private readonly IImageService _imageService;
+        private readonly IAdminManager _adminManager;
         public AdminController(UserManager<ApplicationUser> userManager,
             ICinemasManager cinemasManager,
             ICategoryManager categoryManager,
@@ -33,7 +35,8 @@ namespace Movies_web_app.Controllers
             IProducersManager producerManager,
             IDirectorManager directorManager,
             IActorsManager actorManager,
-            IImageService imageService)
+            IImageService imageService,
+            IAdminManager adminManager)
         {
             this.cinemasManager = cinemasManager;
             _movieManager = movieManager;
@@ -43,13 +46,26 @@ namespace Movies_web_app.Controllers
             _categoryManager = categoryManager;
             _userManager = userManager;
             _imageService = imageService;
+            _adminManager = adminManager;
         }
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction(nameof(Dashboard));
+        }
+        [HttpGet]
+        public async Task<IActionResult> Dashboard()
+        {
+            var model = await _adminManager.GetDashboardAsync(30);
+            return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> DashboardCharts(int days = 7)
+        {
+            var charts = await _adminManager.GetChartsAsync(days);
+            return Json(charts);
+        }
         [HttpGet]
         public async Task<IActionResult> PendingRequests()
         {

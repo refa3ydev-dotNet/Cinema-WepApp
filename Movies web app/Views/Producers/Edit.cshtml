@@ -3,7 +3,9 @@
 
 @{
     ViewData["Title"] = "Edit Producer";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = User.IsInRole("Admin") ? "_AdminLayout" : "_Layout";
+    ViewData["AdminPageIcon"] = "fas fa-user-pen";
+    ViewData["AdminPageSubtitle"] = "Update producer profile details.";
 }
 
 <div class="row text">
@@ -35,9 +37,24 @@
                 <span asp-validation-for="Bio" class="text-danger"></span>
             </div>
             <div class="form-group text-white">
-                <label asp-for="IMDBLink" class="control-label">Biography</label>
-                <input asp-for="IMDBLink" class="form-control" placeholder="" />
+                <label asp-for="IMDBLink" class="control-label">IMDb Link</label>
+                <input asp-for="IMDBLink" class="form-control" placeholder="https://imdb.com/name/nm..." />
                 <span asp-validation-for="IMDBLink" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="BirthDate" class="control-label">Birth Date</label>
+                <input asp-for="BirthDate" class="form-control" type="date" />
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="DeathDate" class="control-label">Death Date</label>
+                <input asp-for="DeathDate" class="form-control" type="date" />
+                <span asp-validation-for="DeathDate" class="text-danger"></span>
+            </div>
+            <div class="form-group text-white">
+                <label asp-for="Nationality" class="control-label">Nationality</label>
+                <input asp-for="Nationality" class="form-control" placeholder="Country" />
+                <span asp-validation-for="Nationality" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-between mb-2 mt-2">
                 <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
@@ -71,4 +88,4 @@
         });
     </script>
 
-        }
+}

@@ -88,9 +88,14 @@ namespace Movies_web_app.Controllers
             if (Producer == null) return View("NotFound");
             var dto = new UpdateProducerDto
             {
+                Id = Producer.Id,
                 FullName = Producer.FullName,
                 Bio = Producer.Bio,
-                ProfilePath = Producer.ProfilePath
+                ProfilePath = Producer.ProfilePath,
+                IMDBLink = Producer.IMDBLink,
+                BirthDate = Producer.BirthDate,
+                DeathDate = Producer.DeathDate,
+                Nationality = Producer.Nationality
             };
             Console.WriteLine(Producer.ProfilePicture);
             return View(dto);

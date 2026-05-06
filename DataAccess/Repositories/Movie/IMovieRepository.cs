@@ -1,9 +1,10 @@
 ﻿using Core;
+using Core.Enums;
 using Core.Helpers;
 
 namespace DataAccess.Repositories.MOVIE
 {
-    public interface IMovieRepository
+    public interface IMovieRepository 
     {
         Task<Movie> GetMovieByIdAsync(int id);
         Task<List<Movie>> GetAllMoviesAsync();
@@ -17,5 +18,6 @@ namespace DataAccess.Repositories.MOVIE
         Task<bool> HasActiveSchedulesForCinemaAsync(int movieId, int cinemaId);
         Task<Movie> UpsertMovieFromTmdbAsync(Movie movie);
         Task<IEnumerable<Movie>> GetAllCatalogMoviesAsync();
+        Task<PaginationResult<Movie>> GetFilteredMoviesAsync(string? searchTerm,MovieCategory? category,int pageNumber, int pageSize);
     }
 }

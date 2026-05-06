@@ -2,8 +2,11 @@
 @model GetProducerByIdDto
 
 @{
-    Layout = "_Layout";
     ViewData["Title"] = "Details";
+    Layout = User.IsInRole("Admin") ? "_AdminLayout" : "_Layout";
+    ViewData["AdminPageTitle"] = "Producer Details";
+    ViewData["AdminPageIcon"] = "fas fa-user-tie";
+    ViewData["AdminPageSubtitle"] = "Review producer profile details.";
 }
 <link href="~/css/Actor/Details.css" rel="stylesheet" />
 

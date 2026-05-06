@@ -12,6 +12,7 @@ namespace Business.DTOs.Movies
         [Required(ErrorMessage = "Description is required")]
         public string Description { get; set; }=string.Empty;
         [Required(ErrorMessage = "Price is required")]
+        [Range(0.01, 10000, ErrorMessage = "Price must be between 0.01 and 10000")]
         public decimal Price { get; set; }
         public IFormFile? PosterImg { get; set; }
         public string? PosterUrl { get; set; }

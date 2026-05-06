@@ -1,7 +1,10 @@
 ﻿@model IEnumerable<Business.DTOs.Cinemas.GetAllCinemasDto>
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "_AdminLayout";
     ViewData["Title"] = "Cinema Registration Requests";
+    ViewData["AdminPageTitle"] = "Pending Approvals";
+    ViewData["AdminPageIcon"] = "fas fa-file-signature";
+    ViewData["ActiveAdminPage"] = "approvals";
 }
 <link href="~/css/Cinemas/Pending_Cinema.css" rel="stylesheet" asp-append-version="true" />
 
