@@ -20,20 +20,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CimaFlick</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>@ViewData["Title"] - CimaFlick</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link href='~/Images/logo.png' rel="icon" />
-    
+<!-- Preconnect to CDNs for faster resource loading -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
+<!-- Critical CSS - Load immediately -->
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
+
+<!-- Critical CSS only - Inline for fastest rendering -->
+<link rel="stylesheet" href="~/css/critical.css" asp-append-version="true" />
+
+<!-- Fonts with font-display:swap for non-blocking load -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap">
+
+<!-- Preload main site styles -->
+<link rel="preload" href="~/css/site.css" as="style" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+
+<!-- Icons - Load non-critical asynchronously -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"></noscript>
+
+<!-- Favicon -->
+<link href='~/Images/logo.png' rel="icon" />
+
+<!-- Preload page-specific CSS if provided -->
+@await RenderSectionAsync("Head", required: false)
+
+<!-- Critical CSS inline for fastest rendering -->
+<style>
+    /* Above-the-fold styles */
+    :root{--bg-dark:#0b0f15;--bg-darker:#05070a;--bg-card:#151a23;--primary-red:#e50914;--primary-red-hover:#b20710;--text-white:#fff;--text-grey:#a0a0a0;--font-heading:'Outfit',sans-serif}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background-color:var(--bg-dark);color:var(--text-white);font-family:var(--font-heading);line-height:1.6}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.8rem 1.5rem;border-radius:4px;font-weight:600;cursor:pointer;border:none;transition:all .3s ease;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px}
+    .btn-primary{background-color:var(--primary-red);color:#fff}
+    .btn-primary:hover{background-color:var(--primary-red-hover);transform:translateY(-2px)}
+    i.fas,i.far,i.fab,i.fa{font-size:1em;display:inline-block;line-height:1;vertical-align:middle}
+    .btn i,a i,.nav-link i{font-size:inherit!important}
+    i[class*=fa-]{color:inherit}
+</style>
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- Navbar -->
@@ -331,7 +364,6 @@
                     <a asp-action="Index" asp-controller="Home" class="nav-link @IsActive("Home", "Index")">Home</a>
                     <a asp-action="SearchTmdb" asp-controller="Movies" class="nav-link @IsActive("Movies", "SearchTmdb")">Movies</a>
                     <a asp-action="Index" asp-controller="Cinemas" class="nav-link @IsActive("Cinemas", "Index")">Cinemas</a>
-                    <a asp-action="MyTickets" asp-controller="Customer" class="nav-link active @IsActive("Customer", "MyTickets")"> <i class="fas fa-ticket-alt"></i>My Tickets</a>
                     <!-- Mobile Only Actions -->
                     <div class="mobile-nav-actions">
                         <a href="#" class="btn btn-outline-white"><i class="fas fa-search"></i> Search</a>

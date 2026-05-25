@@ -3,13 +3,15 @@
 }
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
-    <div class="row1">
-        <span class="span">404</span>
-        <h3 class="oops">Oops</h3>
-        <h2 class="notfound">Page not found</h2>
-        <p class="des">The page you are looking for does not exist or has been moved</p>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">Back to Home</a>
-    </div>
+<div class="row1">
+<span class="span"><i class="fas fa-exclamation-triangle"></i> 404</span>
+<h3 class="oops"><i class="fas fa-search"></i> Oops</h3>
+<h2 class="notfound"><i class="fas fa-file-excel"></i> Page not found</h2>
+<p class="des"><i class="fas fa-info-circle"></i> The page you are looking for does not exist or has been moved</p>
+<a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
+<i class="fas fa-home"></i> Back to Home
+</a>
+</div>
 
 <style>
     * {

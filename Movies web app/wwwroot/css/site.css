@@ -1,22 +1,49 @@
 ﻿:root {
-    --bg-dark: #0b0f15;
-    --bg-darker: #05070a;
-    --bg-card: #151a23;
-    --primary-red: #e50914;
-    --primary-red-hover: #b20710;
-    --text-white: #ffffff;
-    --text-grey: #a0a0a0;
-    --gradient-overlay: linear-gradient(to bottom, rgba(11, 15, 21, 0.7) 0%, rgba(11, 15, 21, 0) 40%, rgba(11, 15, 21, 1) 100%);
-    --font-heading: 'Outfit', sans-serif;
-    --container-width: 1200px;
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
+--bg-dark: #0b0f15;
+--bg-darker: #05070a;
+--bg-card: #151a23;
+--primary-red: #e50914;
+--primary-red-hover: #b20710;
+--text-white: #ffffff;
+--text-grey: #a0a0a0;
+--gradient-overlay: linear-gradient(to bottom, rgba(11, 15, 21, 0.7) 0%, rgba(11, 15, 21, 0) 40%, rgba(11, 15, 21, 1) 100%);
+--font-heading: 'Outfit', sans-serif;
+--container-width: 1200px;
+--glass-bg: rgba(255, 255, 255, 0.05);
+--glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Font Awesome Icon Styles - Ensure proper display */
+i.fas, i.far, i.fab, i.fa, i.fas fa-spin, i.fas fa-spin-pulse {
+font-size: 1em;
+display: inline-block;
+line-height: 1;
+vertical-align: middle;
+}
+
+.btn i, .btn i.fa, a i, a i.fa, .nav-link i, .dropdown-item i {
+font-size: inherit !important;
+}
+
+/* Ensure icons inherit color from parent */
+i[class*="fa-"] {
+color: inherit;
+}
+
+/* Fix for icon buttons */
+button i, .btn i {
+vertical-align: middle;
+}
+
+/* Fix icon sizes in different contexts */
+h1 i, h2 i, h3 i, h4 i, h5 i, h6 i {
+font-size: 1em;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+margin: 0;
+padding: 0;
+box-sizing: border-box;
 }
 
 body {

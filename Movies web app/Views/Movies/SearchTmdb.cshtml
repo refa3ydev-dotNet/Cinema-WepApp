@@ -1,4 +1,4 @@
-﻿@model Business.DTOs.Integration.TmdbSearchResponse
+@model Business.DTOs.Integration.TmdbSearchResponse
 @{
     if(!User.IsInRole("Admin")){
 
@@ -49,21 +49,99 @@
     .page-subtitle { color: var(--brand-red); font-size: 1.4rem; font-weight: 500; margin-bottom: 50px; text-shadow: 0 0 20px var(--brand-glow);}
 
     /* --- SEARCH BAR --- */
-    .search-container { max-width: 750px; margin: 0 auto; position: relative; }
+    .search-container {
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        padding: 8px 12px 8px 8px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        transition: all 0.4s ease;
+    }
+    .search-container:focus-within {
+        border-color: var(--brand-red);
+        box-shadow: 0 0 50px var(--brand-glow);
+    }
+    .search-input-wrapper {
+        position: relative;
+        flex-grow: 1;
+    }
     .modern-search {
-        width: 100%; background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.15); border-radius: 50px;
-        padding: 22px 30px 22px 70px; color: #fff; font-size: 1.25rem; backdrop-filter: blur(20px); transition: all 0.4s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 15px 20px 15px 60px;
+        color: #fff;
+        font-size: 1.25rem;
+        box-shadow: none;
+        outline: none;
+    }
+    .modern-search:focus {
+        background: transparent;
+        border-color: transparent;
+        box-shadow: none;
+        outline: none;
     }
     .modern-search::placeholder { color: rgba(255,255,255,0.6); font-weight: 500;}
-    .modern-search:focus { outline: none; background: rgba(255,255,255,0.12); border-color: var(--brand-red); box-shadow: 0 0 50px var(--brand-glow); }
-    .search-icon { position: absolute; left: 30px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.7); font-size: 1.6rem; pointer-events: none; }
-    
-    .btn-filter { 
-        position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
-        background: var(--brand-red); border: none; color: #fff; width: 50px; height: 50px; 
-        border-radius: 50%; font-size: 1.2rem; transition: 0.3s; box-shadow: 0 5px 15px var(--brand-glow); 
+    .search-icon {
+        position: absolute;
+        left: 25px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255,255,255,0.7);
+        font-size: 1.5rem;
+        pointer-events: none;
     }
-    .btn-filter:hover { background: #ff4d6d; transform: translateY(-50%) scale(1.1); }
+    .category-select-wrapper {
+        border-left: 1px solid rgba(255, 255, 255, 0.15);
+        padding-left: 15px;
+    }
+    .modern-category-select {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 10px 35px 10px 10px;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 5px center;
+    }
+    .modern-category-select option {
+        background: #12121a;
+        color: #fff;
+    }
+    .btn-filter {
+        position: static;
+        transform: none;
+        background: var(--brand-red);
+        border: none;
+        color: #fff;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px var(--brand-glow);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-filter:hover {
+        background: #ff4d6d;
+        transform: scale(1.1);
+    }
 
     /* --- MOVIES GRID --- */
     .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 50px 35px; max-width: 1400px; margin: 0 auto; padding: 0 4%; }
@@ -98,31 +176,38 @@
 
 <div class="movies-page-wrapper mt-4">
 
-    <div class="hero-header anim-up d-1">
+    <div class="hero-header anim-up d-1 mt-3">
         <div class="hero-scrim"></div>
         <div class="hero-content">
             <h1 class="page-title">Discover Movies</h1>
             <p class="page-subtitle">Find your next favorite blockbuster.</p>
             
             <form asp-action="SearchTmdb" method="get" class="search-container">
-                <input type="text" name="query" value="@ViewBag.SearchQuery" class="modern-search" placeholder="Search by title, genre, or keyword..." autocomplete="off">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <div class="search-input-wrapper">
+                    <input type="text" name="query" value="@ViewBag.SearchQuery" class="modern-search" placeholder="Search by title..." autocomplete="off">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                </div>
+                <div class="category-select-wrapper">
+                    <select name="category" class="modern-category-select">
+                        <option value="">All Categories</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var cat in ViewBag.Categories)
+                            {
+                                if (ViewBag.SelectedCategory == cat.Name)
+                                {
+                                    <option value="@cat.Name" selected>@cat.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@cat.Name">@cat.Name</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
                 <button type="submit" class="btn-filter"><i class="fa-solid fa-arrow-right"></i></button>
             </form>
-            <div class="filter-bar d-flex gap-3 mb-4 p-3 rounded-4" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
-    
-                <input type="text" id="localSearch" class="form-control bg-dark text-white border-secondary" placeholder="Search our catalog...">
-    
-                <select id="categoryFilter" class="form-select bg-dark text-white border-secondary" style="max-width: 250px;">
-                    <option value="">All Categories</option>
-                    <option value="Action">Action</option>
-                    <option value="Comedy">Comedy</option>
-                    <option value="Drama">Drama</option>
-                    <option value="Horror">Horror</option>
-                    <option value="SciFi">Sci-Fi</option>
-                    <!-- ضيفي باقي الأقسام اللي في الـ Enum بتاعك -->
-                </select>
-            </div>
         </div>
     </div>
 
@@ -197,7 +282,7 @@ else if (Model != null && Model.Results != null && Model.Results.Any())
                 <ul class="pagination pagination-lg" style="gap: 5px;">
                     <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
                         <a class="page-link" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;" 
-                           href="@Url.Action("SearchTmdb", new { query = ViewBag.SearchQuery, page = ViewBag.CurrentPage - 1 })">
+                           href="@Url.Action("SearchTmdb", new { query = ViewBag.SearchQuery, category = ViewBag.SelectedCategory, page = ViewBag.CurrentPage - 1 })">
                             <i class="fa-solid fa-chevron-left"></i> Prev
                         </a>
                     </li>
@@ -208,7 +293,7 @@ else if (Model != null && Model.Results != null && Model.Results.Any())
                     </li>
                     <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
                         <a class="page-link" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;" 
-                           href="@Url.Action("SearchTmdb", new { query = ViewBag.SearchQuery, page = ViewBag.CurrentPage + 1 })">
+                           href="@Url.Action("SearchTmdb", new { query = ViewBag.SearchQuery, category = ViewBag.SelectedCategory, page = ViewBag.CurrentPage + 1 })">
                             Next <i class="fa-solid fa-chevron-right"></i>
                         </a>
                     </li>
@@ -319,20 +404,26 @@ else if (Model != null && Model.Results != null && Model.Results.Any())
 @section Scripts {
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // تحميل كل الأفلام أول ما الصفحة تفتح
-        loadFilteredMovies();
-    });
+        const categoryFilter = document.getElementById('categoryFilter');
+        const localSearch = document.getElementById('localSearch');
+        const localMoviesGrid = document.getElementById('localMoviesGrid');
 
-    // مراقبة تغيير الـ Category
-    document.getElementById('categoryFilter').addEventListener('change', function () {
-        loadFilteredMovies();
-    });
+        if (categoryFilter && localSearch && localMoviesGrid) {
+            // تحميل كل الأفلام أول ما الصفحة تفتح
+            loadFilteredMovies();
 
-    // مراقبة البحث (مع تأخير نص ثانية عشان منضغطش على السيرفر)
-    let searchTimeout;
-    document.getElementById('localSearch').addEventListener('keyup', function () {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(loadFilteredMovies, 500);
+            // مراقبة تغيير الـ Category
+            categoryFilter.addEventListener('change', function () {
+                loadFilteredMovies();
+            });
+
+            // مراقبة البحث (مع تأخير نص ثانية عشان منضغطش على السيرفر)
+            let searchTimeout;
+            localSearch.addEventListener('keyup', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(loadFilteredMovies, 500);
+            });
+        }
     });
 
     function loadFilteredMovies() {

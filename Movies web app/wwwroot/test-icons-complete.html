@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Test - CimaFlick</title>
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 40px;
+            margin: 0;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #e50914;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .status.success {
+            background: rgba(46, 204, 113, 0.2);
+            border: 2px solid #2ecc71;
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .icon-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .icon-item i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .icon-name {
+            font-size: 0.75rem;
+            color: #aaa;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1><i class="fas fa-check-circle"></i> Font Awesome Icon Test</h1>
+        
+        <div class="status success">
+            <h3><i class="fas fa-check"></i> Icons Are Working!</h3>
+            <p>If you can see the icons below, Font Awesome is loaded correctly.</p>
+        </div>
+
+        <h2>Solid Icons (fas)</h2>
+        <div class="icon-grid">
+            <div class="icon-item">
+                <i class="fas fa-home" style="color: #e50914;"></i>
+                <span class="icon-name">fa-home</span>
+            </div>
+            <div class="icon-item">
+                <i class="fas fa-film" style="color: #e50914;"></i>
+                <span class="icon-name">fa-film</span>
+            </div>
+            <div class="icon-item">
+                <i class="fas fa-user" style="color: #3498db;"></i>
+                <span class="icon-name">fa-user</span>
+            </div>
+            <div class="icon-item">
+                <i class="fas fa-heart" style="color: #e50914;"></i>
+                <span class="icon-name">fa-heart</span>
+            </div>
+            <div class="icon-item">
+                <i class="fas fa-building" style="color: #f39c12;"></i>
+                <span class="icon-name">fa-building</span>
+            </div>
+            <div class="icon-item">
+                <i class="fas fa-ticket-alt" style="color: #9b59b6;"></i>
+                <span class="icon-name">fa-ticket-alt</span>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 40px;">Brand Icons (fab)</h2>
+        <div class="icon-grid">
+            <div class="icon-item">
+                <i class="fab fa-discord" style="color: #7289da;"></i>
+                <span class="icon-name">fab fa-discord</span>
+            </div>
+            <div class="icon-item">
+                <i class="fab fa-instagram" style="color: #e4405f;"></i>
+                <span class="icon-name">fab fa-instagram</span>
+            </div>
+            <div class="icon-item">
+                <i class="fab fa-twitter" style="color: #1da1f2;"></i>
+                <span class="icon-name">fab fa-twitter</span>
+            </div>
+            <div class="icon-item">
+                <i class="fab fa-youtube" style="color: #ff0000;"></i>
+                <span class="icon-name">fab fa-youtube</span>
+            </div>
+        </div>
+
+        <div class="status success" style="margin-top: 40px;">
+            <h3><i class="fas fa-info-circle"></i> Usage</h3>
+            <p>To use icons in your views, use: <code>&lt;i class="fas fa-icon-name"&gt;&lt;/i&gt;</code></p>
+            <p>Example: <code>&lt;i class="fas fa-home"&gt;&lt;/i&gt;</code> shows <i class="fas fa-home"></i></p>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const icons = document.querySelectorAll('.fa, .fab, .fas, .far');
+            if (icons.length > 0) {
+                console.log('✓ Font Awesome loaded successfully!');
+                console.log('Total icons found:', icons.length);
+            } else {
+                console.error('✗ Font Awesome not loaded!');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

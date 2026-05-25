@@ -1,9 +1,7 @@
-﻿using Business.DTOs.Cinemas;
+using Business.DTOs.Cinemas;
 using Business.Managers.Accounts;
-using Business.Managers.Actors;
 using Business.Managers.Cinemas;
 using Core.Enums;
-using DataAccess.Contexts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies_web_app.Services;
@@ -13,20 +11,17 @@ namespace Movies_web_app.Controllers
 {
     public class CinemasController : Controller
     {
-        private readonly MoviesDbContext _context;
-        private readonly IAccountManager _accountmanager;
         private readonly ICinemasManager _cinemaManager;
-        private readonly IImageService _imageServises;
+        private readonly IImageService _imageService;
+        private readonly IAccountManager _accountManager;
 
-
-
-        public CinemasController(MoviesDbContext context, ICinemasManager cinemaManager, IImageService imageServices, IAccountManager accountManager)
+        public CinemasController(ICinemasManager cinemaManager, IImageService imageService, IAccountManager accountManager)
         {
-            _context = context;
             _cinemaManager = cinemaManager;
-            _imageServises = imageServices;
-                _accountmanager = accountManager;
+            _imageService = imageService;
+            _accountManager = accountManager;
         }
+
         [HttpGet]
         public async Task<IActionResult> Index(int page = 1)
         {
@@ -34,51 +29,55 @@ namespace Movies_web_app.Controllers
             var allCinemas = await _cinemaManager.GetPagedCinemasAsync(page, pageSize);
             return View(allCinemas);
         }
+
         [Authorize(Roles = "CinemaAgent")]
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-           var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            var currentUser = await _accountmanager.GetUserByEmailAsync(userEmail);
+            var emailClaim = User.FindFirst(ClaimTypes.Email);
+            if (emailClaim == null) return RedirectToAction("Login", "Account");
 
+            var userEmail = emailClaim.Value;
+            var currentUser = await _accountManager.GetUserByEmailAsync(userEmail);
 
             if (currentUser != null && currentUser.CinemaId != null)
             {
                 return RedirectToAction("Details", "Cinemas", new { id = currentUser.CinemaId });
             }
-            
+
             return View();
         }
+
         [Authorize(Roles = "CinemaAgent")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateCinemaDto cinema)
         {
-
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            var currentUser=await _accountmanager.GetUserByEmailAsync(userEmail);
+            var currentUser = await _accountManager.GetUserByEmailAsync(userEmail);
+
             if (currentUser != null && currentUser.CinemaId != null && currentUser.CinemaId != 0)
             {
-
                 return RedirectToAction("Details", "Cinemas", new { id = currentUser.CinemaId });
             }
+
             if (!ModelState.IsValid)
             {
                 return View(cinema);
             }
-            string logoPath = cinema.LogoPath;
-            if(cinema.Logo != null)
-            {
-                logoPath =
-                    await _imageServises.UploadImageAsync(cinema.Logo, "Cinemas",ImageType.Profile);
 
+            string logoPath = cinema.LogoPath;
+            if (cinema.Logo != null)
+            {
+                logoPath = await _imageService.UploadImageAsync(cinema.Logo, "Cinemas", ImageType.Profile);
             }
+
             string backgroundPath = cinema.BackgroundPath;
             if (cinema.BackgroundPicture != null)
             {
-                backgroundPath =
-                    await _imageServises.UploadImageAsync(cinema.BackgroundPicture, "Cinemas",ImageType.Background);
-
+                backgroundPath = await _imageService.UploadImageAsync(cinema.BackgroundPicture, "Cinemas", ImageType.Background);
             }
+
             var cinemaModel = new CreateCinemaDto
             {
                 Name = cinema.Name,
@@ -86,31 +85,28 @@ namespace Movies_web_app.Controllers
                 Address = cinema.Address,
                 LogoPath = logoPath,
                 BackgroundPath = backgroundPath
-
             };
+
             var newCinemaId = await _cinemaManager.CreateCinemaAsync(cinemaModel);
 
-            if(currentUser!=null&& newCinemaId>0)
+            if (currentUser != null && newCinemaId > 0)
             {
                 currentUser.CinemaId = newCinemaId;
-                await _accountmanager.UpdateUserAsync(currentUser);
+                await _accountManager.UpdateUserAsync(currentUser);
             }
-           
+
             return RedirectToAction("PendingApproval");
         }
-        [Authorize(Roles = "CinemaAgent")]
+
         [HttpGet]
-        public async Task<IActionResult> PendingApproval()
-        {
-            return View();
-        }
         public async Task<IActionResult> Details(int id)
         {
-            if(id<=0) return View("NotFound");
+            if (id <= 0) return View("NotFound");
             var cinema = await _cinemaManager.GetCinemaByIdAsync(id);
             if (cinema == null) return View("NotFound");
             return View(cinema);
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -127,75 +123,75 @@ namespace Movies_web_app.Controllers
             };
             return View(dto);
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UpdateCinemaDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return View(dto);
             }
-            var exsistingCinema = await _cinemaManager.GetCinemaByIdAsync(dto.Id);
-            if (exsistingCinema == null) return View("NotFound");
+
+            var existingCinema = await _cinemaManager.GetCinemaByIdAsync(dto.Id);
+            if (existingCinema == null) return View("NotFound");
+
             if (dto.Logo != null)
             {
-                if (!string.IsNullOrEmpty(dto.LogoPath) && !exsistingCinema.LogoPath.StartsWith("http"))
+                if (!string.IsNullOrEmpty(dto.LogoPath) && !existingCinema.LogoPath.StartsWith("http"))
                 {
-                    await _imageServises.DeleteImageAsync(exsistingCinema.LogoPath);
+                    await _imageService.DeleteImageAsync(existingCinema.LogoPath);
                 }
 
-                dto.LogoPath =
-                await _imageServises.UploadImageAsync(dto.Logo, "Cinemas", ImageType.Profile);
-
-
+                dto.LogoPath = await _imageService.UploadImageAsync(dto.Logo, "Cinemas", ImageType.Profile);
             }
-            else if(!string.IsNullOrEmpty(dto.LogoPath ) && dto.LogoPath != exsistingCinema.LogoPath)
+            else if (!string.IsNullOrEmpty(dto.LogoPath) && dto.LogoPath != existingCinema.LogoPath)
             {
-                if(!string.IsNullOrEmpty(exsistingCinema.LogoPath) && !exsistingCinema.LogoPath.StartsWith("http"))
+                if (!string.IsNullOrEmpty(existingCinema.LogoPath) && !existingCinema.LogoPath.StartsWith("http"))
                 {
-                    await _imageServises.DeleteImageAsync(exsistingCinema.LogoPath);
+                    await _imageService.DeleteImageAsync(existingCinema.LogoPath);
                 }
             }
 
-            if(dto.BackgroundPicture != null)
+            if (dto.BackgroundPicture != null)
             {
-                if (!string.IsNullOrEmpty(exsistingCinema.BackgroundPath) && !exsistingCinema.BackgroundPath.StartsWith("http"))
+                if (!string.IsNullOrEmpty(existingCinema.BackgroundPath) && !existingCinema.BackgroundPath.StartsWith("http"))
                 {
-                    await _imageServises.DeleteImageAsync(exsistingCinema.BackgroundPath);
+                    await _imageService.DeleteImageAsync(existingCinema.BackgroundPath);
                 }
 
-                    dto.BackgroundPath =
-                    await _imageServises.UploadImageAsync(dto.BackgroundPicture, "Cinemas", ImageType.Background);
-
+                dto.BackgroundPath = await _imageService.UploadImageAsync(dto.BackgroundPicture, "Cinemas", ImageType.Background);
             }
-            else if(!string.IsNullOrEmpty(dto.BackgroundPath) && dto.BackgroundPath != exsistingCinema.BackgroundPath)
+            else if (!string.IsNullOrEmpty(dto.BackgroundPath) && dto.BackgroundPath != existingCinema.BackgroundPath)
             {
-                if (!string.IsNullOrEmpty(exsistingCinema.BackgroundPath) && !exsistingCinema.BackgroundPath.StartsWith("http"))
+                if (!string.IsNullOrEmpty(existingCinema.BackgroundPath) && !existingCinema.BackgroundPath.StartsWith("http"))
                 {
-                    await _imageServises.DeleteImageAsync(exsistingCinema.BackgroundPath);
+                    await _imageService.DeleteImageAsync(existingCinema.BackgroundPath);
                 }
             }
-
 
             await _cinemaManager.UpdateCinemaAsync(dto);
             return RedirectToAction("Details", new { id = dto.Id });
-
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var cinema = await _cinemaManager.GetCinemaByIdAsync(id);
             if (cinema == null) return View("NotFound");
+
             if (!string.IsNullOrEmpty(cinema.LogoPath))
             {
-                await _imageServises.DeleteImageAsync(cinema.LogoPath);
+                await _imageService.DeleteImageAsync(cinema.LogoPath);
             }
             if (!string.IsNullOrEmpty(cinema.BackgroundPath))
             {
-                await _imageServises.DeleteImageAsync(cinema.BackgroundPath);
+                await _imageService.DeleteImageAsync(cinema.BackgroundPath);
             }
+
             await _cinemaManager.DeleteCinemaAsync(id);
             return RedirectToAction("Index");
         }
-
     }
 }

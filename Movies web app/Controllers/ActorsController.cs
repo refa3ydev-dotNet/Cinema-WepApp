@@ -1,8 +1,6 @@
-﻿using Business.DTOs.Actors;
+using Business.DTOs.Actors;
 using Business.Managers.Actors;
-using Core.Entities;
 using Core.Enums;
-using DataAccess.Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Movies_web_app.Services;
 
@@ -10,93 +8,85 @@ namespace Movies_web_app.Controllers
 {
     public class ActorsController : Controller
     {
-        private readonly MoviesDbContext _context;
-        private readonly IActorsManager _actorsmanager;
-        private readonly IImageService _imageServises;
+        private readonly IActorsManager _actorsManager;
+        private readonly IImageService _imageService;
 
-
-        public ActorsController(MoviesDbContext context, IActorsManager actorsmanager, IImageService imageServises)
+        public ActorsController(IActorsManager actorsManager, IImageService imageService)
         {
-            _context = context;
-            _actorsmanager = actorsmanager;
-            _imageServises = imageServises;
+            _actorsManager = actorsManager;
+            _imageService = imageService;
         }
+
         [HttpGet]
         public async Task<IActionResult> Index(string searchString)
         {
-            Console.WriteLine($"Search Term Received: '{searchString}'");
             ViewData["CurrentFilter"] = searchString;
             List<GetAllActorsDto> actors;
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                actors = await _actorsmanager.SearchActorsAsync(searchString);
-                Console.WriteLine($"Found {actors.Count} actors.");
+                actors = await _actorsManager.SearchActorsAsync(searchString);
             }
             else
             {
-                actors = await _actorsmanager.GetAllActorsAsync();
-                Console.WriteLine("Fetching All Actors.");
-
+                actors = await _actorsManager.GetAllActorsAsync();
             }
             return View(actors);
         }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
             return View();
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateActorDto actor)
         {
             if (!ModelState.IsValid)
             {
-                foreach (var modelStateKey in ModelState.Keys)
-                {
-                    var modelStateVal = ModelState[modelStateKey];
-                    foreach (var error in modelStateVal.Errors)
-                    {
-                        Console.WriteLine($"Key: {modelStateKey}, Error: {error.ErrorMessage}");
-                    }
-                }
-
                 return View(actor);
             }
 
             if (actor.ProfilePicture != null)
             {
-                actor.ProfilePath =
-                                 await _imageServises.UploadImageAsync(actor.ProfilePicture, "Actors", ImageType.Profile);
+                actor.ProfilePath = await _imageService.UploadImageAsync(actor.ProfilePicture, "Actors", ImageType.Profile);
             }
-            
 
-        await _actorsmanager.CreateActorAsync(actor);
+            await _actorsManager.CreateActorAsync(actor);
             return RedirectToAction("Index");
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var actor = await _actorsmanager.GetActorByIdAsync(id);
+            var actor = await _actorsManager.GetActorByIdAsync(id);
             if (actor == null) return View("NotFound");
+
             if (!string.IsNullOrEmpty(actor.ProfilePath))
-            { 
-                await _imageServises.DeleteImageAsync(actor.ProfilePath);
+            {
+                await _imageService.DeleteImageAsync(actor.ProfilePath);
             }
 
-            await _actorsmanager.DeleteActorAsync(id);
+            await _actorsManager.DeleteActorAsync(id);
             return RedirectToAction("Index");
         }
+
         public async Task<IActionResult> Details(int id)
         {
-            var actor = await _actorsmanager.GetActorByIdAsync(id);
+            var actor = await _actorsManager.GetActorByIdAsync(id);
             if (actor == null) return View("NotFound");
             return View(actor);
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var actor = await _actorsmanager.GetActorByIdAsync(id);
+            var actor = await _actorsManager.GetActorByIdAsync(id);
             if (actor == null) return View("NotFound");
+
             var dto = new UpdateActorDto
             {
                 Id = actor.Id,
@@ -110,25 +100,26 @@ namespace Movies_web_app.Controllers
             };
             return View(dto);
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UpdateActorDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return View(dto);
             }
+
             if (dto.ProfilePicture != null)
             {
                 if (!string.IsNullOrEmpty(dto.ProfilePath))
                 {
-                    await _imageServises.DeleteImageAsync(dto.ProfilePath);
+                    await _imageService.DeleteImageAsync(dto.ProfilePath);
                 }
-                dto.ProfilePath = 
-                 await _imageServises.UploadImageAsync(dto.ProfilePicture, "Actors",ImageType.Profile);
-
+                dto.ProfilePath = await _imageService.UploadImageAsync(dto.ProfilePicture, "Actors", ImageType.Profile);
             }
-            await _actorsmanager.UpdateActorAsync(dto);
 
+            await _actorsManager.UpdateActorAsync(dto);
             return RedirectToAction("Details", new { id = dto.Id });
         }
     }

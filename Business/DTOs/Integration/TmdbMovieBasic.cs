@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -23,6 +23,7 @@ namespace Business.DTOs.Integration
         [JsonPropertyName("original_language")]
         public string Original_Language { get; set; } = string.Empty;
         public bool Adult { get; set; } // تصنيف عمري (للكبار فقط؟)
-
+        [JsonPropertyName("genre_ids")]
+        public List<int> Genre_Ids { get; set; } = new List<int>();
     }
 }

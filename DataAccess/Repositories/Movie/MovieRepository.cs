@@ -18,22 +18,24 @@ namespace DataAccess.Repositories.MOVIE
             _context = context;
         }
 
-        public async Task<Movie> GetMovieByIdAsync(int id)
-        {   
-                var mov = await _context.Movies
-                    .Include(x => x.ActorMovies)
-                    .ThenInclude(y => y.Actor)
-                    .Include(x => x.CinemaMovies)
-                    .ThenInclude(y => y.Cinema)
-                    .Include(p=>p.ProducerMovies)
-                    .ThenInclude(y=>y.Producer)
-                    .Include(d=>d.DirectorMovies)
-                    .ThenInclude(y=>y.Director)
-                    .Include(x => x.Categories)
-                    .FirstOrDefaultAsync(x => x.Id == id);
+public async Task<Movie> GetMovieByIdAsync(int id)
+{
+    if (id <= 0) return null;
+    
+    var mov = await _context.Movies
+        .Include(x => x.ActorMovies)
+        .ThenInclude(y => y.Actor)
+        .Include(x => x.CinemaMovies)
+        .ThenInclude(y => y.Cinema)
+        .Include(p=>p.ProducerMovies)
+        .ThenInclude(y=>y.Producer)
+        .Include(d=>d.DirectorMovies)
+        .ThenInclude(y=>y.Director)
+        .Include(x => x.Categories)
+        .FirstOrDefaultAsync(x => x.Id == id);
 
-                return mov ?? new Movie();
-        }
+    return mov;
+}
         public async Task<List<Movie>> GetAllMoviesAsync()
         {
             var movs = await _context.Movies
@@ -253,39 +255,39 @@ namespace DataAccess.Repositories.MOVIE
                 .ToListAsync();
         }
 
-        public async Task<PaginationResult<Movie>> GetFilteredMoviesAsync(string? searchTerm, MovieCategory? category, int pageNumber, int pageSize)
-        {
-            var query = _context.Movies.Include(m=>m.CinemaMovies).ThenInclude(c=>c.Cinema).AsQueryable();
+public async Task<PaginationResult<Movie>> GetFilteredMoviesAsync(string? searchTerm, MovieCategory? category, int pageNumber, int pageSize)
+{
+    var query = _context.Movies.Include(m=>m.CinemaMovies).ThenInclude(c=>c.Cinema).AsQueryable();
 
 
-            if(!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                var lowerSearchTerm = searchTerm.ToLower();
+    if(!string.IsNullOrWhiteSpace(searchTerm))
+    {
+        var lowerSearchTerm = searchTerm.ToLower();
 
-                query = query.Where(m => m.Name.ToLower().Contains(lowerSearchTerm) 
-                || m.Description.ToLower().Contains(lowerSearchTerm));
-            }
+        query = query.Where(m => m.Name.ToLower().Contains(lowerSearchTerm)
+        || m.Description.ToLower().Contains(lowerSearchTerm));
+    }
 
-            if (category.HasValue)
-            {
-                query = query.Where(m => m.Categories.Any(c => c.CategoryName == category.Value.ToString()));
-            }
-            int totalMovies =await query.CountAsync();
-            int totalPages = (int)Math.Ceiling(await query.CountAsync() / (double)pageSize);
+    if (category.HasValue)
+    {
+        query = query.Where(m => m.Categories.Any(c => c.CategoryName == category.Value.ToString()));
+    }
+    var totalCount = await query.CountAsync();
+    int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
-            var movies = await query
-                .OrderByDescending(m=>m.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+    var movies = await query
+        .OrderByDescending(m=>m.Id)
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync();
 
-            return new PaginationResult<Movie>
-            {
-                Items = movies,
-                CurrentPage = pageNumber,
-                TotalPages = totalPages
-            };
-        }
+    return new PaginationResult<Movie>
+    {
+        Items = movies,
+        CurrentPage = pageNumber,
+        TotalPages = totalPages
+    };
+}
     }
     }
 

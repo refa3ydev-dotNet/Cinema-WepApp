@@ -57,7 +57,7 @@
 
     <div class="content-rows">
 
-        <div class="category-bar">
+        <div class="category-bar mt-5">
             @foreach (var cat in Model.SelectMany(m => m.CategoryNames ?? new List<string>()).Distinct().Take(8))
             {
                 <span class="cat-pill">@cat</span>

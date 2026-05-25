@@ -54,30 +54,31 @@
     </div>
 
 </div>
-<div class="pagination">
-    @if (Model.CurrentPage > 1)
-    {
-        <a href="?page=@(Model.CurrentPage - 1)">Previous</a>
-    }
+<div class="pagination d-flex justify-content-center align-items-center gap-2">
+@if (Model.CurrentPage > 1)
+{
+<a href="?page=@(Model.CurrentPage - 1)" class="btn btn-outline-primary"><i class="fas fa-chevron-left"></i> Previous</a>
+}
 
-    @for (int i = 1; i <= Model.TotalPages; i++)
-    {
-        if (i == Model.CurrentPage)
-        {
-            <strong>@i</strong>
-        }
-        else
-        {
-            <a href="?page=@i">@i</a>
-        }
-    }
+@for (int i = 1; i <= Model.TotalPages; i++)
+{
+if (i == Model.CurrentPage)
+{
+<strong class="badge bg-primary">@i</strong>
+}
+else
+{
+<a href="?page=@i" class="btn btn-outline-secondary">@i</a>
+}
+}
 
-    @if (Model.CurrentPage < Model.TotalPages)
-    {
-        <a href="?page=@(Model.CurrentPage + 1)">Next</a>
-    }
+@if (Model.CurrentPage < Model.TotalPages)
+{
+<a href="?page=@(Model.CurrentPage + 1)" class="btn btn-outline-primary">Next <i class="fas fa-chevron-right"></i></a>
+}
 </div>
 <div style="position:fixed; bottom: 20px; right: 20px">
-
-    <a asp-action="Create" class="btn btn-outline-success rounded-circle rounded"><i class="bi bi-plus-circle-fill"></i></a>
+<a asp-action="Create" class="btn btn-outline-success rounded-circle rounded shadow-lg" title="Add New Movie">
+<i class="fas fa-plus-circle" style="font-size: 1.5rem;"></i>
+</a>
 </div>

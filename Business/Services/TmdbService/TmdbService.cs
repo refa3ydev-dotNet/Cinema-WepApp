@@ -1,4 +1,5 @@
-﻿using Business.DTOs.Integration;
+using Business.DTOs.Integration;
+using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 
 namespace Business.Services.TmdbService
@@ -6,12 +7,16 @@ namespace Business.Services.TmdbService
     public class TmdbService : ITmdbService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey = "3a1b76eedcfccb8ed491fd77d32d6bcc";
+        private readonly string _apiKey;
         private readonly string _baseUrl = "https://api.themoviedb.org/3";
-        public TmdbService(HttpClient httpClient)
+
+        public TmdbService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _apiKey = configuration["TmdbSettings:ApiKey"]
+                ?? throw new InvalidOperationException("TMDB API Key not found in configuration");
         }
+
         public async Task<TmdbMovieDetails> GetMovieDetailsAsync(int tmdbMovieId)
         {
             var response = await _httpClient.GetFromJsonAsync<TmdbMovieDetails>(
@@ -23,9 +28,8 @@ namespace Business.Services.TmdbService
         {
             try
             {
-
-            var response= await _httpClient.GetFromJsonAsync<TmdbPersonDetails>(
-                $"{_baseUrl}/person/{personId}?api_key={_apiKey}");
+                var response = await _httpClient.GetFromJsonAsync<TmdbPersonDetails>(
+                    $"{_baseUrl}/person/{personId}?api_key={_apiKey}");
                 return response;
             }
             catch
@@ -46,6 +50,14 @@ namespace Business.Services.TmdbService
         {
             var response = await _httpClient.GetFromJsonAsync<TmdbSearchResponse>
                 ($"{_baseUrl}/search/movie?api_key={_apiKey}&query={movieName}&page={page}");
+
+            return response;
+        }
+
+        public async Task<TmdbSearchResponse> GetMoviesByGenreAsync(int genreId, int page = 1)
+        {
+            var response = await _httpClient.GetFromJsonAsync<TmdbSearchResponse>
+                ($"{_baseUrl}/discover/movie?api_key={_apiKey}&with_genres={genreId}&page={page}&language=en-US&sort_by=popularity.desc");
 
             return response;
         }

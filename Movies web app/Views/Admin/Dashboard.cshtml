@@ -496,7 +496,7 @@
         </section>
 
 <script id="dashboardData" type="application/json">
-    @Html.Raw(JsonSerializer.Serialize(new
+    @JsonSerializer.Serialize(new
     {
         revenueChart = Model.RevenueChart,
         bookingsChart = Model.BookingsChart

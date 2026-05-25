@@ -33,48 +33,53 @@ public class CustomerController:Controller
         return View(seatSelectionDto);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Checkout(CheckoutDto checkoutDto)
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Checkout(CheckoutDto checkoutDto)
+{
+    if (string.IsNullOrEmpty(checkoutDto.SelectedSeatIds))
     {
-        if (string.IsNullOrEmpty(checkoutDto.SelectedSeatIds))
-        {
-            TempData["ErrorMessage"] = "Please select at least one seat before checking out.";
-            return RedirectToAction("SelectSeats", new { scheduleId = checkoutDto.ScheduleId });
-        }
-
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Unauthorized();
-        }
-
-        bool isSuccess = await _bookingManager.ProcessCheckoutAsync(checkoutDto, userId);
-
-        if (isSuccess)
-        {
-            TempData["SeccessMessage"] = "Tickets booked successfully! Grab your popcorn 🍿";
-            return RedirectToAction("MyTickets");
-            
-        }
-        TempData["ErrorMessage"] = "Sorry, one or more selected seats were just booked by someone else.";
+        TempData["ErrorMessage"] = "Please select at least one seat before checking out.";
         return RedirectToAction("SelectSeats", new { scheduleId = checkoutDto.ScheduleId });
     }
-    [HttpGet]
-    public async Task<IActionResult> MyTickets()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
-        {
-            return RedirectToAction("Login", "Account");
-            
-        }
 
-        var tickets = await _bookingManager.GetUserTicketsAsync(userId);
-        tickets = tickets.OrderByDescending(t => t.StartTime > DateTime.Now)
-            .ThenBy(t => t.StartTime)
-            .ToList();
-        return View(tickets);
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrEmpty(userId))
+    {
+        return Unauthorized();
     }
+
+    bool isSuccess = await _bookingManager.ProcessCheckoutAsync(checkoutDto, userId);
+
+    if (isSuccess)
+    {
+        TempData["SeccessMessage"] = "Tickets booked successfully! Grab your popcorn 🍿";
+        return RedirectToAction("MyTickets");
+
+    }
+    TempData["ErrorMessage"] = "Sorry, one or more selected seats were just booked by someone else.";
+    return RedirectToAction("SelectSeats", new { scheduleId = checkoutDto.ScheduleId });
+}
+[HttpGet]
+public async Task<IActionResult> MyTickets()
+{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrEmpty(userId))
+    {
+        return RedirectToAction("Login", "Account");
+    }
+
+    var tickets = await _bookingManager.GetUserTicketsAsync(userId);
+    if (tickets == null)
+    {
+        return View(new List<MyTicketDto>());
+    }
+    
+    tickets = tickets.OrderByDescending(t => t.StartTime > DateTime.Now)
+        .ThenBy(t => t.StartTime)
+        .ToList();
+    return View(tickets);
+}
     [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetMovieSchedules(int movieId)
@@ -86,23 +91,24 @@ public class CustomerController:Controller
         return Json(schedules);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> ToggleFavorite(int movieId)
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> ToggleFavorite(int movieId)
+{
+    if (movieId <= 0)
     {
-        if (movieId <= 0)
-        {
-            return Json(new { success = false, message = "Invalid movie id." });
-        }
-
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Unauthorized();
-        }
-
-        var isFavorite = await _favoriteManager.ToggleFavoriteAsync(userId, movieId);
-        return Json(new { success = true, isFavorite });
+        return Json(new { success = false, message = "Invalid movie id." });
     }
+
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrEmpty(userId))
+    {
+        return Unauthorized();
+    }
+
+    var isFavorite = await _favoriteManager.ToggleFavoriteAsync(userId, movieId);
+    return Json(new { success = true, isFavorite });
+}
 
     [HttpGet]
     public async Task<IActionResult> MyFavorites()

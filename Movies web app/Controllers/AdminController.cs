@@ -72,22 +72,24 @@ namespace Movies_web_app.Controllers
             var PendingCinemas = await cinemasManager.GetPendingCinemasAsync();
             return View(PendingCinemas);
         }
-        [HttpPost]
-        public async Task<IActionResult> ApproveCinema(int id)
-        {
-            await cinemasManager.ApproveCinemaAsync(id);
-            return RedirectToAction("PendingRequests");
-        }
-            [HttpPost]
-        public async Task<IActionResult> RejectCinema(int id, string reason)
-        {
-            if(string.IsNullOrWhiteSpace(reason))
-            {
-                reason = "Your request has been rejected. Please update your information.";
-            }
-            await cinemasManager.RejectCinemaAsync(id, reason);
-            return RedirectToAction("PendingRequests");
-        }
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> ApproveCinema(int id)
+{
+    await cinemasManager.ApproveCinemaAsync(id);
+    return RedirectToAction("PendingRequests");
+}
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> RejectCinema(int id, string reason)
+{
+    if(string.IsNullOrWhiteSpace(reason))
+    {
+        reason = "Your request has been rejected. Please update your information.";
+    }
+    await cinemasManager.RejectCinemaAsync(id, reason);
+    return RedirectToAction("PendingRequests");
+}
         [HttpGet]
         public async Task<IActionResult> CreateMovies()
         {

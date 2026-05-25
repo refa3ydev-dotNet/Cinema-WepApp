@@ -1,7 +1,6 @@
-﻿using Business.DTOs.Producers;
+using Business.DTOs.Producers;
 using Business.Managers.Producers;
 using Core.Enums;
-using DataAccess.Contexts;
 using Microsoft.AspNetCore.Mvc;
 using Movies_web_app.Services;
 
@@ -9,115 +8,108 @@ namespace Movies_web_app.Controllers
 {
     public class ProducersController : Controller
     {
-        private readonly MoviesDbContext _context;
         private readonly IProducersManager _producersManager;
-        private readonly IImageService _imageServises;
+        private readonly IImageService _imageService;
 
-        public ProducersController(MoviesDbContext context, IProducersManager producersmanager, IImageService imageServises)
+        public ProducersController(IProducersManager producersManager, IImageService imageService)
         {
-            _context = context;
-            _producersManager = producersmanager;
-            _imageServises = imageServises;
+            _producersManager = producersManager;
+            _imageService = imageService;
         }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-
-            var Producers = await _producersManager.GetAllProducersAsync();
-            return View(Producers);
+            var producers = await _producersManager.GetAllProducersAsync();
+            return View(producers);
         }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-
             return View();
         }
+
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProducerDto Producer)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateProducerDto producer)
         {
-            
             if (!ModelState.IsValid)
             {
-                
-                foreach (var state in ModelState)
-                {
-                    foreach (var error in state.Value.Errors)
-                    {
-                        Console.WriteLine($"Error in '{state.Key}': {error.ErrorMessage}");
-                    }
-                    foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
-                    {
-                        Console.WriteLine("Validation error: " + modelError.ErrorMessage);
-                    }
+                return View(producer);
+            }
 
-                }
-                return View(Producer);
-            }
-            if (Producer.ProfilePicture != null)
+            if (producer.ProfilePicture != null)
             {
-                Producer.ProfilePath =
-                    await _imageServises.UploadImageAsync(Producer.ProfilePicture, "Producers", ImageType.Profile);
+                producer.ProfilePath = await _imageService.UploadImageAsync(producer.ProfilePicture, "Producers", ImageType.Profile);
             }
-            await _producersManager.CreateProducerAsync(Producer);
+
+            await _producersManager.CreateProducerAsync(producer);
             return RedirectToAction("Index");
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var Producer = await _producersManager.GetProducerByIdAsync(id);
-            if (Producer == null) return View("NotFound");
-            if (!string.IsNullOrEmpty(Producer.ProfilePath))
-            { 
+            var producer = await _producersManager.GetProducerByIdAsync(id);
+            if (producer == null) return View("NotFound");
 
-                await _imageServises.DeleteImageAsync(Producer.ProfilePath);
+            if (!string.IsNullOrEmpty(producer.ProfilePath))
+            {
+                await _imageService.DeleteImageAsync(producer.ProfilePath);
             }
 
             await _producersManager.DeleteProducerAsync(id);
             return RedirectToAction("Index");
         }
+
         public async Task<IActionResult> Details(int id)
         {
-            var Producer = await _producersManager.GetProducerByIdAsync(id);
-            if (Producer == null) return View("NotFound");
-            return View(Producer);
+            var producer = await _producersManager.GetProducerByIdAsync(id);
+            if (producer == null) return View("NotFound");
+            return View(producer);
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var Producer = await _producersManager.GetProducerByIdAsync(id);
-            if (Producer == null) return View("NotFound");
+            var producer = await _producersManager.GetProducerByIdAsync(id);
+            if (producer == null) return View("NotFound");
+
             var dto = new UpdateProducerDto
             {
-                Id = Producer.Id,
-                FullName = Producer.FullName,
-                Bio = Producer.Bio,
-                ProfilePath = Producer.ProfilePath,
-                IMDBLink = Producer.IMDBLink,
-                BirthDate = Producer.BirthDate,
-                DeathDate = Producer.DeathDate,
-                Nationality = Producer.Nationality
+                Id = producer.Id,
+                FullName = producer.FullName,
+                Bio = producer.Bio,
+                ProfilePath = producer.ProfilePath,
+                IMDBLink = producer.IMDBLink,
+                BirthDate = producer.BirthDate,
+                DeathDate = producer.DeathDate,
+                Nationality = producer.Nationality
             };
-            Console.WriteLine(Producer.ProfilePicture);
             return View(dto);
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UpdateProducerDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return View(dto);
             }
+
             if (dto.ProfilePicture != null)
             {
                 if (!string.IsNullOrEmpty(dto.ProfilePath))
                 {
-                    await _imageServises.DeleteImageAsync(dto.ProfilePath);
+                    await _imageService.DeleteImageAsync(dto.ProfilePath);
                 }
-                dto.ProfilePath = 
-                        await _imageServises.UploadImageAsync(dto.ProfilePicture, "Producers", ImageType.Profile);
+                dto.ProfilePath = await _imageService.UploadImageAsync(dto.ProfilePicture, "Producers", ImageType.Profile);
             }
-            await _producersManager.UpdateProducerAsync(dto);
 
+            await _producersManager.UpdateProducerAsync(dto);
             return RedirectToAction("Details", new { id = dto.Id });
         }
     }

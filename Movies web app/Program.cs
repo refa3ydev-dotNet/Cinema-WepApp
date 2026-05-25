@@ -1,4 +1,4 @@
-﻿using Business.Managers.Accounts;
+using Business.Managers.Accounts;
 using Business.Managers.Actors;
 using Business.Managers.Admin;
 using Business.Managers.Agent;
@@ -11,6 +11,7 @@ using Business.Managers.Movies;
 using Business.Managers.Producers;
 using Business.Managers.Rooms;
 using Business.Managers.Schedule;
+using Business.Managers.Users;
 using Business.Services.TmdbService;
 using Core.Entities;
 using DataAccess.Contexts;
@@ -26,11 +27,12 @@ using DataAccess.Repositories.MOVIE;
 using DataAccess.Repositories.PRODUCER;
 using DataAccess.Repositories.ROOM;
 using DataAccess.Repositories.Schedule;
+using DataAccess.Repositories.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Movies_web_app.Helper;
 using Movies_web_app.Services;
- 
+
 namespace Movies_web_app
 {
     public class Program
@@ -41,80 +43,109 @@ namespace Movies_web_app
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            //Repositories
-            builder.Services.AddScoped<IActorRepository,ActorRepository>();
-            builder.Services.AddScoped<IRoomRepository,RoomRepository>();
-            builder.Services.AddScoped<IProducerRepository, ProducerRepository>();
-            builder.Services.AddScoped<ICinemaRepository, CinemaRepository>();
-            builder.Services.AddScoped<IMovieRepository,MovieRepository>();
-            builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
-            builder.Services.AddScoped<IDirectorRepository,DirectorRepository>();
-            builder.Services.AddScoped<IAgentDashboardRepository, AgentDashboardRepository>();
-            builder.Services.AddScoped<IMovieScheduleRepository, MovieScheduleRepository>();
-            builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
-            builder.Services.AddScoped<IAdminDashboardRepository,AdminDashboardRepository>();
-            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-            
-            
-            builder.Services.AddScoped<IActorsManager,ActorsManager>();
-            builder.Services.AddScoped<IRoomManager, RoomManager>();
-            builder.Services.AddScoped<IProducersManager, ProducersManager>();
-            builder.Services.AddScoped<ICinemasManager, CinemasManager>();
-            builder.Services.AddScoped<IMovieManager,MovieManager>();
-            builder.Services.AddScoped<ICategoryManager,CategoryManager>();
-            builder.Services.AddScoped<IImageService, ImageService>();
-            builder.Services.AddScoped<IDirectorManager,DirectorManager>();
-            builder.Services.AddScoped<IAccountManager, AccountManager>();
-            builder.Services.AddScoped<IAgentDashboardManager, AgentDashboardManager>();
-            builder.Services.AddHttpClient<ITmdbService, TmdbService>();
-            builder.Services.AddScoped<IMovieScheduleManager, MovieScheduleManager>();
-            builder.Services.AddScoped<IBookingManager, BookingManager>();
-            builder.Services.AddScoped<IFavoriteManager, FavoriteManager>();
-            builder.Services.AddScoped<IAdminManager, AdminManager>();
-            
+//Repositories
+builder.Services.AddScoped<IActorRepository,ActorRepository>();
+builder.Services.AddScoped<IRoomRepository,RoomRepository>();
+builder.Services.AddScoped<IProducerRepository, ProducerRepository>();
+builder.Services.AddScoped<ICinemaRepository, CinemaRepository>();
+builder.Services.AddScoped<IMovieRepository,MovieRepository>();
+builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
+builder.Services.AddScoped<IDirectorRepository,DirectorRepository>();
+builder.Services.AddScoped<IAgentDashboardRepository, AgentDashboardRepository>();
+builder.Services.AddScoped<IMovieScheduleRepository, MovieScheduleRepository>();
+builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+builder.Services.AddScoped<IAdminDashboardRepository,AdminDashboardRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-            // ? DbContext configuration using the connection string from appsettings.json
+builder.Services.AddScoped<IActorsManager,ActorsManager>();
+builder.Services.AddScoped<IRoomManager, RoomManager>();
+builder.Services.AddScoped<IProducersManager, ProducersManager>();
+builder.Services.AddScoped<ICinemasManager, CinemasManager>();
+builder.Services.AddScoped<IMovieManager,MovieManager>();
+builder.Services.AddScoped<ICategoryManager,CategoryManager>();
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IDirectorManager,DirectorManager>();
+builder.Services.AddScoped<IAccountManager, AccountManager>();
+builder.Services.AddScoped<IAgentDashboardManager, AgentDashboardManager>();
+builder.Services.AddHttpClient<ITmdbService, TmdbService>();
+builder.Services.AddScoped<IMovieScheduleManager, MovieScheduleManager>();
+builder.Services.AddScoped<IBookingManager, BookingManager>();
+builder.Services.AddScoped<IFavoriteManager, FavoriteManager>();
+builder.Services.AddScoped<IAdminManager, AdminManager>();
+builder.Services.AddScoped<IUserManager, UserManager>();
+
+            // DbContext configuration using the connection string from appsettings.json
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<MoviesDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(Options =>
+            // Strengthened password policy for production security
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
-                Options.Password.RequireDigit = true;
-                Options.Password.RequireLowercase = true;
-                Options.Password.RequireUppercase = true;
-                Options.Password.RequireNonAlphanumeric = false;
-                Options.Password.RequiredLength = 8;
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true; // Require special character
+                options.Password.RequiredLength = 10; // Increased from 8 to 10
+                options.Password.RequiredUniqueChars = 3;
             })
             .AddEntityFrameworkStores<MoviesDbContext>()
             .AddDefaultTokenProviders()
             .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>();
 
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+            // Account lockout configuration
+            builder.Services.Configure<IdentityOptions>(options =>
             {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
-            app.UseStaticFiles();
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+            });
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+var app = builder.Build();
 
-            app.UseRouting();
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+// Security headers middleware
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; frame-src 'self' https:;");
+    
+    // Add cache headers for static assets
+    if (context.Request.Path.Value?.Contains("/wwwroot/") == true || 
+        context.Request.Path.Value?.StartsWith("/css/") == true ||
+        context.Request.Path.Value?.StartsWith("/js/") == true)
+    {
+        context.Response.Headers.Append("Cache-Control", "public, max-age=31536000, immutable");
+    }
+    
+    await next();
+});
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseStaticFiles();
 
-            await AppDbInitializer.TaskSeedRoleAsync(app);
-            await AppDbInitializer.TaskSeedAdminUserAsync(app);
-            app.Run();
+app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+await AppDbInitializer.TaskSeedRoleAsync(app);
+await AppDbInitializer.TaskSeedAdminUserAsync(app);
+app.Run();
         }
     }
 }

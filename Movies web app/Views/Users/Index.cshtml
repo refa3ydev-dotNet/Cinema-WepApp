@@ -1,0 +1,268 @@
+@model Core.Helpers.PaginationResult<Business.DTOs.Users.UserListDto>
+@{
+    ViewData["Title"] = "User Management";
+    ViewData["AdminPageIcon"] = "fas fa-users";
+    ViewData["AdminPageSubtitle"] = "Manage all users in the system";
+}
+
+@functions {
+    string GetBadgeForRole(string role)
+    {
+        return role.ToLower() switch
+        {
+            "admin" => "danger",
+            "cinemaagent" => "primary",
+            "customer" => "success",
+            _ => "secondary"
+        };
+    }
+}
+
+<link rel="stylesheet" href="~/css/Admin/Users.css" asp-append-version="true" />
+
+<div class="users-header">
+    <h1><i class="fas fa-users"></i> User Management</h1>
+    <p>Manage all users, roles, and permissions</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-row" id="userStatsRow">
+    <div class="stat-card">
+        <div class="stat-icon icon-blue">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="totalUsers">-</h3>
+            <span>Total Users</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon icon-green">
+            <i class="fas fa-user-check"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="activeUsers">-</h3>
+            <span>Active</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon icon-orange">
+            <i class="fas fa-user-clock"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="pendingUsers">-</h3>
+            <span>Pending Approval</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon icon-purple">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="adminUsers">-</h3>
+            <span>Admins</span>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="users-filters">
+    <div class="filter-group">
+        <label><i class="fas fa-filter"></i> Filter by Role:</label>
+        <div class="role-selector">
+            <button class="role-btn @(ViewBag.CurrentRole == "" || ViewBag.CurrentRole == null ? "active" : "")" 
+                    data-role="" onclick="filterByRole('')">
+                <i class="fas fa-users"></i> All
+            </button>
+            <button class="role-btn @(ViewBag.CurrentRole == "Admin" ? "active" : "")" 
+                    data-role="Admin" onclick="filterByRole('Admin')">
+                <i class="fas fa-user-shield"></i> Admin
+            </button>
+            <button class="role-btn @(ViewBag.CurrentRole == "CinemaAgent" ? "active" : "")" 
+                    data-role="CinemaAgent" onclick="filterByRole('CinemaAgent')">
+                <i class="fas fa-user-tie"></i> Agent
+            </button>
+            <button class="role-btn @(ViewBag.CurrentRole == "Customer" ? "active" : "")" 
+                    data-role="Customer" onclick="filterByRole('Customer')">
+                <i class="fas fa-user"></i> Customer
+            </button>
+        </div>
+    </div>
+    
+    <div class="filter-group">
+        <label><i class="fas fa-search"></i> Search:</label>
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" class="form-control" 
+                   placeholder="Search by name, email..." 
+                   value="@ViewBag.SearchTerm"
+                   oninput="debounceSearch()" />
+        </div>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="users-table-container">
+    <table class="users-table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Items.Any())
+            {
+                @foreach (var user in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                @if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
+                                {
+                                    <img src="@user.ProfilePictureUrl" alt="@user.FirstName" class="user-avatar" />
+                                }
+                                else
+                                {
+                                    <div class="user-avatar-placeholder">
+                                        @user.FirstName[0]@user.LastName[0]
+                                    </div>
+                                }
+                                <div>
+                                    <strong>@user.FirstName @user.LastName</strong>
+                                    <small class="text-muted">@user.UserName</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@user.Email</td>
+                        <td>
+                            @foreach (var role in user.Roles)
+                            {
+                                <span class="badge bg-@GetBadgeForRole(role)">@role</span>
+                            }
+                        </td>
+                        <td>
+                            @if (user.IsDeleted)
+                            {
+                                <span class="status-badge status-deleted"><i class="fas fa-ban"></i> Deleted</span>
+                            }
+                            else if (!user.IsApproved)
+                            {
+                                <span class="status-badge status-pending"><i class="fas fa-clock"></i> Pending</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-active"><i class="fas fa-check"></i> Active</span>
+                            }
+                        </td>
+                        <td>@user.CreateAt.ToString("MMM dd, yyyy")</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a asp-action="Details" asp-route-id="@user.Id" class="btn-action btn-view" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <form asp-action="ToggleApproval" asp-route-userId="@user.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-action btn-@(user.IsApproved ? "warning" : "success")" 
+                                            title="@(user.IsApproved ? "Deactivate" : "Approve")">
+                                        <i class="fas fa-@(user.IsApproved ? "ban" : "check")"></i>
+                                    </button>
+                                </form>
+                                <form asp-action="ToggleStatus" asp-route-userId="@user.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-action btn-@(user.IsDeleted ? "success" : "danger")" 
+                                            title="@(user.IsDeleted ? "Activate" : "Delete")">
+                                        <i class="fas fa-@(user.IsDeleted ? "check" : "trash")"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <i class="fas fa-users-slash fa-3x mb-3"></i>
+                            <p>No users found</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model != null && Model.TotalPages > 1)
+    {
+        <div class="pagination">
+            @if (Model.CurrentPage > 1)
+            {
+                <a href="?page=@(Model.CurrentPage - 1)&role=@ViewBag.CurrentRole&searchTerm=@ViewBag.SearchTerm" class="btn-pagination">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </a>
+            }
+            
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <a href="?page=@i&role=@ViewBag.CurrentRole&searchTerm=@ViewBag.SearchTerm" 
+                   class="btn-pagination @(i == Model.CurrentPage ? "active" : "")">
+                    @i
+                </a>
+            }
+            
+            @if (Model.CurrentPage < Model.TotalPages)
+            {
+                <a href="?page=@(Model.CurrentPage + 1)&role=@ViewBag.CurrentRole&searchTerm=@ViewBag.SearchTerm" class="btn-pagination">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+            }
+        </div>
+    }
+
+    @section Scripts {
+        <script>
+            let searchTimeout;
+            
+            function debounceSearch() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const searchTerm = document.getElementById('searchInput').value;
+                    const role = document.querySelector('.role-btn.active').getAttribute('data-role');
+                    window.location.href = `?searchTerm=${encodeURIComponent(searchTerm)}&role=${role}`;
+                }, 500);
+            }
+            
+            function filterByRole(role) {
+                // Update active button
+                document.querySelectorAll('.role-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-role') === role) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Navigate
+                const searchTerm = document.getElementById('searchInput').value;
+                window.location.href = `?role=${role}&searchTerm=${encodeURIComponent(searchTerm)}`;
+            }
+            
+            // Load stats on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                fetch('/Users/GetStats')
+                    .then(response => response.json())
+                    .then(stats => {
+                        document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+                        document.getElementById('activeUsers').textContent = stats.activeUsers || 0;
+                        document.getElementById('pendingUsers').textContent = stats.pendingApproval || 0;
+                        document.getElementById('adminUsers').textContent = stats.admins || 0;
+                    })
+                    .catch(error => console.error('Error loading stats:', error));
+            });
+        </script>
+    }
